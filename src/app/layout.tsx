@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Lexend } from "next/font/google";
 import { Chatbot } from "@/components/chatbot/Chatbot";
+import { ReloadRedirect } from "@/components/ReloadRedirect";
 import { LanguageProvider } from "@/context/LanguageContext";
 import "./globals.css";
 
@@ -48,6 +49,7 @@ export default function RootLayout({
           }}
         />
         <LanguageProvider>
+          <ReloadRedirect />
           {children}
           <Chatbot />
         </LanguageProvider>
