@@ -20,7 +20,6 @@ const quickLinks: { key: TranslationKey; href: string }[] = [
 
 const resourceLinks: { key: TranslationKey; href: string }[] = [
   { key: "footer_resource_cobac", href: "/resources" },
-  { key: "footer_resource_templates", href: "/resources" },
   { key: "footer_resource_training", href: "/resources" },
   { key: "footer_resource_faq", href: "/faq" },
 ];

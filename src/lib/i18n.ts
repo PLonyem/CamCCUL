@@ -52,7 +52,6 @@ const en = {
   footer_link_news: "News",
   footer_link_contact: "Contact",
   footer_resource_cobac: "COBAC Regulations",
-  footer_resource_templates: "Reporting Templates",
   footer_resource_training: "Training Materials",
   footer_resource_faq: "FAQ",
 
@@ -160,7 +159,6 @@ const fr: Record<keyof typeof en, string> = {
   footer_link_news: "Actualités",
   footer_link_contact: "Contact",
   footer_resource_cobac: "Règlements COBAC",
-  footer_resource_templates: "Modèles de Rapports",
   footer_resource_training: "Supports de Formation",
   footer_resource_faq: "FAQ",
 

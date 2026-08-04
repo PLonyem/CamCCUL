@@ -232,10 +232,25 @@ export function Navbar() {
         </div>
       </div>
 
+      {/*
+        Anchored to the header (which is `sticky`, so it's a valid containing
+        block) and sized to its own content via `top-full` + `max-h`, instead
+        of a `fixed inset-0` overlay forced to the full viewport height. The
+        old approach relied on `100vh`-style sizing, which on mobile browsers
+        is computed against the layout viewport rather than what's actually
+        visible above the address bar — so the menu could render partly
+        below the fold until the page was scrolled once. Using `100dvh` here
+        tracks the real visible viewport, and capping with `max-h` (rather
+        than forcing a fixed height) means the menu is exactly as tall as
+        its content and only scrolls internally if content is genuinely
+        taller than the screen.
+      */}
       <div
         aria-hidden={!isOpen}
         className={cn(
-          "md:hidden fixed inset-0 top-16 z-40 flex flex-col bg-white dark:bg-gray-900 p-6 overflow-y-auto transition-all duration-300 ease-in-out",
+          "md:hidden absolute left-0 right-0 top-full z-40 flex flex-col bg-white dark:bg-gray-900 p-6",
+          "max-h-[calc(100dvh-4rem)] overflow-y-auto shadow-xl border-b border-gray-200 dark:border-gray-800",
+          "transition-all duration-300 ease-in-out",
           isOpen
             ? "opacity-100 translate-y-0"
             : "opacity-0 -translate-y-4 pointer-events-none"
