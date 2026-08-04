@@ -6,9 +6,9 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Menu, X, ChevronDown, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { regions } from "@/lib/mock-data";
+import { regions, regionLabels } from "@/lib/mock-data";
 import { useLanguage } from "@/context/LanguageContext";
-import type { TranslationKey } from "@/lib/i18n";
+import { localize, type TranslationKey } from "@/lib/i18n";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import logo from "../../../public/logo.jpg";
 
@@ -191,9 +191,9 @@ export function Navbar() {
                         key={region}
                         href={`/affiliates?region=${encodeURIComponent(region)}`}
                         onClick={() => setIsAffiliatesOpen(false)}
-                        className="block px-4 py-2.5 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-primary-600 dark:hover:text-white rounded-md capitalize"
+                        className="block px-4 py-2.5 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-primary-600 dark:hover:text-white rounded-md"
                       >
-                        {region.toLowerCase()}
+                        {localize(regionLabels[region], language)}
                       </Link>
                     ))}
                   </div>
@@ -359,9 +359,9 @@ export function Navbar() {
                         key={region}
                         href={`/affiliates?region=${encodeURIComponent(region)}`}
                         onClick={closeMobileMenu}
-                        className="block py-3 text-base text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-white capitalize"
+                        className="block py-3 text-base text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-white"
                       >
-                        {region.toLowerCase()}
+                        {localize(regionLabels[region], language)}
                       </Link>
                     ))}
                   </div>
