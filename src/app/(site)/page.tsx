@@ -18,6 +18,7 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
+import { FacebookIcon } from "@/components/ui/SocialIcon";
 import { buttonVariants } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import { affiliates, regions, services, newsArticles } from "@/lib/mock-data";
@@ -408,6 +409,42 @@ export default function Home() {
             <ArrowRight className="h-5 w-5" />
           </Link>
         </AnimatedSection>
+      </section>
+
+      {/* SECTION 8: CONNECT WITH US */}
+      <section className="bg-white dark:bg-gray-950 py-20">
+        <div className="max-w-7xl mx-auto px-6">
+          <SectionHeader
+            align="center"
+            title={t("home_connect_title")}
+            subtitle={t("home_connect_subtitle")}
+          />
+
+          <div className="mt-12 max-w-lg mx-auto bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm">
+            <div className="h-2 bg-[#1877F2]" />
+            <div className="p-8 text-center">
+              <div className="w-14 h-14 rounded-full bg-[#1877F2]/10 flex items-center justify-center mx-auto mb-4">
+                <FacebookIcon className="h-7 w-7 text-[#1877F2]" />
+              </div>
+              <p className="font-display text-lg font-bold text-primary-900 dark:text-white">
+                {t("home_connect_handle")}
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
+                {t("home_connect_description")}
+              </p>
+              <a
+                href="https://www.facebook.com/CamCCUL/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-6 inline-flex items-center gap-2 bg-[#1877F2] hover:bg-[#166fe5] text-white font-semibold px-6 py-3 rounded-lg transition-colors"
+              >
+                <FacebookIcon className="h-5 w-5" />
+                {t("home_connect_button")}
+              </a>
+              <p className="text-xs text-gray-400 mt-2">{t("home_connect_note")}</p>
+            </div>
+          </div>
+        </div>
       </section>
     </>
   );

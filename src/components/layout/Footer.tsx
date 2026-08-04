@@ -6,7 +6,10 @@ import { MapPin } from "lucide-react";
 import { contactInfo } from "@/lib/mock-data";
 import { useLanguage } from "@/context/LanguageContext";
 import type { TranslationKey } from "@/lib/i18n";
+import { SocialIcon } from "@/components/ui/SocialIcon";
 import logo from "../../../public/logo.jpg";
+
+const CAMCCUL_FACEBOOK_URL = "https://www.facebook.com/CamCCUL/";
 
 const quickLinks: { key: TranslationKey; href: string }[] = [
   { key: "footer_link_home", href: "/" },
@@ -82,6 +85,18 @@ export function Footer() {
             </div>
             <p className="text-sm text-gray-400 mb-2">{contactInfo.phone}</p>
             <p className="text-sm text-gray-400">{contactInfo.email}</p>
+
+            <div className="border-t border-primary-700 my-4" />
+
+            <h4 className="text-sm font-semibold uppercase tracking-wider mb-3">
+              {t("footer_follow_us")}
+            </h4>
+            <div className="flex items-center gap-3">
+              <SocialIcon platform="facebook" href={CAMCCUL_FACEBOOK_URL} />
+              <SocialIcon platform="twitter" href="#" />
+              <SocialIcon platform="linkedin" href="#" />
+              <SocialIcon platform="youtube" href="#" />
+            </div>
           </div>
         </div>
 

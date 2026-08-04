@@ -12,11 +12,15 @@ import {
   Loader2,
   CheckCircle2,
   AlertCircle,
+  ExternalLink,
 } from "lucide-react";
 import { PageHero } from "@/components/layout/PageHero";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { FacebookIcon } from "@/components/ui/SocialIcon";
 import { contactInfo } from "@/lib/mock-data";
+
+const CAMCCUL_FACEBOOK_URL = "https://www.facebook.com/CamCCUL/";
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
@@ -233,6 +237,24 @@ export default function ContactPage() {
                   CamCCUL maintains regional offices in all 10 regions.
                   Contact the headquarters for regional office information.
                 </p>
+
+                <div className="my-4 border-t border-gray-200 dark:border-gray-800" />
+
+                <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
+                  Follow Us Online
+                </h4>
+                <a
+                  href={CAMCCUL_FACEBOOK_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                >
+                  <FacebookIcon className="h-5 w-5 text-[#1877F2] shrink-0" />
+                  <span className="text-sm font-medium text-primary-900 dark:text-white">
+                    CamCCUL on Facebook
+                  </span>
+                  <ExternalLink className="h-3 w-3 text-gray-400 ml-auto shrink-0" />
+                </a>
               </Card>
             </div>
           </div>

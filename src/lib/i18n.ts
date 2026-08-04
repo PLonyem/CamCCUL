@@ -54,6 +54,7 @@ const en = {
   footer_resource_cobac: "COBAC Regulations",
   footer_resource_training: "Training Materials",
   footer_resource_faq: "FAQ",
+  footer_follow_us: "Follow Us",
 
   // ─── Homepage ─────────────────────────────────────────────────────────
   home_hero_badge: "Regulated by COBAC",
@@ -102,6 +103,14 @@ const en = {
   home_faq_subtitle:
     "Find answers to common questions about CamCCUL, credit unions, and our services.",
   home_faq_button: "View FAQs",
+  home_connect_title: "Connect With Us",
+  home_connect_subtitle:
+    "Follow CamCCUL on Facebook for the latest updates, event photos, and community stories.",
+  home_connect_handle: "Follow us @CamCCUL",
+  home_connect_description:
+    "Get real-time updates on League activities, training sessions, AGM coverage, and stories from credit unions across Cameroon.",
+  home_connect_button: "Follow CamCCUL on Facebook",
+  home_connect_note: "Opens in a new tab",
 
   // ─── Chatbot ──────────────────────────────────────────────────────────
   chatbot_assistant_name: "CamCCUL Assistant",
@@ -161,6 +170,7 @@ const fr: Record<keyof typeof en, string> = {
   footer_resource_cobac: "Règlements COBAC",
   footer_resource_training: "Supports de Formation",
   footer_resource_faq: "FAQ",
+  footer_follow_us: "Suivez-nous",
 
   // ─── Homepage ─────────────────────────────────────────────────────────
   home_hero_badge: "Réglementé par la COBAC",
@@ -210,6 +220,14 @@ const fr: Record<keyof typeof en, string> = {
   home_faq_subtitle:
     "Trouvez des réponses aux questions courantes sur CamCCUL, les coopératives de crédit et nos services.",
   home_faq_button: "Voir la FAQ",
+  home_connect_title: "Restez Connectés",
+  home_connect_subtitle:
+    "Suivez CamCCUL sur Facebook pour les dernières actualités, photos d'événements et récits de la communauté.",
+  home_connect_handle: "Suivez-nous @CamCCUL",
+  home_connect_description:
+    "Recevez des mises à jour en temps réel sur les activités de la Ligue, les sessions de formation, la couverture des AGO et les récits des coopératives de crédit à travers le Cameroun.",
+  home_connect_button: "Suivre CamCCUL sur Facebook",
+  home_connect_note: "S'ouvre dans un nouvel onglet",
 
   // ─── Chatbot ──────────────────────────────────────────────────────────
   chatbot_assistant_name: "Assistant CamCCUL",
