@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -19,29 +19,36 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { FacebookIcon } from "@/components/ui/SocialIcon";
 import { contactInfo } from "@/lib/mock-data";
+import { useLanguage } from "@/context/LanguageContext";
+import { localize, type TranslationKey } from "@/lib/i18n";
 
 const CAMCCUL_FACEBOOK_URL = "https://www.facebook.com/CamCCUL/";
 
-const contactSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters."),
-  email: z.string().email("Enter a valid email address."),
-  subject: z.string().min(5, "Subject must be at least 5 characters."),
-  message: z.string().min(10, "Message must be at least 10 characters."),
-});
-
-type ContactFormValues = z.infer<typeof contactSchema>;
+type ContactFormValues = z.infer<ReturnType<typeof buildContactSchema>>;
 
 type FormStatus = "idle" | "submitting" | "success" | "error";
 
-const infoItems = [
-  { icon: MapPin, label: "Address", value: contactInfo.address },
-  { icon: Phone, label: "Phone", value: contactInfo.phone },
-  { icon: Mail, label: "Email", value: contactInfo.email },
-  { icon: Clock, label: "Office Hours", value: contactInfo.officeHours },
-];
+function buildContactSchema(t: (key: TranslationKey) => string) {
+  return z.object({
+    name: z.string().min(2, t("contact_validation_name")),
+    email: z.string().email(t("contact_validation_email")),
+    subject: z.string().min(5, t("contact_validation_subject")),
+    message: z.string().min(10, t("contact_validation_message")),
+  });
+}
 
 export default function ContactPage() {
+  const { t, language } = useLanguage();
   const [status, setStatus] = useState<FormStatus>("idle");
+
+  const contactSchema = useMemo(() => buildContactSchema(t), [t]);
+
+  const infoItems = [
+    { icon: MapPin, label: t("contact_label_address"), value: contactInfo.address },
+    { icon: Phone, label: t("contact_label_phone"), value: contactInfo.phone },
+    { icon: Mail, label: t("contact_label_email"), value: contactInfo.email },
+    { icon: Clock, label: t("contact_label_office_hours"), value: localize(contactInfo.officeHours, language) },
+  ];
 
   const {
     register,
@@ -64,10 +71,7 @@ export default function ContactPage() {
 
   return (
     <>
-      <PageHero
-        title="Contact Us"
-        subtitle="We'd love to hear from you. Reach out to the League headquarters or your regional office."
-      />
+      <PageHero title={t("contact_page_title")} subtitle={t("contact_page_subtitle")} />
 
       <div className="bg-gray-50 dark:bg-gray-900 py-20">
         <div className="max-w-5xl mx-auto px-4">
@@ -78,11 +82,10 @@ export default function ContactPage() {
                   <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-8 text-center">
                     <CheckCircle2 className="h-12 w-12 text-green-500 mx-auto" />
                     <h2 className="text-2xl font-bold text-green-800 dark:text-green-300 mt-4">
-                      Thank You!
+                      {t("contact_thank_you")}
                     </h2>
                     <p className="text-green-600 dark:text-green-400 mt-2">
-                      Your message has been received. We&apos;ll respond
-                      within 2 business days.
+                      {t("contact_thank_you_message")}
                     </p>
                     <Button
                       type="button"
@@ -93,7 +96,7 @@ export default function ContactPage() {
                         setStatus("idle");
                       }}
                     >
-                      Send Another Message
+                      {t("contact_send_another")}
                     </Button>
                   </div>
                 ) : (
@@ -102,7 +105,7 @@ export default function ContactPage() {
                       <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 flex gap-3 mb-6">
                         <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
                         <p className="text-red-700 dark:text-red-300 text-sm">
-                          Something went wrong. Please try again.
+                          {t("contact_error_message")}
                         </p>
                       </div>
                     )}
@@ -113,7 +116,7 @@ export default function ContactPage() {
                           htmlFor="name"
                           className="text-sm font-medium text-gray-700 dark:text-gray-300"
                         >
-                          Name
+                          {t("contact_label_name")}
                         </label>
                         <input
                           id="name"
@@ -132,7 +135,7 @@ export default function ContactPage() {
                           htmlFor="email"
                           className="text-sm font-medium text-gray-700 dark:text-gray-300"
                         >
-                          Email
+                          {t("contact_label_email")}
                         </label>
                         <input
                           id="email"
@@ -151,7 +154,7 @@ export default function ContactPage() {
                           htmlFor="subject"
                           className="text-sm font-medium text-gray-700 dark:text-gray-300"
                         >
-                          Subject
+                          {t("contact_label_subject")}
                         </label>
                         <input
                           id="subject"
@@ -170,7 +173,7 @@ export default function ContactPage() {
                           htmlFor="message"
                           className="text-sm font-medium text-gray-700 dark:text-gray-300"
                         >
-                          Message
+                          {t("contact_label_message")}
                         </label>
                         <textarea
                           id="message"
@@ -194,10 +197,10 @@ export default function ContactPage() {
                         {status === "submitting" ? (
                           <>
                             <Loader2 className="h-4 w-4 animate-spin" />
-                            Sending...
+                            {t("contact_sending")}
                           </>
                         ) : (
-                          "Send Message"
+                          t("contact_send_message")
                         )}
                       </Button>
                     </form>
@@ -209,7 +212,7 @@ export default function ContactPage() {
             <div className="md:col-span-1">
               <Card className="p-6 h-fit sticky top-24">
                 <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-4">
-                  Contact Information
+                  {t("contact_info_title")}
                 </h3>
 
                 {infoItems.map(({ icon: Icon, label, value }) => (
@@ -231,17 +234,16 @@ export default function ContactPage() {
                 <div className="my-4 border-t border-gray-200 dark:border-gray-800" />
 
                 <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
-                  Regional Offices
+                  {t("contact_regional_offices_title")}
                 </h4>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  CamCCUL maintains regional offices in all 10 regions.
-                  Contact the headquarters for regional office information.
+                  {t("contact_regional_offices_text")}
                 </p>
 
                 <div className="my-4 border-t border-gray-200 dark:border-gray-800" />
 
                 <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
-                  Follow Us Online
+                  {t("contact_follow_us_online")}
                 </h4>
                 <a
                   href={CAMCCUL_FACEBOOK_URL}
@@ -251,7 +253,7 @@ export default function ContactPage() {
                 >
                   <FacebookIcon className="h-5 w-5 text-[#1877F2] shrink-0" />
                   <span className="text-sm font-medium text-primary-900 dark:text-white">
-                    CamCCUL on Facebook
+                    {t("contact_facebook_link_text")}
                   </span>
                   <ExternalLink className="h-3 w-3 text-gray-400 ml-auto shrink-0" />
                 </a>

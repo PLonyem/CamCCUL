@@ -18,6 +18,11 @@ interface ThemeToggleProps {
 export function ThemeToggle({ className, "aria-label": ariaLabel }: ThemeToggleProps) {
   const [isDark, setIsDark] = useState(false);
 
+  // Deliberately an effect, not a lazy useState initializer: the server
+  // can't read localStorage/matchMedia, so the first client render must
+  // also start from `false` to match the server-rendered HTML, or React
+  // hits a hydration mismatch. Swapping after mount is the correct fix
+  // here, even though it trips the generic set-state-in-effect lint rule.
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;

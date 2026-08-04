@@ -5,6 +5,16 @@
 // union names) to demonstrate the directory layout at production scale.
 // NOTE: the regional distribution below sums to 216 affiliates, not 220 — the
 // per-region counts as specified add up to 216.
+//
+// Per-affiliate fields (city/address/phone/email) are intentionally left as
+// English placeholder brackets rather than translated — with 216 systematically
+// generated entries all sharing the same "[City Name]"-style filler, a
+// bilingual duplicate of identical placeholder text adds no value and will be
+// replaced wholesale once CamCCUL provides real affiliate data. Structural/UI
+// text and genuinely distinct content (milestones, leadership, news,
+// resources, services) are fully bilingual below.
+
+import type { LocalizedText } from "./i18n";
 
 export interface Affiliate {
   id: string;
@@ -22,30 +32,30 @@ export interface ContactInfo {
   address: string;
   phone: string;
   email: string;
-  officeHours: string;
+  officeHours: LocalizedText;
 }
 
 export interface LeadershipMember {
-  name: string;
-  title: string;
-  bio: string;
+  name: LocalizedText;
+  title: LocalizedText;
+  bio: LocalizedText;
 }
 
 export interface NewsArticle {
   id: string;
-  title: string;
+  title: LocalizedText;
   slug: string;
   category: string;
-  excerpt: string;
-  content: string;
+  excerpt: LocalizedText;
+  content: LocalizedText;
   publishedAt: string;
   imageUrl: string;
 }
 
 export interface Resource {
   id: string;
-  title: string;
-  description: string;
+  title: LocalizedText;
+  description: LocalizedText;
   category: string;
   fileType: string;
   fileSize: number;
@@ -61,10 +71,13 @@ export interface Service {
 
 export interface Milestone {
   year: string;
-  title: string;
-  description: string;
+  title: LocalizedText;
+  description: LocalizedText;
 }
 
+// Canonical region identifiers used for filtering, URL query params, and
+// matching against Affiliate.region — never render these directly; look up
+// the display label for the active language via `regionLabels` instead.
 export const regions: string[] = [
   "ADAMAWA",
   "CENTRE",
@@ -77,6 +90,31 @@ export const regions: string[] = [
   "SOUTHWEST",
   "WEST",
 ];
+
+export const regionLabels: Record<string, LocalizedText> = {
+  ADAMAWA: { en: "Adamawa", fr: "Adamaoua" },
+  CENTRE: { en: "Centre", fr: "Centre" },
+  EAST: { en: "East", fr: "Est" },
+  "FAR NORTH": { en: "Far North", fr: "Extrême-Nord" },
+  LITTORAL: { en: "Littoral", fr: "Littoral" },
+  NORTH: { en: "North", fr: "Nord" },
+  NORTHWEST: { en: "Northwest", fr: "Nord-Ouest" },
+  SOUTH: { en: "South", fr: "Sud" },
+  SOUTHWEST: { en: "Southwest", fr: "Sud-Ouest" },
+  WEST: { en: "West", fr: "Ouest" },
+};
+
+// Canonical NewsArticle.category values used for filtering — look up the
+// display label for the active language via `newsCategoryLabels` instead of
+// rendering the raw value.
+export const newsCategoryLabels: Record<string, LocalizedText> = {
+  All: { en: "All", fr: "Toutes" },
+  Circular: { en: "Circular", fr: "Circulaire" },
+  Training: { en: "Training", fr: "Formation" },
+  COBAC: { en: "COBAC", fr: "COBAC" },
+  Announcement: { en: "Announcement", fr: "Annonce" },
+  Event: { en: "Event", fr: "Événement" },
+};
 
 export const affiliates: Affiliate[] = [
   {
@@ -2461,154 +2499,194 @@ export const contactInfo: ContactInfo = {
   address: "P.O. Box 2011, Bamenda, North West Region, Cameroon",
   phone: "(237) 233 44 57 66",
   email: "camccul@camccul.com",
-  officeHours: "[Office hours to be provided by CamCCUL]",
+  officeHours: {
+    en: "[Office hours to be provided by CamCCUL]",
+    fr: "[Heures d'ouverture à fournir par CamCCUL]",
+  },
 };
 
-export const mission: string = "CamCCUL's mission statement will appear here. This placeholder text demonstrates the layout and formatting of the mission section. The official mission statement will be provided by the League's communications department.";
+export const mission: LocalizedText = {
+  en: "CamCCUL's mission statement will appear here. This placeholder text demonstrates the layout and formatting of the mission section. The official mission statement will be provided by the League's communications department.",
+  fr: "L'énoncé de mission de CamCCUL apparaîtra ici. Ce texte provisoire illustre la mise en page de la section mission. L'énoncé officiel sera fourni par le service communication de la Ligue.",
+};
 
-export const vision: string = "CamCCUL's vision statement will appear here. This placeholder text demonstrates the layout and formatting of the vision section. The official vision statement will be provided by the League's communications department.";
+export const vision: LocalizedText = {
+  en: "CamCCUL's vision statement will appear here. This placeholder text demonstrates the layout and formatting of the vision section. The official vision statement will be provided by the League's communications department.",
+  fr: "L'énoncé de vision de CamCCUL apparaîtra ici. Ce texte provisoire illustre la mise en page de la section vision. L'énoncé officiel sera fourni par le service communication de la Ligue.",
+};
+
+const LEADERSHIP_TITLE_PLACEHOLDER: LocalizedText = {
+  en: "[Position Title — to be provided]",
+  fr: "[Titre du poste — à fournir]",
+};
+const LEADERSHIP_BIO_PLACEHOLDER: LocalizedText = {
+  en: "[Biography will be inserted here upon receipt from CamCCUL administration. This placeholder demonstrates the layout for leadership profile cards.]",
+  fr: "[La biographie sera insérée ici dès réception par l'administration de CamCCUL. Ce texte provisoire illustre la mise en page des fiches de direction.]",
+};
 
 export const leadership: LeadershipMember[] = [
   {
-    name: "[Board Chair Name — to be provided]",
-    title: "[Position Title — to be provided]",
-    bio: "[Biography will be inserted here upon receipt from CamCCUL administration. This placeholder demonstrates the layout for leadership profile cards.]",
+    name: { en: "[Board Chair Name — to be provided]", fr: "[Nom du président du conseil — à fournir]" },
+    title: LEADERSHIP_TITLE_PLACEHOLDER,
+    bio: LEADERSHIP_BIO_PLACEHOLDER,
   },
   {
-    name: "[Executive Director Name — to be provided]",
-    title: "[Position Title — to be provided]",
-    bio: "[Biography will be inserted here upon receipt from CamCCUL administration. This placeholder demonstrates the layout for leadership profile cards.]",
+    name: { en: "[Executive Director Name — to be provided]", fr: "[Nom du directeur exécutif — à fournir]" },
+    title: LEADERSHIP_TITLE_PLACEHOLDER,
+    bio: LEADERSHIP_BIO_PLACEHOLDER,
   },
   {
-    name: "[Board Member Name — to be provided]",
-    title: "[Position Title — to be provided]",
-    bio: "[Biography will be inserted here upon receipt from CamCCUL administration. This placeholder demonstrates the layout for leadership profile cards.]",
+    name: { en: "[Board Member Name — to be provided]", fr: "[Nom du membre du conseil — à fournir]" },
+    title: LEADERSHIP_TITLE_PLACEHOLDER,
+    bio: LEADERSHIP_BIO_PLACEHOLDER,
   },
   {
-    name: "[Director Name — to be provided]",
-    title: "[Position Title — to be provided]",
-    bio: "[Biography will be inserted here upon receipt from CamCCUL administration. This placeholder demonstrates the layout for leadership profile cards.]",
+    name: { en: "[Director Name — to be provided]", fr: "[Nom du directeur — à fournir]" },
+    title: LEADERSHIP_TITLE_PLACEHOLDER,
+    bio: LEADERSHIP_BIO_PLACEHOLDER,
   },
   {
-    name: "[Board Member Name — to be provided]",
-    title: "[Position Title — to be provided]",
-    bio: "[Biography will be inserted here upon receipt from CamCCUL administration. This placeholder demonstrates the layout for leadership profile cards.]",
+    name: { en: "[Board Member Name — to be provided]", fr: "[Nom du membre du conseil — à fournir]" },
+    title: LEADERSHIP_TITLE_PLACEHOLDER,
+    bio: LEADERSHIP_BIO_PLACEHOLDER,
   },
   {
-    name: "[Executive Name — to be provided]",
-    title: "[Position Title — to be provided]",
-    bio: "[Biography will be inserted here upon receipt from CamCCUL administration. This placeholder demonstrates the layout for leadership profile cards.]",
+    name: { en: "[Executive Name — to be provided]", fr: "[Nom du cadre dirigeant — à fournir]" },
+    title: LEADERSHIP_TITLE_PLACEHOLDER,
+    bio: LEADERSHIP_BIO_PLACEHOLDER,
   },
 ];
+
+const NEWS_TITLE_PLACEHOLDER: LocalizedText = {
+  en: "[News Article Title — to be provided by CamCCUL communications]",
+  fr: "[Titre de l'article — à fournir par le service communication de CamCCUL]",
+};
+const NEWS_EXCERPT_PLACEHOLDER: LocalizedText = {
+  en: "[Article excerpt will appear here. This placeholder demonstrates the two-line preview format for news articles. Real content to be provided by CamCCUL communications department.]",
+  fr: "[L'extrait de l'article apparaîtra ici. Ce texte provisoire illustre le format d'aperçu sur deux lignes des actualités. Le contenu réel sera fourni par le service communication de CamCCUL.]",
+};
+const NEWS_CONTENT_PLACEHOLDER: LocalizedText = {
+  en: "[Full article content will appear here. This placeholder demonstrates the article detail layout. Real circulars, announcements, and news content to be provided by CamCCUL staff for publication on the website.]",
+  fr: "[Le contenu complet de l'article apparaîtra ici. Ce texte provisoire illustre la mise en page détaillée d'un article. Les circulaires, annonces et actualités réelles seront fournies par le personnel de CamCCUL pour publication sur le site.]",
+};
 
 export const newsArticles: NewsArticle[] = [
   {
     id: "news-1",
-    title: "[News Article Title — to be provided by CamCCUL communications]",
+    title: NEWS_TITLE_PLACEHOLDER,
     slug: "news-article-1",
     category: "Circular",
-    excerpt: "[Article excerpt will appear here. This placeholder demonstrates the two-line preview format for news articles. Real content to be provided by CamCCUL communications department.]",
-    content: "[Full article content will appear here. This placeholder demonstrates the article detail layout. Real circulars, announcements, and news content to be provided by CamCCUL staff for publication on the website.]",
+    excerpt: NEWS_EXCERPT_PLACEHOLDER,
+    content: NEWS_CONTENT_PLACEHOLDER,
     publishedAt: "2026-07-01",
     imageUrl: "",
   },
   {
     id: "news-2",
-    title: "[News Article Title — to be provided by CamCCUL communications]",
+    title: NEWS_TITLE_PLACEHOLDER,
     slug: "news-article-2",
     category: "Training",
-    excerpt: "[Article excerpt will appear here. This placeholder demonstrates the two-line preview format for news articles. Real content to be provided by CamCCUL communications department.]",
-    content: "[Full article content will appear here. This placeholder demonstrates the article detail layout. Real circulars, announcements, and news content to be provided by CamCCUL staff for publication on the website.]",
+    excerpt: NEWS_EXCERPT_PLACEHOLDER,
+    content: NEWS_CONTENT_PLACEHOLDER,
     publishedAt: "2026-07-02",
     imageUrl: "",
   },
   {
     id: "news-3",
-    title: "[News Article Title — to be provided by CamCCUL communications]",
+    title: NEWS_TITLE_PLACEHOLDER,
     slug: "news-article-3",
     category: "COBAC",
-    excerpt: "[Article excerpt will appear here. This placeholder demonstrates the two-line preview format for news articles. Real content to be provided by CamCCUL communications department.]",
-    content: "[Full article content will appear here. This placeholder demonstrates the article detail layout. Real circulars, announcements, and news content to be provided by CamCCUL staff for publication on the website.]",
+    excerpt: NEWS_EXCERPT_PLACEHOLDER,
+    content: NEWS_CONTENT_PLACEHOLDER,
     publishedAt: "2026-07-03",
     imageUrl: "",
   },
   {
     id: "news-4",
-    title: "[News Article Title — to be provided by CamCCUL communications]",
+    title: NEWS_TITLE_PLACEHOLDER,
     slug: "news-article-4",
     category: "Announcement",
-    excerpt: "[Article excerpt will appear here. This placeholder demonstrates the two-line preview format for news articles. Real content to be provided by CamCCUL communications department.]",
-    content: "[Full article content will appear here. This placeholder demonstrates the article detail layout. Real circulars, announcements, and news content to be provided by CamCCUL staff for publication on the website.]",
+    excerpt: NEWS_EXCERPT_PLACEHOLDER,
+    content: NEWS_CONTENT_PLACEHOLDER,
     publishedAt: "2026-07-04",
     imageUrl: "",
   },
   {
     id: "news-5",
-    title: "[News Article Title — to be provided by CamCCUL communications]",
+    title: NEWS_TITLE_PLACEHOLDER,
     slug: "news-article-5",
     category: "Event",
-    excerpt: "[Article excerpt will appear here. This placeholder demonstrates the two-line preview format for news articles. Real content to be provided by CamCCUL communications department.]",
-    content: "[Full article content will appear here. This placeholder demonstrates the article detail layout. Real circulars, announcements, and news content to be provided by CamCCUL staff for publication on the website.]",
+    excerpt: NEWS_EXCERPT_PLACEHOLDER,
+    content: NEWS_CONTENT_PLACEHOLDER,
     publishedAt: "2026-07-05",
     imageUrl: "",
   },
   {
     id: "news-6",
-    title: "[News Article Title — to be provided by CamCCUL communications]",
+    title: NEWS_TITLE_PLACEHOLDER,
     slug: "news-article-6",
     category: "Circular",
-    excerpt: "[Article excerpt will appear here. This placeholder demonstrates the two-line preview format for news articles. Real content to be provided by CamCCUL communications department.]",
-    content: "[Full article content will appear here. This placeholder demonstrates the article detail layout. Real circulars, announcements, and news content to be provided by CamCCUL staff for publication on the website.]",
+    excerpt: NEWS_EXCERPT_PLACEHOLDER,
+    content: NEWS_CONTENT_PLACEHOLDER,
     publishedAt: "2026-07-06",
     imageUrl: "",
   },
   {
     id: "news-7",
-    title: "[News Article Title — to be provided by CamCCUL communications]",
+    title: NEWS_TITLE_PLACEHOLDER,
     slug: "news-article-7",
     category: "Training",
-    excerpt: "[Article excerpt will appear here. This placeholder demonstrates the two-line preview format for news articles. Real content to be provided by CamCCUL communications department.]",
-    content: "[Full article content will appear here. This placeholder demonstrates the article detail layout. Real circulars, announcements, and news content to be provided by CamCCUL staff for publication on the website.]",
+    excerpt: NEWS_EXCERPT_PLACEHOLDER,
+    content: NEWS_CONTENT_PLACEHOLDER,
     publishedAt: "2026-07-07",
     imageUrl: "",
   },
   {
     id: "news-8",
-    title: "[News Article Title — to be provided by CamCCUL communications]",
+    title: NEWS_TITLE_PLACEHOLDER,
     slug: "news-article-8",
     category: "COBAC",
-    excerpt: "[Article excerpt will appear here. This placeholder demonstrates the two-line preview format for news articles. Real content to be provided by CamCCUL communications department.]",
-    content: "[Full article content will appear here. This placeholder demonstrates the article detail layout. Real circulars, announcements, and news content to be provided by CamCCUL staff for publication on the website.]",
+    excerpt: NEWS_EXCERPT_PLACEHOLDER,
+    content: NEWS_CONTENT_PLACEHOLDER,
     publishedAt: "2026-07-08",
     imageUrl: "",
   },
   {
     id: "news-9",
-    title: "[News Article Title — to be provided by CamCCUL communications]",
+    title: NEWS_TITLE_PLACEHOLDER,
     slug: "news-article-9",
     category: "Announcement",
-    excerpt: "[Article excerpt will appear here. This placeholder demonstrates the two-line preview format for news articles. Real content to be provided by CamCCUL communications department.]",
-    content: "[Full article content will appear here. This placeholder demonstrates the article detail layout. Real circulars, announcements, and news content to be provided by CamCCUL staff for publication on the website.]",
+    excerpt: NEWS_EXCERPT_PLACEHOLDER,
+    content: NEWS_CONTENT_PLACEHOLDER,
     publishedAt: "2026-07-09",
     imageUrl: "",
   },
   {
     id: "news-10",
-    title: "[News Article Title — to be provided by CamCCUL communications]",
+    title: NEWS_TITLE_PLACEHOLDER,
     slug: "news-article-10",
     category: "Event",
-    excerpt: "[Article excerpt will appear here. This placeholder demonstrates the two-line preview format for news articles. Real content to be provided by CamCCUL communications department.]",
-    content: "[Full article content will appear here. This placeholder demonstrates the article detail layout. Real circulars, announcements, and news content to be provided by CamCCUL staff for publication on the website.]",
+    excerpt: NEWS_EXCERPT_PLACEHOLDER,
+    content: NEWS_CONTENT_PLACEHOLDER,
     publishedAt: "2026-07-10",
     imageUrl: "",
   },
 ];
 
+const RESOURCE_TITLE_PLACEHOLDER: LocalizedText = {
+  en: "[Document Title — to be provided by CamCCUL]",
+  fr: "[Titre du document — à fournir par CamCCUL]",
+};
+const RESOURCE_DESCRIPTION_PLACEHOLDER: LocalizedText = {
+  en: "[Document description will appear here. This placeholder demonstrates how downloadable resources will be displayed. Actual document titles, descriptions, and files to be provided by CamCCUL.]",
+  fr: "[La description du document apparaîtra ici. Ce texte provisoire illustre l'affichage des ressources téléchargeables. Les titres, descriptions et fichiers réels seront fournis par CamCCUL.]",
+};
+
 export const resources: Resource[] = [
   {
     id: "res-1",
-    title: "[Document Title — to be provided by CamCCUL]",
-    description: "[Document description will appear here. This placeholder demonstrates how downloadable resources will be displayed. Actual document titles, descriptions, and files to be provided by CamCCUL.]",
+    title: RESOURCE_TITLE_PLACEHOLDER,
+    description: RESOURCE_DESCRIPTION_PLACEHOLDER,
     category: "ReportingTemplate",
     fileType: "PDF",
     fileSize: 0,
@@ -2616,8 +2694,8 @@ export const resources: Resource[] = [
   },
   {
     id: "res-2",
-    title: "[Document Title — to be provided by CamCCUL]",
-    description: "[Document description will appear here. This placeholder demonstrates how downloadable resources will be displayed. Actual document titles, descriptions, and files to be provided by CamCCUL.]",
+    title: RESOURCE_TITLE_PLACEHOLDER,
+    description: RESOURCE_DESCRIPTION_PLACEHOLDER,
     category: "COBACRegulation",
     fileType: "XLSX",
     fileSize: 0,
@@ -2625,8 +2703,8 @@ export const resources: Resource[] = [
   },
   {
     id: "res-3",
-    title: "[Document Title — to be provided by CamCCUL]",
-    description: "[Document description will appear here. This placeholder demonstrates how downloadable resources will be displayed. Actual document titles, descriptions, and files to be provided by CamCCUL.]",
+    title: RESOURCE_TITLE_PLACEHOLDER,
+    description: RESOURCE_DESCRIPTION_PLACEHOLDER,
     category: "TrainingMaterial",
     fileType: "PDF",
     fileSize: 0,
@@ -2634,8 +2712,8 @@ export const resources: Resource[] = [
   },
   {
     id: "res-4",
-    title: "[Document Title — to be provided by CamCCUL]",
-    description: "[Document description will appear here. This placeholder demonstrates how downloadable resources will be displayed. Actual document titles, descriptions, and files to be provided by CamCCUL.]",
+    title: RESOURCE_TITLE_PLACEHOLDER,
+    description: RESOURCE_DESCRIPTION_PLACEHOLDER,
     category: "Form",
     fileType: "DOCX",
     fileSize: 0,
@@ -2643,8 +2721,8 @@ export const resources: Resource[] = [
   },
   {
     id: "res-5",
-    title: "[Document Title — to be provided by CamCCUL]",
-    description: "[Document description will appear here. This placeholder demonstrates how downloadable resources will be displayed. Actual document titles, descriptions, and files to be provided by CamCCUL.]",
+    title: RESOURCE_TITLE_PLACEHOLDER,
+    description: RESOURCE_DESCRIPTION_PLACEHOLDER,
     category: "ReportingTemplate",
     fileType: "PDF",
     fileSize: 0,
@@ -2652,8 +2730,8 @@ export const resources: Resource[] = [
   },
   {
     id: "res-6",
-    title: "[Document Title — to be provided by CamCCUL]",
-    description: "[Document description will appear here. This placeholder demonstrates how downloadable resources will be displayed. Actual document titles, descriptions, and files to be provided by CamCCUL.]",
+    title: RESOURCE_TITLE_PLACEHOLDER,
+    description: RESOURCE_DESCRIPTION_PLACEHOLDER,
     category: "COBACRegulation",
     fileType: "XLSX",
     fileSize: 0,
@@ -2661,8 +2739,8 @@ export const resources: Resource[] = [
   },
   {
     id: "res-7",
-    title: "[Document Title — to be provided by CamCCUL]",
-    description: "[Document description will appear here. This placeholder demonstrates how downloadable resources will be displayed. Actual document titles, descriptions, and files to be provided by CamCCUL.]",
+    title: RESOURCE_TITLE_PLACEHOLDER,
+    description: RESOURCE_DESCRIPTION_PLACEHOLDER,
     category: "TrainingMaterial",
     fileType: "PDF",
     fileSize: 0,
@@ -2670,8 +2748,8 @@ export const resources: Resource[] = [
   },
   {
     id: "res-8",
-    title: "[Document Title — to be provided by CamCCUL]",
-    description: "[Document description will appear here. This placeholder demonstrates how downloadable resources will be displayed. Actual document titles, descriptions, and files to be provided by CamCCUL.]",
+    title: RESOURCE_TITLE_PLACEHOLDER,
+    description: RESOURCE_DESCRIPTION_PLACEHOLDER,
     category: "Form",
     fileType: "DOCX",
     fileSize: 0,
@@ -2706,35 +2784,47 @@ export const services: Service[] = [
   },
 ];
 
+const MILESTONE_TITLE_PLACEHOLDER: LocalizedText = {
+  en: "[Milestone title — to be provided by CamCCUL]",
+  fr: "[Titre du jalon — à fournir par CamCCUL]",
+};
+const MILESTONE_SHORT_DESCRIPTION_PLACEHOLDER: LocalizedText = {
+  en: "[Historical milestone description will appear here.]",
+  fr: "[La description de ce jalon historique apparaîtra ici.]",
+};
+
 export const milestones: Milestone[] = [
   {
     year: "1968",
-    title: "[Milestone title — to be provided by CamCCUL]",
-    description: "[Historical milestone description will appear here. This placeholder demonstrates the timeline layout. Real CamCCUL history and key dates to be provided by the League.]",
+    title: MILESTONE_TITLE_PLACEHOLDER,
+    description: {
+      en: "[Historical milestone description will appear here. This placeholder demonstrates the timeline layout. Real CamCCUL history and key dates to be provided by the League.]",
+      fr: "[La description de ce jalon historique apparaîtra ici. Ce texte provisoire illustre la mise en page de la chronologie. L'historique réel et les dates clés seront fournis par la Ligue.]",
+    },
   },
   {
     year: "1970s",
-    title: "[Milestone title — to be provided by CamCCUL]",
-    description: "[Historical milestone description will appear here.]",
+    title: MILESTONE_TITLE_PLACEHOLDER,
+    description: MILESTONE_SHORT_DESCRIPTION_PLACEHOLDER,
   },
   {
     year: "1990s",
-    title: "[Milestone title — to be provided by CamCCUL]",
-    description: "[Historical milestone description will appear here.]",
+    title: MILESTONE_TITLE_PLACEHOLDER,
+    description: MILESTONE_SHORT_DESCRIPTION_PLACEHOLDER,
   },
   {
     year: "2000s",
-    title: "[Milestone title — to be provided by CamCCUL]",
-    description: "[Historical milestone description will appear here.]",
+    title: MILESTONE_TITLE_PLACEHOLDER,
+    description: MILESTONE_SHORT_DESCRIPTION_PLACEHOLDER,
   },
   {
     year: "2010s",
-    title: "[Milestone title — to be provided by CamCCUL]",
-    description: "[Historical milestone description will appear here.]",
+    title: MILESTONE_TITLE_PLACEHOLDER,
+    description: MILESTONE_SHORT_DESCRIPTION_PLACEHOLDER,
   },
   {
     year: "Present",
-    title: "[Milestone title — to be provided by CamCCUL]",
-    description: "[Historical milestone description will appear here.]",
+    title: MILESTONE_TITLE_PLACEHOLDER,
+    description: MILESTONE_SHORT_DESCRIPTION_PLACEHOLDER,
   },
 ];

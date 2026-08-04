@@ -1,9 +1,13 @@
+"use client";
+
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import { Shield, FileSearch, GraduationCap, Network, ArrowRight } from "lucide-react";
 import { PageHero } from "@/components/layout/PageHero";
 import { Card } from "@/components/ui/Card";
 import { services } from "@/lib/mock-data";
+import { useLanguage } from "@/context/LanguageContext";
+import type { TranslationKey } from "@/lib/i18n";
 
 const serviceIcons: Record<string, LucideIcon> = {
   Shield,
@@ -12,15 +16,36 @@ const serviceIcons: Record<string, LucideIcon> = {
   Network,
 };
 
+const serviceTranslationKeys: Record<string, { titleKey: TranslationKey; descriptionKey: TranslationKey }> = {
+  "/services/regulatory-supervision": {
+    titleKey: "nav_services_regulatory",
+    descriptionKey: "home_service_regulatory_desc",
+  },
+  "/services/financial-auditing": {
+    titleKey: "nav_services_auditing",
+    descriptionKey: "home_service_auditing_desc",
+  },
+  "/services/capacity-building": {
+    titleKey: "nav_services_capacity",
+    descriptionKey: "home_service_capacity_desc",
+  },
+  "/services/digitalization": {
+    titleKey: "nav_services_digitalization",
+    descriptionKey: "home_service_digitalization_desc",
+  },
+};
+
 export default function ServicesPage() {
+  const { t } = useLanguage();
+
   return (
     <>
       <PageHero
-        title="Our Services"
-        subtitle="CamCCUL supports its 220+ affiliate credit unions through four core services: regulatory supervision, financial auditing, capacity building, and digitalization."
+        title={t("services_page_title")}
+        subtitle={t("services_page_subtitle")}
         breadcrumb={[
-          { label: "Home", href: "/" },
-          { label: "Services", href: "/services" },
+          { label: t("nav_home"), href: "/" },
+          { label: t("nav_services"), href: "/services" },
         ]}
       />
 
@@ -29,22 +54,23 @@ export default function ServicesPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {services.map((service) => {
               const Icon = serviceIcons[service.icon] ?? Shield;
+              const translation = serviceTranslationKeys[service.href];
               return (
                 <Card key={service.href} className="p-8 flex flex-col">
                   <div className="rounded-full p-3 h-12 w-12 bg-primary-100 dark:bg-primary-900/40 text-primary-600 dark:text-primary-300 flex items-center justify-center mb-4">
                     <Icon className="h-6 w-6" />
                   </div>
                   <h2 className="font-display text-xl font-bold text-primary-900 dark:text-white mb-3">
-                    {service.title}
+                    {translation ? t(translation.titleKey) : service.title}
                   </h2>
                   <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-6 flex-1">
-                    {service.description}
+                    {translation ? t(translation.descriptionKey) : service.description}
                   </p>
                   <Link
                     href={service.href}
                     className="inline-flex items-center gap-2 text-sm font-semibold text-primary-600 dark:text-primary-300 hover:text-primary-700 dark:hover:text-primary-200 transition-colors"
                   >
-                    Learn more
+                    {t("services_learn_more")}
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Card>

@@ -1,11 +1,13 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Building2, MapPin, Phone, Mail, SearchX } from "lucide-react";
 import { PageHero } from "@/components/layout/PageHero";
 import { Card } from "@/components/ui/Card";
-import { affiliates, regions } from "@/lib/mock-data";
+import { affiliates, regions, regionLabels } from "@/lib/mock-data";
+import { useLanguage } from "@/context/LanguageContext";
+import { localize } from "@/lib/i18n";
 
 function RegionSelectCard({
   selectedRegion,
@@ -16,15 +18,16 @@ function RegionSelectCard({
   onChange?: (value: string) => void;
   disabled?: boolean;
 }) {
+  const { t, language } = useLanguage();
+
   return (
     <Card className="p-8 text-center mx-auto max-w-lg">
       <Building2 className="h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
       <h2 className="font-display text-2xl font-bold text-primary-900 dark:text-white mb-2">
-        Find Credit Unions in Your Region
+        {t("affiliates_select_title")}
       </h2>
       <p className="text-gray-600 dark:text-gray-300 mb-6">
-        Select a region from the dropdown below to view all affiliated
-        credit unions in that area.
+        {t("affiliates_select_description")}
       </p>
       <select
         value={selectedRegion}
@@ -33,11 +36,11 @@ function RegionSelectCard({
         className="w-full h-14 rounded-xl border-2 border-gray-300 dark:border-gray-700 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 focus:outline-none text-lg px-6 bg-white dark:bg-gray-800 dark:text-white cursor-pointer"
       >
         <option value="" disabled className="text-gray-400 dark:text-gray-500">
-          — Select a Region —
+          {t("affiliates_select_placeholder")}
         </option>
         {regions.map((region) => (
           <option key={region} value={region}>
-            {region}
+            {localize(regionLabels[region], language)}
           </option>
         ))}
       </select>
@@ -46,6 +49,7 @@ function RegionSelectCard({
 }
 
 function AffiliatesContent() {
+  const { t, language } = useLanguage();
   const searchParams = useSearchParams();
   const regionParam = searchParams.get("region") ?? "";
   const [selectedRegion, setSelectedRegion] = useState(
@@ -53,11 +57,13 @@ function AffiliatesContent() {
   );
 
   // Syncs state when the URL's `region` param changes via client-side
-  // navigation (e.g. the Navbar dropdown) — a route that stays mounted on
-  // the same page doesn't re-run useState's initializer on its own.
-  useEffect(() => {
+  // navigation (e.g. the Navbar dropdown) — adjusted during render (rather
+  // than in an effect) since it's reacting to a change in the URL param.
+  const [lastRegionParam, setLastRegionParam] = useState(regionParam);
+  if (regionParam !== lastRegionParam) {
+    setLastRegionParam(regionParam);
     setSelectedRegion(regions.includes(regionParam) ? regionParam : "");
-  }, [regionParam]);
+  }
 
   const filteredAffiliates = affiliates.filter(
     (affiliate) => affiliate.region === selectedRegion
@@ -77,10 +83,10 @@ function AffiliatesContent() {
               <div className="flex justify-between items-center flex-wrap gap-4">
                 <div>
                   <p className="font-display text-xl font-bold text-primary-900 dark:text-white">
-                    Region: {selectedRegion}
+                    {t("affiliates_region_label")} {localize(regionLabels[selectedRegion], language)}
                   </p>
                   <p className="text-gray-600 dark:text-gray-300 mt-1">
-                    Total Credit Unions: {filteredAffiliates.length}
+                    {t("affiliates_total_label")} {filteredAffiliates.length}
                   </p>
                 </div>
                 <button
@@ -88,7 +94,7 @@ function AffiliatesContent() {
                   onClick={() => setSelectedRegion("")}
                   className="inline-flex items-center rounded-lg border border-gray-300 dark:border-gray-700 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                 >
-                  Change Region
+                  {t("affiliates_change_region")}
                 </button>
               </div>
             </Card>
@@ -130,10 +136,10 @@ function AffiliatesContent() {
               <div className="text-center py-12">
                 <SearchX className="h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
                 <p className="text-gray-600 dark:text-gray-300">
-                  No credit unions found in this region.
+                  {t("affiliates_empty_title")}
                 </p>
                 <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
-                  Please select a different region.
+                  {t("affiliates_empty_subtitle")}
                 </p>
               </div>
             )}
@@ -155,14 +161,16 @@ function AffiliatesFallback() {
 }
 
 export default function AffiliatesPage() {
+  const { t } = useLanguage();
+
   return (
     <>
       <PageHero
-        title="Our Affiliate Credit Unions"
-        subtitle="Select a region to view its affiliated credit unions"
+        title={t("affiliates_page_title")}
+        subtitle={t("affiliates_page_subtitle")}
         breadcrumb={[
-          { label: "Home", href: "/" },
-          { label: "Affiliates", href: "/affiliates" },
+          { label: t("nav_home"), href: "/" },
+          { label: t("nav_affiliates"), href: "/affiliates" },
         ]}
       />
 

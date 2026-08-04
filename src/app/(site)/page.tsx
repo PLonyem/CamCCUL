@@ -21,9 +21,9 @@ import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { FacebookIcon } from "@/components/ui/SocialIcon";
 import { buttonVariants } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
-import { affiliates, regions, services, newsArticles } from "@/lib/mock-data";
+import { affiliates, regions, regionLabels, services, newsArticles, newsCategoryLabels } from "@/lib/mock-data";
 import { useLanguage } from "@/context/LanguageContext";
-import type { TranslationKey } from "@/lib/i18n";
+import { localize, type TranslationKey } from "@/lib/i18n";
 
 const yearsOfService = new Date().getFullYear() - 1968;
 
@@ -102,8 +102,8 @@ const categoryVariant: Record<
   Event: "default",
 };
 
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString("en-US", {
+function formatDate(dateStr: string, language: "en" | "fr") {
+  return new Date(dateStr).toLocaleDateString(language === "fr" ? "fr-FR" : "en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -112,7 +112,7 @@ function formatDate(dateStr: string) {
 }
 
 export default function Home() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const trustBar = ["COBAC", t("home_trust_mof"), "ANEMCAM", "ACCOSCA"];
 
   return (
@@ -309,8 +309,8 @@ export default function Home() {
                 className="text-center rounded-xl border border-gray-200 dark:border-gray-800 p-4 hover:border-primary-300 dark:hover:border-primary-600 hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
               >
                 <p className="text-2xl font-bold text-primary-900 dark:text-white">{count}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 capitalize">
-                  {region.toLowerCase()}
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  {localize(regionLabels[region], language)}
                 </p>
               </Link>
             ))}
@@ -372,16 +372,16 @@ export default function Home() {
                   variant={categoryVariant[article.category] ?? "default"}
                   className="w-fit mb-3"
                 >
-                  {article.category}
+                  {localize(newsCategoryLabels[article.category] ?? newsCategoryLabels.All, language)}
                 </Badge>
                 <h3 className="font-display font-semibold text-lg text-primary-900 dark:text-white">
-                  {article.title}
+                  {localize(article.title, language)}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300 mt-2 text-sm flex-1">
-                  {article.excerpt}
+                  {localize(article.excerpt, language)}
                 </p>
                 <p className="text-xs text-gray-400 dark:text-gray-500 mt-4">
-                  {formatDate(article.publishedAt)}
+                  {formatDate(article.publishedAt, language)}
                 </p>
               </Card>
             ))}

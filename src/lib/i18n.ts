@@ -112,6 +112,117 @@ const en = {
   home_connect_button: "Follow CamCCUL on Facebook",
   home_connect_note: "Opens in a new tab",
 
+  // ─── FAQ page ─────────────────────────────────────────────────────────
+  faq_page_title: "Frequently Asked Questions",
+
+  // ─── About page ───────────────────────────────────────────────────────
+  about_page_title: "About CamCCUL",
+  about_history_title: "Our History",
+  about_history_subtitle:
+    "A legacy of service to Cameroon's cooperative credit unions since 1968.",
+  about_mission_vision_title: "Our Mission & Vision",
+  about_mission_vision_subtitle:
+    "Guiding principles that drive our work across all 10 regions of Cameroon.",
+  about_mission_title: "Our Mission",
+  about_vision_title: "Our Vision",
+  about_leadership_title: "Board of Directors",
+  about_leadership_subtitle:
+    "The dedicated leadership guiding CamCCUL's strategic direction.",
+  about_presence_title: "Our Presence Across Cameroon",
+  about_presence_subtitle:
+    "220+ affiliate credit unions serving members in every region of the country.",
+  about_presence_paragraph:
+    "CamCCUL operates as the umbrella body for affiliated credit unions organized across all ten regions of Cameroon. Each affiliate operates independently within its community while adhering to the regulatory, reporting, and capacity-building standards set by the League, allowing members nationwide to access consistent, cooperative financial services close to home.",
+  about_milestone_present: "Present",
+
+  // ─── Affiliates page ──────────────────────────────────────────────────
+  affiliates_page_title: "Our Affiliate Credit Unions",
+  affiliates_page_subtitle: "Select a region to view its affiliated credit unions",
+  affiliates_select_title: "Find Credit Unions in Your Region",
+  affiliates_select_description:
+    "Select a region from the dropdown below to view all affiliated credit unions in that area.",
+  affiliates_select_placeholder: "— Select a Region —",
+  affiliates_region_label: "Region:",
+  affiliates_total_label: "Total Credit Unions:",
+  affiliates_change_region: "Change Region",
+  affiliates_empty_title: "No credit unions found in this region.",
+  affiliates_empty_subtitle: "Please select a different region.",
+
+  // ─── Contact page ─────────────────────────────────────────────────────
+  contact_page_title: "Contact Us",
+  contact_page_subtitle:
+    "We'd love to hear from you. Reach out to the League headquarters or your regional office.",
+  contact_thank_you: "Thank You!",
+  contact_thank_you_message:
+    "Your message has been received. We'll respond within 2 business days.",
+  contact_send_another: "Send Another Message",
+  contact_error_message: "Something went wrong. Please try again.",
+  contact_label_name: "Name",
+  contact_label_email: "Email",
+  contact_label_subject: "Subject",
+  contact_label_message: "Message",
+  contact_sending: "Sending...",
+  contact_send_message: "Send Message",
+  contact_info_title: "Contact Information",
+  contact_label_address: "Address",
+  contact_label_phone: "Phone",
+  contact_label_office_hours: "Office Hours",
+  contact_regional_offices_title: "Regional Offices",
+  contact_regional_offices_text:
+    "CamCCUL maintains regional offices in all 10 regions. Contact the headquarters for regional office information.",
+  contact_follow_us_online: "Follow Us Online",
+  contact_facebook_link_text: "CamCCUL on Facebook",
+  contact_validation_name: "Name must be at least 2 characters.",
+  contact_validation_email: "Enter a valid email address.",
+  contact_validation_subject: "Subject must be at least 5 characters.",
+  contact_validation_message: "Message must be at least 10 characters.",
+
+  // ─── News page ────────────────────────────────────────────────────────
+  news_page_title: "News & Circulars",
+  news_page_subtitle: "Stay informed with the latest updates from CamCCUL.",
+  news_read_more: "Read More →",
+  news_previous: "Previous",
+  news_next: "Next",
+  news_page_label: "Page",
+  news_of_label: "of",
+  news_empty_title: "No articles in this category.",
+  news_empty_subtitle: "Select a different category to view more.",
+
+  // ─── Resources page ───────────────────────────────────────────────────
+  resources_page_title: "Resources & Downloads",
+  resources_page_subtitle:
+    "Access COBAC templates, training materials, and regulatory documents.",
+  resources_tab_templates: "Reporting Templates",
+  resources_tab_cobac: "COBAC Regulations",
+  resources_tab_training: "Training Materials",
+  resources_tab_forms: "Forms",
+  resources_download: "Download",
+  resources_empty_title: "No resources in this category yet.",
+  resources_empty_subtitle: "Check back soon for new uploads.",
+
+  // ─── Services index page ──────────────────────────────────────────────
+  services_page_title: "Our Services",
+  services_page_subtitle:
+    "CamCCUL supports its 220+ affiliate credit unions through four core services: regulatory supervision, financial auditing, capacity building, and digitalization.",
+  services_learn_more: "Learn more",
+
+  // ─── Services detail pages (hero subtitles) ──────────────────────────
+  service_regulatory_subtitle:
+    "Ensuring compliance and financial stability across all 220 affiliate credit unions.",
+  service_auditing_subtitle:
+    "Independent, rigorous audits ensuring transparency and accountability across all affiliate credit unions.",
+  service_capacity_subtitle:
+    "Equipping credit union staff with essential skills, knowledge, and tools for operational excellence.",
+  service_digitalization_subtitle:
+    "Transforming operations and service delivery through innovative technology across all 220 affiliate credit unions.",
+
+  // ─── Not found / loading ──────────────────────────────────────────────
+  notfound_title: "Page Not Found",
+  notfound_message:
+    "The page you're looking for doesn't exist or may have been moved. Please check the URL or return to the homepage.",
+  notfound_back_home: "Back to Home",
+  loading_text: "Loading...",
+
   // ─── Chatbot ──────────────────────────────────────────────────────────
   chatbot_assistant_name: "CamCCUL Assistant",
   chatbot_placeholder: "Type your question...",
@@ -229,6 +340,117 @@ const fr: Record<keyof typeof en, string> = {
   home_connect_button: "Suivre CamCCUL sur Facebook",
   home_connect_note: "S'ouvre dans un nouvel onglet",
 
+  // ─── FAQ page ─────────────────────────────────────────────────────────
+  faq_page_title: "Foire Aux Questions",
+
+  // ─── About page ───────────────────────────────────────────────────────
+  about_page_title: "À propos de CamCCUL",
+  about_history_title: "Notre Histoire",
+  about_history_subtitle:
+    "Un héritage de service aux coopératives de crédit du Cameroun depuis 1968.",
+  about_mission_vision_title: "Notre Mission et Vision",
+  about_mission_vision_subtitle:
+    "Les principes directeurs qui guident notre action dans les 10 régions du Cameroun.",
+  about_mission_title: "Notre Mission",
+  about_vision_title: "Notre Vision",
+  about_leadership_title: "Conseil d'Administration",
+  about_leadership_subtitle:
+    "La direction dévouée qui guide l'orientation stratégique de CamCCUL.",
+  about_presence_title: "Notre Présence à Travers le Cameroun",
+  about_presence_subtitle:
+    "Plus de 220 coopératives de crédit affiliées au service des membres dans chaque région du pays.",
+  about_presence_paragraph:
+    "CamCCUL agit comme organe faîtier des coopératives de crédit affiliées organisées dans les dix régions du Cameroun. Chaque affiliée opère de manière indépendante au sein de sa communauté tout en respectant les normes de réglementation, de reporting et de renforcement des capacités fixées par la Ligue, permettant aux membres à travers le pays d'accéder à des services financiers coopératifs cohérents, près de chez eux.",
+  about_milestone_present: "Présent",
+
+  // ─── Affiliates page ──────────────────────────────────────────────────
+  affiliates_page_title: "Nos Coopératives de Crédit Affiliées",
+  affiliates_page_subtitle: "Sélectionnez une région pour voir ses coopératives de crédit affiliées",
+  affiliates_select_title: "Trouvez des Coopératives de Crédit dans Votre Région",
+  affiliates_select_description:
+    "Sélectionnez une région dans le menu déroulant ci-dessous pour voir toutes les coopératives de crédit affiliées de cette zone.",
+  affiliates_select_placeholder: "— Sélectionnez une Région —",
+  affiliates_region_label: "Région :",
+  affiliates_total_label: "Total des Coopératives de Crédit :",
+  affiliates_change_region: "Changer de Région",
+  affiliates_empty_title: "Aucune coopérative de crédit trouvée dans cette région.",
+  affiliates_empty_subtitle: "Veuillez sélectionner une autre région.",
+
+  // ─── Contact page ─────────────────────────────────────────────────────
+  contact_page_title: "Contactez-nous",
+  contact_page_subtitle:
+    "Nous serions ravis de vous entendre. Contactez le siège de la Ligue ou votre bureau régional.",
+  contact_thank_you: "Merci !",
+  contact_thank_you_message:
+    "Votre message a été reçu. Nous vous répondrons sous 2 jours ouvrables.",
+  contact_send_another: "Envoyer un Autre Message",
+  contact_error_message: "Une erreur s'est produite. Veuillez réessayer.",
+  contact_label_name: "Nom",
+  contact_label_email: "Courriel",
+  contact_label_subject: "Sujet",
+  contact_label_message: "Message",
+  contact_sending: "Envoi en cours...",
+  contact_send_message: "Envoyer le Message",
+  contact_info_title: "Coordonnées",
+  contact_label_address: "Adresse",
+  contact_label_phone: "Téléphone",
+  contact_label_office_hours: "Heures d'Ouverture",
+  contact_regional_offices_title: "Bureaux Régionaux",
+  contact_regional_offices_text:
+    "CamCCUL maintient des bureaux régionaux dans les 10 régions. Contactez le siège pour toute information sur les bureaux régionaux.",
+  contact_follow_us_online: "Suivez-nous en Ligne",
+  contact_facebook_link_text: "CamCCUL sur Facebook",
+  contact_validation_name: "Le nom doit comporter au moins 2 caractères.",
+  contact_validation_email: "Saisissez une adresse courriel valide.",
+  contact_validation_subject: "Le sujet doit comporter au moins 5 caractères.",
+  contact_validation_message: "Le message doit comporter au moins 10 caractères.",
+
+  // ─── News page ────────────────────────────────────────────────────────
+  news_page_title: "Actualités et Circulaires",
+  news_page_subtitle: "Restez informé des dernières actualités de CamCCUL.",
+  news_read_more: "Lire la Suite →",
+  news_previous: "Précédent",
+  news_next: "Suivant",
+  news_page_label: "Page",
+  news_of_label: "sur",
+  news_empty_title: "Aucun article dans cette catégorie.",
+  news_empty_subtitle: "Sélectionnez une autre catégorie pour en voir plus.",
+
+  // ─── Resources page ───────────────────────────────────────────────────
+  resources_page_title: "Ressources et Téléchargements",
+  resources_page_subtitle:
+    "Accédez aux modèles COBAC, supports de formation et documents réglementaires.",
+  resources_tab_templates: "Modèles de Rapports",
+  resources_tab_cobac: "Règlements COBAC",
+  resources_tab_training: "Supports de Formation",
+  resources_tab_forms: "Formulaires",
+  resources_download: "Télécharger",
+  resources_empty_title: "Aucune ressource dans cette catégorie pour le moment.",
+  resources_empty_subtitle: "Revenez bientôt pour de nouveaux téléchargements.",
+
+  // ─── Services index page ──────────────────────────────────────────────
+  services_page_title: "Nos Services",
+  services_page_subtitle:
+    "CamCCUL accompagne ses plus de 220 coopératives de crédit affiliées à travers quatre services essentiels : supervision réglementaire, audit financier, renforcement des capacités et digitalisation.",
+  services_learn_more: "En savoir plus",
+
+  // ─── Services detail pages (hero subtitles) ──────────────────────────
+  service_regulatory_subtitle:
+    "Garantir la conformité et la stabilité financière des 220 coopératives de crédit affiliées.",
+  service_auditing_subtitle:
+    "Des audits indépendants et rigoureux garantissant transparence et responsabilité dans toutes les coopératives de crédit affiliées.",
+  service_capacity_subtitle:
+    "Doter le personnel des coopératives de crédit des compétences, connaissances et outils essentiels à l'excellence opérationnelle.",
+  service_digitalization_subtitle:
+    "Transformer les opérations et la prestation de services grâce à des technologies innovantes dans les 220 coopératives de crédit affiliées.",
+
+  // ─── Not found / loading ──────────────────────────────────────────────
+  notfound_title: "Page Introuvable",
+  notfound_message:
+    "La page que vous recherchez n'existe pas ou a peut-être été déplacée. Veuillez vérifier l'URL ou retourner à la page d'accueil.",
+  notfound_back_home: "Retour à l'Accueil",
+  loading_text: "Chargement...",
+
   // ─── Chatbot ──────────────────────────────────────────────────────────
   chatbot_assistant_name: "Assistant CamCCUL",
   chatbot_placeholder: "Tapez votre question...",
@@ -247,3 +469,15 @@ export const translations = { en, fr };
 
 export type Language = keyof typeof translations;
 export type TranslationKey = keyof typeof en;
+
+// For content that lives in mock-data.ts (or a page's own local data) rather
+// than this dictionary — e.g. milestones, leadership bios, news articles —
+// translatable fields hold both languages directly instead of a lookup key.
+export interface LocalizedText {
+  en: string;
+  fr: string;
+}
+
+export function localize(field: LocalizedText, language: Language): string {
+  return field[language];
+}
