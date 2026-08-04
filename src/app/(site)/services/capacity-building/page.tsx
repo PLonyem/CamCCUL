@@ -46,20 +46,20 @@ export default function CapacityBuildingPage() {
         subtitle="Equipping credit union staff with essential skills, knowledge, and tools for operational excellence."
         breadcrumb={[
           { label: "Home", href: "/" },
-          { label: "Services", href: "/services/digitalization" },
+          { label: "Services", href: "/services" },
           { label: "Capacity Building", href: "/services/capacity-building" },
         ]}
       />
 
       {/* SECTION 1: OVERVIEW */}
-      <section className="bg-white py-20">
+      <section className="bg-white dark:bg-gray-950 py-20">
         <div className="max-w-4xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="md:col-span-2">
-              <h2 className="font-display text-2xl font-bold text-primary-900 mb-4">
+              <h2 className="font-display text-2xl font-bold text-primary-900 dark:text-white mb-4">
                 Investing in People, Strengthening Institutions
               </h2>
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 CamCCUL offers robust capacity building training for its
                 affiliate credit unions, equipping staff with essential
                 skills and knowledge to manage their institutions
@@ -67,7 +67,7 @@ export default function CapacityBuildingPage() {
                 by skilled people — from the general manager to the loan
                 officer to the teller serving members at the counter.
               </p>
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 Our training programs cover the full spectrum of credit
                 union operations: financial management and accounting, loan
                 portfolio management, governance and board responsibilities,
@@ -76,7 +76,7 @@ export default function CapacityBuildingPage() {
                 workshops, on-site coaching visits, peer learning exchanges,
                 and increasingly through digital platforms.
               </p>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 Each year, hundreds of credit union staff and board members
                 participate in CamCCUL training programs. Our curriculum is
                 developed in partnership with regional and international
@@ -86,9 +86,9 @@ export default function CapacityBuildingPage() {
               </p>
             </div>
             <div className="md:col-span-1">
-              <div className="bg-gray-50 rounded-xl p-6 sticky top-24">
-                <h3 className="font-semibold mb-3">Training Areas</h3>
-                <ul className="space-y-2 text-sm text-gray-600">
+              <div className="bg-gray-50 dark:bg-gray-900 rounded-xl p-6 sticky top-24">
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Training Areas</h3>
+                <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
                   {trainingAreas.map((area) => (
                     <li key={area}>{area}</li>
                   ))}
@@ -100,19 +100,19 @@ export default function CapacityBuildingPage() {
       </section>
 
       {/* SECTION 2: OUR TRAINING APPROACH */}
-      <section className="bg-gray-50 py-20">
+      <section className="bg-gray-50 dark:bg-gray-900 py-20">
         <div className="max-w-5xl mx-auto px-4">
           <SectionHeader align="center" title="How We Build Capacity" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
             {trainingApproach.map((item) => (
               <Card key={item.title} className="p-6">
-                <div className="rounded-full p-3 h-12 w-12 bg-primary-100 text-primary-600 flex items-center justify-center mb-4">
+                <div className="rounded-full p-3 h-12 w-12 bg-primary-100 dark:bg-primary-900/40 text-primary-600 dark:text-primary-300 flex items-center justify-center mb-4">
                   <item.icon className="h-6 w-6" />
                 </div>
-                <h3 className="font-display font-semibold text-lg text-primary-900 mb-2">
+                <h3 className="font-display font-semibold text-lg text-primary-900 dark:text-white mb-2">
                   {item.title}
                 </h3>
-                <p className="text-gray-600 text-sm">{item.description}</p>
+                <p className="text-gray-600 dark:text-gray-300 text-sm">{item.description}</p>
               </Card>
             ))}
           </div>
@@ -120,13 +120,13 @@ export default function CapacityBuildingPage() {
       </section>
 
       {/* SECTION 3: IMPACT */}
-      <section className="bg-white py-20">
+      <section className="bg-white dark:bg-gray-950 py-20">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <TrendingUp className="h-16 w-16 text-accent-600 mx-auto mb-6" />
-          <h2 className="font-display text-2xl font-bold text-primary-900 mb-4">
+          <TrendingUp className="h-16 w-16 text-accent-600 dark:text-accent-400 mx-auto mb-6" />
+          <h2 className="font-display text-2xl font-bold text-primary-900 dark:text-white mb-4">
             Building a Stronger Cooperative Movement
           </h2>
-          <p className="max-w-3xl mx-auto text-gray-600">
+          <p className="max-w-3xl mx-auto text-gray-600 dark:text-gray-300">
             The impact of our capacity building work extends far beyond
             individual credit unions. Better-trained managers make better
             lending decisions. Better-trained boards provide stronger

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Lexend } from "next/font/google";
+import { Chatbot } from "@/components/chatbot/Chatbot";
+import { LanguageProvider } from "@/context/LanguageContext";
 import "./globals.css";
 
 const inter = Inter({
@@ -27,7 +29,8 @@ export default function RootLayout({
     <html
       lang="en"
       data-scroll-behavior="smooth"
-      className={`${inter.variable} ${lexend.variable} h-full antialiased`}
+      suppressHydrationWarning
+      className={`${inter.variable} ${lexend.variable} h-full antialiased transition-colors duration-300`}
     >
       <body className={`${inter.className} min-h-full flex flex-col`}>
         <script
@@ -35,7 +38,10 @@ export default function RootLayout({
             __html: `(function(){try{var t=localStorage.getItem("theme");var d=t?t==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;if(d)document.documentElement.classList.add("dark");}catch(e){}})();`,
           }}
         />
-        {children}
+        <LanguageProvider>
+          {children}
+          <Chatbot />
+        </LanguageProvider>
       </body>
     </html>
   );

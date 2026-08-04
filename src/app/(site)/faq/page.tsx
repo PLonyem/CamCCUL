@@ -19,7 +19,7 @@ const faqSections: { title: string; items: { q: string; a: string }[] }[] = [
       },
       {
         q: "What services does CamCCUL offer?",
-        a: "CamCCUL provides four core services to its affiliate credit unions. First, Regulatory Supervision — ongoing monitoring of financial health, governance, and COBAC compliance across all affiliates. Second, Financial Auditing — annual statutory audits, risk-based examinations, and special investigations to ensure transparency and accountability. Third, Capacity Building — robust training programs equipping credit union staff and board members with essential skills in financial management, governance, risk management, and member service. Fourth, Digitalization — spearheading the technological transformation of affiliate operations, from our new digital platform to the upcoming COBAC Reporting Portal. We also represent the interests of credit unions in national and regional policy discussions.",
+        a: "CamCCUL provides four core services to its affiliate credit unions. First, Regulatory Supervision — ongoing monitoring of financial health, governance, and COBAC compliance across all affiliates. Second, Financial Auditing — annual statutory audits, risk-based examinations, and special investigations to ensure transparency and accountability. Third, Capacity Building — robust training programs equipping credit union staff and board members with essential skills in financial management, governance, risk management, and member service. Fourth, Digitalization — spearheading the technological transformation of affiliate operations, from our new digital platform to an internal digital reporting system now in development. We also represent the interests of credit unions in national and regional policy discussions.",
       },
       {
         q: "How can I open an account with CamCCUL?",
@@ -49,7 +49,7 @@ const faqSections: { title: string; items: { q: string; a: string }[] }[] = [
     items: [
       {
         q: "How do credit unions submit financial reports?",
-        a: "Affiliate credit unions currently submit periodic financial reports to CamCCUL following COBAC reporting standards. Reporting templates and deadlines are available on our Resources page. CamCCUL is developing a digital COBAC Reporting Portal — part of our digitalization roadmap — that will allow credit unions to submit reports online with built-in validation, AI-powered error detection, and real-time compliance tracking. This will significantly reduce processing time and improve accuracy.",
+        a: "Affiliate credit unions currently submit periodic financial reports to CamCCUL following COBAC reporting standards. Reporting templates and deadlines are available on our Resources page. As part of our digitalization roadmap, CamCCUL is developing an internal digital reporting system that will let League staff process affiliate submissions with built-in validation, AI-powered error detection, and real-time compliance tracking. This will significantly reduce processing time and improve accuracy.",
       },
       {
         q: "What are the key COBAC requirements for credit unions?",
@@ -75,7 +75,7 @@ const faqSections: { title: string; items: { q: string; a: string }[] }[] = [
     items: [
       {
         q: "What is CamCCUL doing about digitalization?",
-        a: "CamCCUL is spearheading the digitalization of its affiliate credit unions, streamlining operations and enhancing service delivery through innovative technology. Our digitalization roadmap has three phases: Phase 1 — this modern public website with affiliate directory, digital resources, and news (now live); Phase 2 — a secure COBAC Reporting Portal for online report submission with AI-powered validation (in development); and Phase 3 — mobile services, digital field audit tools, and a comprehensive document management system (planned).",
+        a: "CamCCUL is spearheading the digitalization of its affiliate credit unions, streamlining operations and enhancing service delivery through innovative technology. Our digitalization roadmap has three phases: Phase 1 — this modern public website with affiliate directory, digital resources, and news (now live); Phase 2 — an internal digital reporting system with AI-powered validation to speed up how the League processes affiliate submissions (in development); and Phase 3 — mobile services, digital field audit tools, and a comprehensive document management system (planned).",
       },
     ],
   },
@@ -119,11 +119,11 @@ export default function FaqPage() {
         ]}
       />
 
-      <section className="bg-gray-50 min-h-screen py-12">
+      <section className="bg-gray-50 dark:bg-gray-900 min-h-screen py-12">
         <div className="max-w-3xl mx-auto px-4">
           {sectionsWithOffsets.map((section) => (
             <Fragment key={section.title}>
-              <h2 className="text-lg font-display font-bold text-primary-900 mt-12 mb-4 first:mt-0">
+              <h2 className="text-lg font-display font-bold text-primary-900 dark:text-white mt-12 mb-4 first:mt-0">
                 {section.title}
               </h2>
               {section.items.map((item, itemIdx) => {
@@ -135,20 +135,20 @@ export default function FaqPage() {
                       type="button"
                       onClick={() => setOpenIndex(isOpen ? null : index)}
                       aria-expanded={isOpen}
-                      className="w-full text-left flex items-center justify-between py-5 px-6 bg-white border border-gray-200 rounded-xl mb-3 hover:border-primary-300 transition-colors shadow-sm"
+                      className="w-full text-left flex items-center justify-between py-5 px-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl mb-3 hover:border-primary-300 dark:hover:border-primary-600 transition-colors shadow-sm"
                     >
-                      <span className="font-semibold text-primary-900 pr-8">
+                      <span className="font-semibold text-primary-900 dark:text-white pr-8">
                         {item.q}
                       </span>
                       <ChevronDown
                         className={cn(
-                          "h-5 w-5 text-gray-400 shrink-0 transition-transform duration-200",
+                          "h-5 w-5 text-gray-400 dark:text-gray-500 shrink-0 transition-transform duration-200",
                           isOpen && "rotate-180"
                         )}
                       />
                     </button>
                     {isOpen && (
-                      <div className="bg-white border-x border-b border-gray-200 rounded-b-xl px-6 pb-5 -mt-3 pt-5 text-gray-600 leading-relaxed">
+                      <div className="bg-white dark:bg-gray-800 border-x border-b border-gray-200 dark:border-gray-700 rounded-b-xl px-6 pb-5 -mt-3 pt-5 text-gray-600 dark:text-gray-300 leading-relaxed">
                         {item.a}
                       </div>
                     )}

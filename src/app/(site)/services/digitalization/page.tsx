@@ -5,7 +5,6 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { buttonVariants } from "@/components/ui/Button";
-import { ComingSoonButton } from "@/components/ui/ComingSoonButton";
 import { cn } from "@/lib/utils";
 
 const whyItMatters = [
@@ -37,23 +36,23 @@ export default function DigitalizationPage() {
         subtitle="Transforming operations and service delivery through innovative technology across all 220 affiliate credit unions."
         breadcrumb={[
           { label: "Home", href: "/" },
-          { label: "Services", href: "/services/digitalization" },
+          { label: "Services", href: "/services" },
           { label: "Digitalization", href: "/services/digitalization" },
         ]}
       />
 
       {/* SECTION 1: THE COMMITMENT */}
-      <section className="bg-white py-20">
+      <section className="bg-white dark:bg-gray-950 py-20">
         <div className="max-w-4xl mx-auto px-4">
-          <blockquote className="border-l-4 border-accent-500 bg-accent-50 rounded-r-lg p-6 mb-8 italic text-lg text-gray-700">
+          <blockquote className="border-l-4 border-accent-500 dark:border-accent-400 bg-accent-50 dark:bg-accent-700/10 rounded-r-lg p-6 mb-8 italic text-lg text-gray-700 dark:text-gray-300">
             &ldquo;CamCCUL is spearheading the digitalization of its affiliate
             credit unions, streamlining operations and enhancing delivery
             through innovative technology.&rdquo;
           </blockquote>
-          <p className="text-sm text-gray-500 mb-8">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">
             — CamCCUL Services Charter
           </p>
-          <p className="text-gray-700 leading-relaxed">
+          <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
             This commitment is not just a statement. It is a multi-phase
             transformation program designed to bring every credit union —
             from Bamenda to Maroua — into the digital age. Our goal is
@@ -64,7 +63,7 @@ export default function DigitalizationPage() {
       </section>
 
       {/* SECTION 2: OUR DIGITALIZATION PHASES */}
-      <section className="bg-gray-50 py-20">
+      <section className="bg-gray-50 dark:bg-gray-900 py-20">
         <div className="max-w-7xl mx-auto px-4">
           <SectionHeader
             align="center"
@@ -74,16 +73,16 @@ export default function DigitalizationPage() {
 
           <div className="mt-12 max-w-4xl mx-auto px-4">
             {/* PHASE 1 */}
-            <div className="border-l-4 border-green-500 bg-white rounded-r-xl p-6 mb-6 shadow-sm">
-              <Badge className="bg-green-100 text-green-700">LIVE</Badge>
-              <h3 className="font-display text-xl font-bold text-primary-900 mt-3">
+            <div className="border-l-4 border-green-500 bg-white dark:bg-gray-800 rounded-r-xl p-6 mb-6 shadow-sm">
+              <Badge className="bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300">LIVE</Badge>
+              <h3 className="font-display text-xl font-bold text-primary-900 dark:text-white mt-3">
                 Phase 1 — Digital Presence
               </h3>
-              <p className="text-gray-600 mt-2">
+              <p className="text-gray-600 dark:text-gray-300 mt-2">
                 A modern, responsive public website serving as the digital
                 face of the League. Features include:
               </p>
-              <ul className="mt-3 space-y-1 text-sm text-gray-600 list-disc list-inside">
+              <ul className="mt-3 space-y-1 text-sm text-gray-600 dark:text-gray-300 list-disc list-inside">
                 <li>
                   Searchable directory of all 220+ affiliate credit unions
                   across all 10 regions
@@ -103,7 +102,7 @@ export default function DigitalizationPage() {
               </ul>
               <Link
                 href="/"
-                className="inline-flex items-center gap-1 text-sm font-medium text-primary-600 hover:text-primary-700 mt-4"
+                className="inline-flex items-center gap-1 text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 mt-4"
               >
                 Explore the Website
                 <ArrowRight className="h-4 w-4" />
@@ -111,20 +110,20 @@ export default function DigitalizationPage() {
             </div>
 
             {/* PHASE 2 */}
-            <div className="border-l-4 border-amber-500 bg-white rounded-r-xl p-6 mb-6 shadow-sm">
-              <Badge className="bg-amber-100 text-amber-700">
+            <div className="border-l-4 border-amber-500 bg-white dark:bg-gray-800 rounded-r-xl p-6 mb-6 shadow-sm">
+              <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
                 IN DEVELOPMENT
               </Badge>
-              <h3 className="font-display text-xl font-bold text-primary-900 mt-3">
-                Phase 2 — COBAC Reporting Portal
+              <h3 className="font-display text-xl font-bold text-primary-900 dark:text-white mt-3">
+                Phase 2 — Digital Reporting System
               </h3>
-              <p className="text-gray-600 mt-2">
-                A secure, automated reporting system that will transform how
-                credit unions submit financial data:
+              <p className="text-gray-600 dark:text-gray-300 mt-2">
+                An internal, automated reporting system that will transform
+                how the League processes affiliate financial data:
               </p>
-              <ul className="mt-3 space-y-1 text-sm text-gray-600 list-disc list-inside">
+              <ul className="mt-3 space-y-1 text-sm text-gray-600 dark:text-gray-300 list-disc list-inside">
                 <li>
-                  Guided multi-step COBAC report submission with built-in
+                  Guided multi-step COBAC report processing with built-in
                   validation
                 </li>
                 <li>
@@ -140,26 +139,22 @@ export default function DigitalizationPage() {
                   integrity
                 </li>
               </ul>
-              <ComingSoonButton className="inline-flex items-center gap-1 text-sm font-medium text-primary-600 hover:text-primary-700 mt-4">
-                Learn About the Portal
-                <ArrowRight className="h-4 w-4" />
-              </ComingSoonButton>
             </div>
 
             {/* PHASE 3 */}
-            <div className="border-l-4 border-gray-300 bg-white rounded-r-xl p-6 mb-6 shadow-sm">
-              <Badge className="bg-gray-100 text-gray-600">PLANNED</Badge>
-              <h3 className="font-display text-xl font-bold text-primary-900 mt-3">
+            <div className="border-l-4 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-r-xl p-6 mb-6 shadow-sm">
+              <Badge className="bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">PLANNED</Badge>
+              <h3 className="font-display text-xl font-bold text-primary-900 dark:text-white mt-3">
                 Phase 3 — Mobile &amp; Field Services
               </h3>
-              <p className="text-gray-600 mt-2">
+              <p className="text-gray-600 dark:text-gray-300 mt-2">
                 Extending digital access to the most remote credit unions and
                 field auditors:
               </p>
-              <ul className="mt-3 space-y-1 text-sm text-gray-600 list-disc list-inside">
+              <ul className="mt-3 space-y-1 text-sm text-gray-600 dark:text-gray-300 list-disc list-inside">
                 <li>
-                  Mobile app for credit union managers to submit reports from
-                  any location
+                  Mobile tools for field auditors to record data from any
+                  location
                 </li>
                 <li>
                   USSD-based access for areas with limited internet
@@ -180,7 +175,7 @@ export default function DigitalizationPage() {
       </section>
 
       {/* SECTION 3: WHY DIGITALIZATION MATTERS */}
-      <section className="bg-white py-20">
+      <section className="bg-white dark:bg-gray-950 py-20">
         <div className="max-w-4xl mx-auto px-4">
           <SectionHeader
             align="center"

@@ -1,29 +1,33 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { MapPin } from "lucide-react";
 import { contactInfo } from "@/lib/mock-data";
-import { ComingSoonButton } from "@/components/ui/ComingSoonButton";
+import { useLanguage } from "@/context/LanguageContext";
+import type { TranslationKey } from "@/lib/i18n";
 import logo from "../../../public/logo.jpg";
 
-const quickLinks = [
-  { label: "Home", href: "/" },
-  { label: "About Us", href: "/about" },
-  { label: "Services", href: "/services/digitalization" },
-  { label: "Affiliates", href: "/affiliates" },
-  { label: "Resources", href: "/resources" },
-  { label: "News", href: "/news" },
-  { label: "Contact", href: "/contact" },
+const quickLinks: { key: TranslationKey; href: string }[] = [
+  { key: "footer_link_home", href: "/" },
+  { key: "footer_link_about", href: "/about" },
+  { key: "footer_link_services", href: "/services/digitalization" },
+  { key: "footer_link_affiliates", href: "/affiliates" },
+  { key: "footer_link_resources", href: "/resources" },
+  { key: "footer_link_news", href: "/news" },
+  { key: "footer_link_contact", href: "/contact" },
 ];
 
-const resourceLinks = [
-  { label: "COBAC Regulations", href: "/resources" },
-  { label: "Reporting Templates", href: "/resources" },
-  { label: "Training Materials", href: "/resources" },
-  { label: "FAQ", href: "/faq" },
-  { label: "Portal Support", href: "/auth/login" },
+const resourceLinks: { key: TranslationKey; href: string }[] = [
+  { key: "footer_resource_cobac", href: "/resources" },
+  { key: "footer_resource_templates", href: "/resources" },
+  { key: "footer_resource_training", href: "/resources" },
+  { key: "footer_resource_faq", href: "/faq" },
 ];
 
 export function Footer() {
+  const { t } = useLanguage();
+
   return (
     <footer className="bg-primary-900 text-white pt-16 pb-8">
       <div className="max-w-7xl mx-auto px-4">
@@ -35,57 +39,43 @@ export function Footer() {
               </div>
               <span className="font-display font-bold text-lg">CamCCUL</span>
             </div>
-            <p className="text-sm text-gray-400 mt-2">
-              Cameroon Cooperative Credit Union League
-            </p>
-            <p className="text-sm text-gray-400 mt-2">
-              Supervising and empowering cooperative credit unions across
-              Cameroon since 1968.
-            </p>
+            <p className="text-sm text-gray-400 mt-2">{t("footer_tagline")}</p>
+            <p className="text-sm text-gray-400 mt-2">{t("footer_about")}</p>
           </div>
 
           <div>
             <h3 className="font-semibold text-sm uppercase tracking-wider mb-4">
-              Quick Links
+              {t("footer_quick_links")}
             </h3>
             {quickLinks.map((link) => (
               <Link
-                key={link.label}
+                key={link.key}
                 href={link.href}
                 className="text-sm text-gray-400 hover:text-white transition-colors block mb-2"
               >
-                {link.label}
+                {t(link.key)}
               </Link>
             ))}
           </div>
 
           <div>
             <h3 className="font-semibold text-sm uppercase tracking-wider mb-4">
-              Resources
+              {t("footer_resources")}
             </h3>
-            {resourceLinks.map((link) =>
-              link.label === "Portal Support" ? (
-                <ComingSoonButton
-                  key={link.label}
-                  className="text-sm text-gray-400 hover:text-white transition-colors block mb-2 text-left"
-                >
-                  {link.label}
-                </ComingSoonButton>
-              ) : (
-                <Link
-                  key={link.label}
-                  href={link.href}
-                  className="text-sm text-gray-400 hover:text-white transition-colors block mb-2"
-                >
-                  {link.label}
-                </Link>
-              )
-            )}
+            {resourceLinks.map((link) => (
+              <Link
+                key={link.key}
+                href={link.href}
+                className="text-sm text-gray-400 hover:text-white transition-colors block mb-2"
+              >
+                {t(link.key)}
+              </Link>
+            ))}
           </div>
 
           <div>
             <h3 className="font-semibold text-sm uppercase tracking-wider mb-4">
-              Contact Us
+              {t("footer_contact")}
             </h3>
             <div className="flex items-start gap-2 text-sm text-gray-400 mb-2">
               <MapPin className="h-4 w-4 mt-0.5 shrink-0" />
@@ -97,16 +87,16 @@ export function Footer() {
         </div>
 
         <div className="border-t border-primary-700 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-400 gap-4">
-          <p>&copy; 2026 CamCCUL. All rights reserved.</p>
+          <p>{t("footer_copyright")}</p>
           <div className="flex items-center gap-6">
             <Link href="/privacy" className="hover:text-white transition-colors">
-              Privacy Policy
+              {t("footer_privacy")}
             </Link>
             <Link href="/terms" className="hover:text-white transition-colors">
-              Terms of Service
+              {t("footer_terms")}
             </Link>
             <Link href="/security" className="hover:text-white transition-colors">
-              Security
+              {t("footer_security")}
             </Link>
           </div>
         </div>
