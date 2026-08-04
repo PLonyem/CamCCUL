@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Lexend } from "next/font/google";
 import { Chatbot } from "@/components/chatbot/Chatbot";
 import { LanguageProvider } from "@/context/LanguageContext";
@@ -18,6 +18,15 @@ export const metadata: Metadata = {
   title: "CamCCUL — Cameroon Cooperative Credit Union League",
   description:
     "Supervising 220+ credit unions across all 10 regions of Cameroon since 1968.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  // Lets fixed elements (e.g. the chatbot bubble) read env(safe-area-inset-*)
+  // so they clear the notch/home-indicator area on modern phones instead of
+  // sitting under it.
+  viewportFit: "cover",
 };
 
 export default function RootLayout({

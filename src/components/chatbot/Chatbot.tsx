@@ -12,6 +12,12 @@ interface Message {
 
 const FOCUSABLE_SELECTOR = 'input, button, [href], [tabindex]:not([tabindex="-1"])';
 
+// Offsets both the closed bubble and the open window the same amount from
+// the corner, but adds env(safe-area-inset-*) on top so it clears the home
+// indicator / rounded corners on notched phones instead of hiding under them.
+const FAB_POSITION_CLASS =
+  "fixed z-[60] bottom-[calc(1.5rem_+_env(safe-area-inset-bottom))] right-[calc(1.5rem_+_env(safe-area-inset-right))]";
+
 export function Chatbot() {
   const { language, t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
@@ -149,13 +155,13 @@ export function Chatbot() {
 
   if (!isOpen) {
     return (
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className={cn(FAB_POSITION_CLASS, "animate-chatbot-float")}>
         <span className="absolute inset-0 rounded-full bg-primary-500 animate-chatbot-pulse" />
         <button
           type="button"
           onClick={() => setIsOpen(true)}
           aria-label={t("chatbot_open_aria")}
-          className="relative w-14 h-14 bg-primary-500 hover:bg-primary-600 text-white rounded-full shadow-lg flex items-center justify-center cursor-pointer transition-all hover:scale-105"
+          className="relative w-14 h-14 bg-primary-500 hover:bg-primary-600 text-white rounded-full shadow-xl flex items-center justify-center cursor-pointer transition-all hover:scale-105"
         >
           <MessageCircle className="h-6 w-6" />
         </button>
@@ -170,8 +176,9 @@ export function Chatbot() {
       aria-modal="true"
       aria-label={t("chatbot_assistant_name")}
       className={cn(
-        "fixed bottom-6 right-6 z-50 origin-bottom-right animate-fade-in",
-        "w-80 sm:w-96 max-[400px]:w-[calc(100vw-2rem)] h-96",
+        FAB_POSITION_CLASS,
+        "origin-bottom-right animate-fade-in",
+        "w-80 sm:w-96 max-[400px]:w-[calc(100vw-2rem)] h-[min(24rem,80dvh)]",
         "bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700",
         "flex flex-col overflow-hidden"
       )}

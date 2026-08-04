@@ -11,7 +11,7 @@ import logo from "../../../public/logo.jpg";
 const quickLinks: { key: TranslationKey; href: string }[] = [
   { key: "footer_link_home", href: "/" },
   { key: "footer_link_about", href: "/about" },
-  { key: "footer_link_services", href: "/services/digitalization" },
+  { key: "footer_link_services", href: "/services" },
   { key: "footer_link_affiliates", href: "/affiliates" },
   { key: "footer_link_resources", href: "/resources" },
   { key: "footer_link_news", href: "/news" },

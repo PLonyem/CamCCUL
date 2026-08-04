@@ -70,6 +70,27 @@ html {
   animation: chatbot-pulse-ring 2s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
+@keyframes chatbot-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-chatbot-float {
+  animation: chatbot-float 3s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-chatbot-float,
+  .animate-chatbot-pulse {
+    animation: none;
+  }
+}
+
 @keyframes fade-in {
   from {
     opacity: 0;
