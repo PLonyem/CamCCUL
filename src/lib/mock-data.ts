@@ -41,15 +41,44 @@ export interface LeadershipMember {
   bio: LocalizedText;
 }
 
+export interface NewsArticleAuthor {
+  name: string;
+  role: string;
+  photo: string;
+}
+
+export interface NewsArticleHeroImage {
+  url: string;
+  alt: string;
+  caption: string;
+}
+
+export type NewsCategory =
+  | "network-news"
+  | "projects"
+  | "training-events"
+  | "insights"
+  | "Circular"
+  | "Training"
+  | "COBAC"
+  | "Announcement"
+  | "Event";
+
 export interface NewsArticle {
   id: string;
-  title: LocalizedText;
+  title: string;
   slug: string;
-  category: string;
-  excerpt: LocalizedText;
-  content: LocalizedText;
+  language: "en" | "fr";
+  translationOf?: string;
+  category: NewsCategory;
+  tags: string[];
+  excerpt: string;
+  content: string;
+  author: NewsArticleAuthor;
   publishedAt: string;
-  imageUrl: string;
+  chapter?: string;
+  featured: boolean;
+  heroImage: NewsArticleHeroImage;
 }
 
 export interface Resource {
@@ -105,16 +134,69 @@ export const regionLabels: Record<string, LocalizedText> = {
 };
 
 // Canonical NewsArticle.category values used for filtering — look up the
-// display label for the active language via `newsCategoryLabels` instead of
-// rendering the raw value.
-export const newsCategoryLabels: Record<string, LocalizedText> = {
-  All: { en: "All", fr: "Toutes" },
-  Circular: { en: "Circular", fr: "Circulaire" },
-  Training: { en: "Training", fr: "Formation" },
-  COBAC: { en: "COBAC", fr: "COBAC" },
-  Announcement: { en: "Announcement", fr: "Annonce" },
-  Event: { en: "Event", fr: "Événement" },
-};
+// display label via `CATEGORIES` instead of rendering the raw value.
+export const CATEGORIES: { value: NewsCategory; label: LocalizedText; description: string }[] = [
+  {
+    value: "network-news",
+    label: { en: "Network News", fr: "Actualités du Réseau" },
+    description: "CamCCUL and its chapters: AGMs, ceremonies, national days, and staff news",
+  },
+  {
+    value: "projects",
+    label: { en: "Projects", fr: "Projets" },
+    description: "Transfragri, Filets Sociaux, and donor-funded programmes",
+  },
+  {
+    value: "training-events",
+    label: { en: "Training & Events", fr: "Formation et Événements" },
+    description: "Seminars, capacity building, conferences, and the training calendar",
+  },
+  {
+    value: "insights",
+    label: { en: "Insights", fr: "Analyses" },
+    description: "Explainers on credit unions, cooperative principles, and financial education",
+  },
+  {
+    value: "Circular",
+    label: { en: "Circular", fr: "Circulaire" },
+    description: "Regulatory circulars and compliance directives",
+  },
+  {
+    value: "Training",
+    label: { en: "Training", fr: "Formation" },
+    description: "Regulator-led training and workshop notices",
+  },
+  {
+    value: "COBAC",
+    label: { en: "COBAC", fr: "COBAC" },
+    description: "Prudential requirements and directives from COBAC",
+  },
+  {
+    value: "Announcement",
+    label: { en: "Announcement", fr: "Annonce" },
+    description: "Institutional announcements and notices",
+  },
+  {
+    value: "Event",
+    label: { en: "Event", fr: "Événement" },
+    description: "Open days, membership drives, and observances",
+  },
+];
+
+export const CHAPTERS: string[] = [
+  "Bamenda",
+  "Kumbo",
+  "Nkambe",
+  "Fako",
+  "Kumba/Mamfe",
+  "Bafoussam",
+  "Douala",
+  "Fundong",
+  "Yaoundé",
+  "Maroua",
+  "Adamawa",
+  "Multiple",
+];
 
 export const affiliates: Affiliate[] = [
   {
@@ -2557,121 +2639,1115 @@ export const leadership: LeadershipMember[] = [
   },
 ];
 
-const NEWS_TITLE_PLACEHOLDER: LocalizedText = {
-  en: "[News Article Title — to be provided by CamCCUL communications]",
-  fr: "[Titre de l'article — à fournir par le service communication de CamCCUL]",
-};
-const NEWS_EXCERPT_PLACEHOLDER: LocalizedText = {
-  en: "[Article excerpt will appear here. This placeholder demonstrates the two-line preview format for news articles. Real content to be provided by CamCCUL communications department.]",
-  fr: "[L'extrait de l'article apparaîtra ici. Ce texte provisoire illustre le format d'aperçu sur deux lignes des actualités. Le contenu réel sera fourni par le service communication de CamCCUL.]",
-};
-const NEWS_CONTENT_PLACEHOLDER: LocalizedText = {
-  en: "[Full article content will appear here. This placeholder demonstrates the article detail layout. Real circulars, announcements, and news content to be provided by CamCCUL staff for publication on the website.]",
-  fr: "[Le contenu complet de l'article apparaîtra ici. Ce texte provisoire illustre la mise en page détaillée d'un article. Les circulaires, annonces et actualités réelles seront fournies par le personnel de CamCCUL pour publication sur le site.]",
-};
-
+// Real CamCCUL news content, supplied in full and used verbatim per the
+// content brief — not placeholder/mock data.
 export const newsArticles: NewsArticle[] = [
   {
-    id: "news-1",
-    title: NEWS_TITLE_PLACEHOLDER,
-    slug: "news-article-1",
+    id: "article-1",
+    title: "Two-Day Events Organized by CamCCUL Network for Women's Day 2026",
+    slug: "womens-day-2026-network-events",
+    language: "en",
+    category: "network-news",
+    tags: ["women", "chapters", "training", "entrepreneurship", "Fako", "Bafoussam", "Douala", "Yaoundé"],
+    excerpt:
+      "Ahead of International Women's Day 2026, the network ran a two-day programme across the Fako, Bafoussam, Douala and Yaoundé chapters — agro-processing training in pineapple juice production, a Business Model Canvas entrepreneurship session, donut-making as an income skill, and the second edition of the CamCCUL Ladies Round Table Conference on the economic, social and cultural rights of women and girls.",
+    content:
+      "Ahead of International Women's Day 2026, the CamCCUL network organised a two-day programme across multiple chapters, bringing together women from affiliated credit unions for training, dialogue, and celebration.\n\nIn the Fako, Bafoussam, Douala and Yaoundé chapters, participants took part in hands-on agro-processing training focused on pineapple juice production — a skill selected for its income-generating potential and the availability of raw materials in those regions. A Business Model Canvas entrepreneurship session equipped attendees with practical tools to plan and manage small businesses, while a donut-making workshop offered another accessible income skill.\n\nThe highlight of the programme was the second edition of the CamCCUL Ladies Round Table Conference, which addressed the economic, social and cultural rights of women and girls. Speakers included Mme Ndagha Cordelia, Sub-Director at the Ministry of Women's Empowerment and the Family, and Barrister N.S. Tumasang.\n\nA key panel examined why women still struggle to access credit union loans — citing collateral requirements, weak business plans, poor record keeping, and the workload pressures on female credit union staff as persistent barriers. The discussion generated concrete recommendations for making credit union products more accessible to women.\n\nThe event closed with an anniversary cake, an awards ceremony recognising outstanding women managers across the network, and a products exhibition showcasing goods produced by women members of affiliate credit unions.",
+    author: { name: "CamCCUL Communications", role: "Communications Department", photo: "" },
+    publishedAt: "2026-03-30",
+    chapter: "Multiple",
+    featured: true,
+    heroImage: {
+      url: "",
+      alt: "Women participants at the CamCCUL Women's Day 2026 round table event",
+      caption: "Delegates at the second edition of the CamCCUL Ladies Round Table Conference",
+    },
+  },
+  {
+    id: "article-2",
+    title: "CamCCUL and Affiliates Celebrate the 139th International Labour Day",
+    slug: "international-labour-day-2025",
+    language: "en",
+    category: "network-news",
+    tags: ["chapters", "staff", "Kumba", "Buea", "Bafoussam", "Yaoundé", "Ngaoundéré"],
+    excerpt:
+      "CamCCUL and affiliates celebrated the 139th International Labour Day on 1 May 2025 in Kumba, Meme Division, with parallel celebrations in Buea, Bafoussam, Yaoundé and Ngaoundéré. Ten CamCCUL staff received state medals in gold, silver and silver-gilt.",
+    content:
+      "CamCCUL and its affiliate credit unions joined workers across Cameroon to celebrate the 139th International Labour Day on 1 May 2025. The main celebration for the network took place in Kumba, chief town of Meme Division, under the auspices of Senior Divisional Officer Mr. Ntou'ou Ndong Chamberlin.\n\nParallel celebrations were held by affiliates in Buea, Bafoussam, Yaoundé and Ngaoundéré, reflecting the national reach of the credit union movement.\n\nThe 2025 theme focused on social dialogue and decent work for a peaceful Cameroon — a message that resonates deeply with the cooperative movement's commitment to economic democracy and workplace dignity.\n\nIn recognition of their service, around ten CamCCUL staff members received state medals during the celebrations, awarded in gold, silver and silver-gilt categories. The honours reflect the League's contribution to Cameroon's financial sector development and the dedication of its workforce.",
+    author: { name: "Kah Calister T.", role: "Communications Officer", photo: "" },
+    publishedAt: "2025-05-07",
+    chapter: "Kumba/Mamfe",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "CamCCUL staff and affiliates marching during Labour Day celebrations in Kumba",
+      caption: "CamCCUL contingent at the 139th International Labour Day march in Kumba, Meme Division",
+    },
+  },
+  {
+    id: "article-3",
+    title: "Kumbo Chapter Credit Unions Urged to Foster Collaboration for Growth",
+    slug: "kumbo-chapter-agm-2024",
+    language: "en",
+    category: "network-news",
+    tags: ["AGM", "governance", "Kumbo", "membership", "COBAC"],
+    excerpt:
+      "The Kumbo Chapter AGM held on 26 April 2025 drew close to 30 delegates. The chapter closed 2024 with 17 credit unions and 68,991 members, up from 63,407 in 2023 — a net gain of 5,584 members.",
+    content:
+      "The 2024 Kumbo Chapter Annual General Meeting, held on 26 April 2025 at the CamCCUL Building on Commercial Avenue, Bamenda, drew close to 30 delegates from member credit unions across the chapter.\n\nChapter President Mr. Jaff Sylverius Dinnyuy reported that the chapter closed 2024 with 17 credit unions and 68,991 members, up from 63,407 in 2023 — a net gain of 5,584 members. The number of branches also rose from 65 to 74, indicating steady expansion across the chapter's territory.\n\nDespite the growth, the President flagged two major setbacks: the ongoing socio-political crisis affecting parts of the region, and rising loan delinquency rates that threaten portfolio quality. He also raised concern about credit unions opening branches without following established procedure, warning that unregulated expansion could expose members to risk.\n\nDelegates were informed that outgoing Chapter Supervisor Mr. Tebid Solomon, after nine years of service, is transferring to CamCCUL's Audit Department — a move seen as strengthening the League's internal oversight capacity.\n\nThe AGM included briefings on the Internal Protection Scheme, Credit Risk Management, Union Bank investments, and the latest COBAC directives affecting credit union operations.",
+    author: { name: "CamCCUL Communications", role: "Communications Department", photo: "" },
+    publishedAt: "2025-05-03",
+    chapter: "Kumbo",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Delegates at the Kumbo Chapter AGM held at the CamCCUL Building in Bamenda",
+      caption: "Chapter President Mr. Jaff Sylverius Dinnyuy addressing delegates at the Kumbo Chapter AGM",
+    },
+  },
+  {
+    id: "article-4",
+    title: "Transfragri Project: A Digital Platform for Agribusiness",
+    slug: "transfragri-digital-platform-agribusiness",
+    language: "en",
+    category: "projects",
+    tags: ["agriculture", "digitalisation", "Alou", "Mbouda", "French Development Agency"],
+    excerpt:
+      "Three pilot credit unions received laptops, motorcycles, smartphones and equipment to launch Cagrib.com, a digital platform connecting farmers directly to buyers. The project is funded by the French Development Agency under the Support Program to the National Strategy for Inclusive Finance.",
+    content:
+      "Three pilot credit unions — Alou (AlouCCUL), M'mouck (M'mouckCCUL) and Mbouda Centre (MCCCU) — received a consignment of equipment on 22–23 April 2025 to launch the Transfragri project's digital agribusiness platform.\n\nThe equipment package included laptops, motorcycles for field agents, smartphones, standby generators, surge protectors and audio equipment — tools selected to enable credit union staff to reach farmers in remote areas and bring them onto the digital platform.\n\nThe platform, Cagrib.com, is designed to let farmers market produce directly to buyers without middlemen, cutting out the intermediaries that typically capture the largest share of agricultural value. It also connects agricultural value-chain actors — from input suppliers to processors to wholesalers — creating an integrated marketplace.\n\nA three-day capacity-building seminar for managers and focal points followed on 24–26 April 2025 at the Women's Empowerment Center in Mbouda, ensuring the pilot credit unions have the skills to support their farming members on the platform.\n\nOfficially titled 'Building of CamCCUL Network Agribusiness Forum,' the programme was created by the Cameroon Government and funded by the French Development Agency (AFD). It falls under the Support Program to the National Strategy for Inclusive Finance (SP-NSIF) and is managed by the Ministry of Finance.\n\nKey CamCCUL personnel named to the programme include: Assistant General Manager Mr. Awah Richard Ndoh, Head of Lending Mr. Konang Godwill, Agribusiness Unit Coordinator Mr. Afon Ferdinand, and platform developer Mr. Lenjo Valery.",
+    author: { name: "Kah Calister T.", role: "Communications Officer", photo: "" },
+    publishedAt: "2025-04-30",
+    chapter: "Bafoussam",
+    featured: true,
+    heroImage: {
+      url: "",
+      alt: "Laptops, motorcycles and equipment handed over to pilot credit unions for the Transfragri agribusiness platform",
+      caption: "Equipment handover ceremony at the Women's Empowerment Center, Mbouda",
+    },
+  },
+  {
+    id: "article-5",
+    title: "CamCCUL Achève avec Succès la Deuxième Phase de Paiement des TMO — Cycle 7, Projet Filets Sociaux",
+    slug: "filets-sociaux-phase-2-tmo-cycle-7",
+    language: "fr",
+    category: "projects",
+    tags: ["inclusion", "partnerships", "Adamaoua", "Est", "Banque Mondiale"],
+    excerpt:
+      "Paiements des Transferts Monétaires Ordinaires effectués du 25 au 31 mars 2025 dans l'Adamaoua et l'Est. 7 000 ménages servis ainsi que 119 relais communautaires. Financement Banque mondiale en partenariat avec le gouvernement camerounais.",
+    content:
+      "La deuxième phase de paiement des Transferts Monétaires Ordinaires (TMO) du cycle 7 du Projet Filets Sociaux s'est déroulée avec succès du 25 au 31 mars 2025 dans les régions de l'Adamaoua et de l'Est.\n\nAu total, 7 000 ménages ont été servis — 3 000 dans l'Adamaoua et 4 000 dans l'Est — ainsi que 119 relais communautaires, dont 51 dans l'Adamaoua et 68 dans l'Est. Ces relais jouent un rôle essentiel dans l'identification des bénéficiaires et le suivi des paiements dans les communautés les plus reculées.\n\nLes communes concernées sont Galim-Tignère, Kontha et Mayo Darlé dans l'Adamaoua, et Massamena, Nguelemedouka, Mbang et Nguelebok dans l'Est.\n\nLe projet est financé par la Banque mondiale en partenariat avec le gouvernement camerounais, dans le cadre du programme de filets sociaux visant à soutenir les ménages les plus vulnérables.\n\nLes équipes de CamCCUL ont fait preuve d'une détermination remarquable, atteignant les bénéficiaires en voiture, à moto et parfois en pirogue pour surmonter les défis d'accessibilité dans ces zones enclavées.",
+    author: { name: "Olivera Ngwete", role: "Chargée de Communication", photo: "" },
+    publishedAt: "2025-04-26",
+    chapter: "Adamawa",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Équipes CamCCUL effectuant des paiements dans les communautés rurales de l'Adamaoua et de l'Est",
+      caption: "Distribution des transferts monétaires dans les communautés bénéficiaires du Projet Filets Sociaux",
+    },
+  },
+  {
+    id: "article-6",
+    title: "The 40th International Women's Day — Yaoundé",
+    slug: "womens-day-2025-yaounde",
+    language: "en",
+    category: "network-news",
+    tags: ["women", "Yaoundé", "membership", "leadership"],
+    excerpt:
+      "Round table at the Bali Cooperative Credit Union hall brought together women members who shared how credit union savings transformed their lives — from building houses to rising to leadership positions.",
+    content:
+      "The Yaoundé chapter marked the 40th International Women's Day with a round table held on 7 March 2025 at the Bali Cooperative Credit Union hall.\n\nUnder the network theme of empowering women and strengthening communities, members shared personal testimonies of how credit union savings had transformed their lives. Highlights included a Menji Cooperative Credit Union member who built her own house through disciplined savings, the first female vice president of Jakiri Credit Union who spoke about breaking barriers in cooperative leadership, and Carine Ngum, Deputy General Manager of Akum Zone Credit Union, who reflected on her career journey.\n\nGrace Tamfu, CamCCUL's first female gender officer and now Coordinator of Credit Unions for Yaoundé, South and East regions, traced the history of women's participation in the cooperative movement, noting the progress made and the distance still to travel.\n\nGender officer Juliette Lum Tangi and gender and development expert Nicoline Nwenushi Wazeh delivered presentations on financial inclusion strategies for women. The event theme was authored by Chiamba Victorine Nke, Head of Human Resources at CamCCUL.",
+    author: { name: "Ruth Enjeh", role: "Communications Officer", photo: "" },
+    publishedAt: "2025-03-10",
+    chapter: "Yaoundé",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Women participants at the Yaoundé International Women's Day round table",
+      caption: "Members sharing experiences at the Bali Cooperative Credit Union hall, Yaoundé",
+    },
+  },
+  {
+    id: "article-7",
+    title: "The 40th International Women's Day — Fako Chapter",
+    slug: "womens-day-2025-fako",
+    language: "en",
+    category: "network-news",
+    tags: ["women", "Fako", "radio", "membership"],
+    excerpt:
+      "Ten women from five credit unions joined a live round table on Dream FM Buea. Hepsiba Mukeba, Chief of the Internal Protection Scheme, encouraged listeners to open accounts as a Women's Day gift to themselves.",
+    content:
+      "The Fako Chapter celebrated the 40th International Women's Day with a distinctive approach — taking the conversation to the airwaves.\n\nTen women from five credit unions — Tole Tea, Buea Police, Ndungated, Mutengene Savings and Loans, and Buea P&T — joined a live round table broadcast on Dream FM Buea, 86.9 MHz, reaching listeners across the Fako division and beyond.\n\nHepsiba Mukeba, Chief of the Internal Protection Scheme at CamCCUL, spoke on the network's commitment to women's financial inclusion and the protections in place for member savings. She encouraged listeners — particularly women who had not yet joined a credit union — to consider opening an account as a Women's Day gift to themselves, emphasising the long-term benefits of cooperative membership.\n\nThe radio format allowed the chapter to reach a wider audience than a physical event, including women in remote areas who could not attend an in-person gathering.",
+    author: { name: "CamCCUL Communications", role: "Communications Department", photo: "" },
+    publishedAt: "2025-03-10",
+    chapter: "Fako",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Women from Fako chapter credit unions during the Dream FM radio broadcast",
+      caption: "Live round table on Dream FM Buea, 86.9 MHz, for International Women's Day 2025",
+    },
+  },
+  {
+    id: "article-8",
+    title: "The 40th International Women's Day — Bafoussam Chapter",
+    slug: "womens-day-2025-bafoussam",
+    language: "en",
+    category: "network-news",
+    tags: ["women", "Bafoussam", "sports", "membership"],
+    excerpt:
+      "Sports and a relay walk through Bafoussam with BaPCCUL Tyo-ville, led by the zonal coordinator, under the patronage of the Region's first lady. A stated aim of the 2025 celebration was increasing female membership.",
+    content:
+      "The Bafoussam Chapter marked International Women's Day 2025 with sports activities and a relay walk through the city, organised in partnership with BaPCCUL Tyo-ville and led by the zonal coordinator.\n\nThe event was placed under the patronage of the West Region's first lady, lending institutional weight to the celebration.\n\nA stated aim of the 2025 activities was increasing female membership across the chapter's credit unions. The public nature of the relay walk — moving through the streets of Bafoussam — served as both a celebration and an awareness campaign, drawing attention to the benefits of credit union membership for women entrepreneurs, traders, and savers.\n\nThe combination of physical activity, community visibility, and financial inclusion messaging made this one of the chapter's most visible Women's Day observances.",
+    author: { name: "CamCCUL Communications", role: "Communications Department", photo: "" },
+    publishedAt: "2025-03-10",
+    chapter: "Bafoussam",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Women participating in the Bafoussam chapter relay walk for International Women's Day",
+      caption: "Relay walk through Bafoussam marking International Women's Day 2025",
+    },
+  },
+  {
+    id: "article-9",
+    title: "CamCCUL EMF COOP-CA Célèbre les Femmes Autour d'une Table à Douala",
+    slug: "journee-femme-2025-douala",
+    language: "fr",
+    category: "network-news",
+    tags: ["women", "Douala", "leadership", "éducation financière"],
+    excerpt:
+      "Rencontre du 7 mars dans la salle de MUPECI sur le thème de l'autonomisation des femmes et du renforcement des communautés. Panel avec des dirigeantes de Mupeci, Nkenccul et du Centre d'Éducation et de Formation de CamCCUL.",
+    content:
+      "La célébration de la 40e Journée Internationale de la Femme par le réseau CamCCUL EMF COOP-CA s'est tenue le 7 mars 2025 dans la salle de MUPECI à Douala, autour d'une table ronde placée sous le thème de l'autonomisation des femmes et du renforcement des communautés.\n\nLe panel a réuni des dirigeantes du réseau : Dame Kemoe Irène, chef d'agence à Mupeci ; Dame Nji Colette, directrice adjointe de Nkenccul ; et Dame Praxedes Banseka, directrice du Centre d'Éducation et de Formation de CamCCUL.\n\nLes discussions ont porté sur le leadership féminin dans le mouvement coopératif, l'éducation financière comme outil d'émancipation, et l'accès des femmes aux ressources — crédit, épargne, formation — au sein des coopératives de crédit affiliées.\n\nLa rencontre a mis en lumière le rôle croissant des femmes dans la gouvernance des coopératives de crédit de la région du Littoral, tout en soulignant les défis persistants en matière d'accès au financement pour les femmes entrepreneures.",
+    author: { name: "O.D. Ngwete", role: "Chargé de Communication", photo: "" },
+    publishedAt: "2025-03-10",
+    chapter: "Douala",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Femmes participantes à la table ronde de la Journée de la Femme à Douala",
+      caption: "Panel de dirigeantes lors de la célébration à la salle MUPECI, Douala",
+    },
+  },
+  {
+    id: "article-10",
+    title: "CamCCUL Chapter AGMs 2025",
+    slug: "chapter-agms-2025",
+    language: "en",
+    category: "network-news",
+    tags: ["AGM", "Kumba/Mamfe", "Douala", "governance"],
+    excerpt:
+      "Coverage of the Kumba/Mamfe and Douala chapter Annual General Meetings for the 2025 season. Full detailed reports including financial summaries, elections, and strategic plans.",
+    content:
+      "The 2025 Annual General Meeting season continued across CamCCUL chapters, with the Kumba/Mamfe and Douala chapters convening their statutory meetings.\n\nThese AGMs form part of the network's governance calendar, where each chapter reports to its member credit unions on financial performance, membership growth, loan portfolio quality, and compliance with COBAC regulatory requirements. Chapter elections are also held where terms have expired.\n\nThe Kumba/Mamfe chapter AGM addressed the chapter's performance over the past financial year, including membership trends, savings mobilisation, and loan recovery rates. Delegates discussed strategies for improving portfolio quality in a challenging economic environment.\n\nThe Douala chapter AGM focused on urban credit union operations, digitalisation of services, and expanding outreach to underserved communities within the Littoral region.\n\nFull detailed reports for both AGMs — including audited financial statements, committee reports, and resolutions — are being compiled and will be published as supplementary documents.",
+    author: { name: "CamCCUL Communications", role: "Communications Department", photo: "" },
+    publishedAt: "2025-05-24",
+    chapter: "Multiple",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Delegates at a CamCCUL chapter Annual General Meeting",
+      caption: "Chapter AGM proceedings — 2025 season",
+    },
+  },
+  {
+    id: "article-11",
+    title: "Specialized Seminar for Credit Union Staff",
+    slug: "specialized-seminar-credit-union-staff-2024",
+    language: "en",
+    category: "training-events",
+    tags: ["training", "Nkongsamba", "branch management", "internal controls"],
+    excerpt:
+      "Branch managers and internal controllers from eight chapters gathered in Nkongsamba for specialised training on credit union operations, internal controls, and regulatory compliance.",
+    content:
+      "Branch managers and internal controllers from the Bamenda, Kumbo, Nkambe, Fako, Kumba/Mamfe, Bafoussam, Douala and Fundong chapters gathered in Nkongsamba for a specialised training seminar in December 2024.\n\nThe training focused on strengthening operational efficiency and internal control systems across the network's branch network. Sessions covered best practices in branch management, cash handling procedures, member service standards, loan documentation requirements, and COBAC compliance obligations.\n\nBringing together staff from eight different chapters created opportunities for peer learning and the exchange of practical experiences from different operational contexts — from urban branches in Douala to rural outposts in the Northwest and West regions.\n\nThe seminar forms part of CamCCUL's ongoing capacity building programme, which delivers targeted training to different staff categories throughout the year.",
+    author: { name: "CamCCUL Communications", role: "Communications Department", photo: "" },
+    publishedAt: "2024-12-13",
+    chapter: "Multiple",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Credit union staff attending the specialized seminar in Nkongsamba",
+      caption: "Participants at the specialized seminar for branch managers and internal controllers, Nkongsamba",
+    },
+  },
+  {
+    id: "article-12",
+    title: "Microfinance Leaders Meet in Douala",
+    slug: "microfinance-leaders-douala-2024",
+    language: "en",
+    category: "network-news",
+    tags: ["governance", "COBAC", "Douala", "regulation", "CEMAC"],
+    excerpt:
+      "Microfinance institutions across CEMAC met in Douala to address implementation of the 2017 Regulations and SESAME 4.0. COBAC Secretary General Mr. Marcel Ondele commended CamCCUL's leadership and pledged support for its five-year restructuring plan.",
+    content:
+      "Microfinance institutions from across the CEMAC region convened in Douala for a high-level meeting addressing the implementation of the 2017 Regulations governing microfinance and the rollout of SESAME 4.0, the regulatory reporting platform.\n\nCOBAC Secretary General Mr. Marcel Ondele, addressing the gathering, commended CamCCUL's leadership in the cooperative credit union sector and acknowledged the League's efforts in bringing its affiliates into compliance with the evolving regulatory framework.\n\nOf particular significance was Mr. Ondele's public pledge of COBAC support for CamCCUL's five-year restructuring plan — a comprehensive programme designed to strengthen the League's supervisory capacity, modernise its operations, and position the network for sustainable growth.\n\nThe meeting underscored the central role CamCCUL plays as the bridge between individual credit unions and the regional regulator, translating COBAC requirements into practical guidance that works for cooperative financial institutions serving communities across Cameroon.",
+    author: { name: "CamCCUL Communications", role: "Communications Department", photo: "" },
+    publishedAt: "2024-11-12",
+    chapter: "Douala",
+    featured: true,
+    heroImage: {
+      url: "",
+      alt: "Microfinance leaders gathering at the CEMAC conference in Douala",
+      caption: "COBAC Secretary General Mr. Marcel Ondele addressing microfinance leaders in Douala",
+    },
+  },
+  {
+    id: "article-13",
+    title: "CamCCUL Staff Trained on the GIMAC Platform",
+    slug: "gimac-platform-training-2024",
+    language: "en",
+    category: "training-events",
+    tags: ["digitalisation", "Douala", "accounting", "GIMAC"],
+    excerpt:
+      "Two-day training at Lewat Hotel, Douala, facilitated by GIMAC experts with support from CREDIX-CAM, focused on accounting and communication functions in line with the network's digitalisation goals.",
+    content:
+      "CamCCUL staff participated in a two-day training session on the GIMAC platform, held at Lewat Hotel in Douala and facilitated by GIMAC experts with support from CREDIX-CAM.\n\nThe training focused on the accounting and communication modules of the GIMAC system, equipping staff with the skills needed to leverage the platform for more efficient financial reporting and internal communication.\n\nThis initiative aligns with CamCCUL's broader digitalisation strategy, which aims to modernise operations across the network — from head office to individual credit unions — through the adoption of appropriate technology platforms.\n\nThe hands-on format allowed participants to work directly with the system under expert guidance, ensuring they could apply their learning immediately upon return to their respective offices.",
+    author: { name: "CamCCUL Communications", role: "Communications Department", photo: "" },
+    publishedAt: "2024-11-01",
+    chapter: "Douala",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "CamCCUL staff during the GIMAC platform training session at Lewat Hotel",
+      caption: "GIMAC platform training session at Lewat Hotel, Douala",
+    },
+  },
+  {
+    id: "article-14",
+    title: "Alpha Core Banking Training for Maroua Staff",
+    slug: "alpha-core-banking-training-maroua-2024",
+    language: "en",
+    category: "training-events",
+    tags: ["digitalisation", "Maroua", "core banking", "Alpha"],
+    excerpt:
+      "Staff in the Maroua area were trained on the Alpha Core Banking System to improve service delivery and operational efficiency at credit union branches.",
+    content:
+      "CamCCUL organised a training programme for staff in the Maroua area on the Alpha Core Banking System, as part of the network's drive to modernise credit union operations through technology.\n\nThe training aimed to improve service delivery at the branch level by equipping staff with the skills to use the core banking platform effectively — from member account management to transaction processing and financial reporting.\n\nFor credit unions in the Far North region, where physical access to banking infrastructure is limited, a reliable core banking system is particularly important. It enables credit unions to serve members more efficiently, maintain accurate records, and meet COBAC reporting requirements.\n\nThe Maroua training is one of several regional digitalisation initiatives being rolled out across the network, ensuring that staff in all 10 regions have access to the skills and tools needed for modern cooperative financial services.",
+    author: { name: "CamCCUL Communications", role: "Communications Department", photo: "" },
+    publishedAt: "2024-11-01",
+    chapter: "Maroua",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Staff training session on the Alpha Core Banking System in Maroua",
+      caption: "Alpha Core Banking training for Maroua area staff",
+    },
+  },
+  {
+    id: "article-15",
+    title: "The Credit Union Principle: Putting People Before Profit",
+    slug: "credit-union-principles-people-before-profit",
+    language: "en",
+    category: "insights",
+    tags: ["education", "cooperative principles", "membership", "financial inclusion"],
+    excerpt:
+      "What separates credit unions from banks: member ownership and control on a one-member-one-vote basis, affordable services for the underserved, earnings reinvested in the cooperative, and cooperation between credit unions.",
+    content:
+      "Credit unions are fundamentally different from banks, and understanding that difference is key to appreciating their role in Cameroon's financial system.\n\nThe defining principle is member ownership and democratic control. In a credit union, every member has one vote — regardless of whether they have saved 5,000 XAF or 5,000,000 XAF. This one-member-one-vote principle ensures the cooperative serves the interests of all members, not just the largest savers. Banks, by contrast, are owned by shareholders whose voting power is proportional to their investment.\n\nCredit unions exist to serve the underserved. While banks focus on profitable customers, credit unions were created precisely to reach people the formal banking sector overlooks — farmers, market traders, teachers, and small business owners who need affordable financial services.\n\nEarnings are reinvested, not extracted. When a credit union generates surplus, that money returns to members through better savings rates, lower loan interest, reduced fees, or dividends. There are no outside shareholders taking profits out of the community.\n\nFinally, credit unions cooperate with each other. Through networks like CamCCUL, they share resources, training, and liquidity support. This cooperation between cooperatives — the sixth of the international cooperative principles — makes individual credit unions stronger than they could ever be alone.",
+    author: { name: "CamCCUL Communications", role: "Communications Department", photo: "" },
+    publishedAt: "2024-07-16",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Illustration representing cooperative credit union principles of democratic member ownership",
+      caption: "Credit unions put people before profit — a founding principle of the cooperative movement",
+    },
+  },
+  {
+    id: "article-16",
+    title: "The Advantages of Affiliating with the CamCCUL Network",
+    slug: "advantages-camccul-affiliation",
+    language: "en",
+    category: "insights",
+    tags: ["affiliates", "membership", "governance", "supervision"],
+    excerpt:
+      "For credit unions considering affiliation: control and supervision, training and skill development, access to liquidity and investment loans on better terms, and financial stability through network guarantee funds.",
+    content:
+      "Credit unions that affiliate with the CamCCUL network gain access to a support system that no standalone cooperative can replicate.\n\nThe first advantage is control and supervision. CamCCUL provides the regulatory oversight that ensures a credit union operates safely and transparently, protecting member savings and maintaining public trust. This supervision is not a burden — it is a quality mark that tells members their money is in safe hands.\n\nTraining and skill development form the second pillar. Through CamCCUL's capacity building programmes, staff and board members of affiliated credit unions receive professional training in financial management, governance, risk management, and member service. This continuous professional development raises the standard of service across the entire network.\n\nAccess to liquidity and investment loans on better terms is a practical benefit that directly impacts a credit union's ability to serve its members. The network's pooled resources allow individual credit unions to access funding they could not secure alone.\n\nFinally, the financial stability that comes from network guarantee funds provides a safety net. In times of difficulty — whether from economic shocks, natural disasters, or operational challenges — the network stands behind its affiliates. This collective security is the cooperative principle of cooperation among cooperatives made real.",
+    author: { name: "CamCCUL Communications", role: "Communications Department", photo: "" },
+    publishedAt: "2024-06-10",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Illustration showing the benefits of CamCCUL network affiliation for credit unions",
+      caption: "The advantages of affiliating with the CamCCUL network — supervision, training, liquidity, and stability",
+    },
+  },
+  // ─── Placeholder items below (article-17 to article-26) are generic
+  // mock content for demonstrating the Circular/Training/COBAC/Announcement/
+  // Event category scheme in the UI. They are not real CamCCUL news and
+  // should be replaced with verified content before launch.
+  {
+    id: "article-17",
+    title: "Q3 2026 Reporting Deadlines Announced",
+    slug: "q3-2026-reporting-deadlines",
+    language: "en",
     category: "Circular",
-    excerpt: NEWS_EXCERPT_PLACEHOLDER,
-    content: NEWS_CONTENT_PLACEHOLDER,
-    publishedAt: "2026-07-01",
-    imageUrl: "",
+    tags: ["reporting", "compliance", "circular"],
+    excerpt:
+      "Affiliated credit unions are reminded of the upcoming Q3 2026 financial reporting deadlines and the documentation required for submission.",
+    content:
+      "All affiliated credit unions are reminded of the reporting deadlines for the third quarter of 2026. Chapters should ensure that financial statements, membership updates, and loan portfolio summaries are submitted through the usual channels ahead of the stated deadline.\n\nCredit unions that anticipate difficulty meeting the deadline should notify their chapter supervisor as early as possible so that appropriate arrangements can be made.\n\nFurther guidance on the required documentation and submission format will be communicated to chapter offices in due course.",
+    author: { name: "CamCCUL Communications", role: "Communications Department", photo: "" },
+    publishedAt: "2026-07-15",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Illustration representing quarterly financial reporting for credit unions",
+      caption: "Q3 2026 reporting deadlines",
+    },
   },
   {
-    id: "news-2",
-    title: NEWS_TITLE_PLACEHOLDER,
-    slug: "news-article-2",
+    id: "article-18",
+    title: "Digital Portal Training for Northwest Region",
+    slug: "digital-portal-training-northwest",
+    language: "en",
     category: "Training",
-    excerpt: NEWS_EXCERPT_PLACEHOLDER,
-    content: NEWS_CONTENT_PLACEHOLDER,
-    publishedAt: "2026-07-02",
-    imageUrl: "",
+    tags: ["digitalisation", "training", "Northwest"],
+    excerpt:
+      "A training programme on the member digital portal is being organised for credit union staff across the Northwest Region.",
+    content:
+      "CamCCUL is organising a training programme on the member digital portal for credit union staff in the Northwest Region. The sessions will cover day-to-day use of the platform, member account support, and troubleshooting common issues.\n\nParticipation is open to branch staff and IT focal points from affiliated credit unions in the region. Chapter offices will share the schedule and venue details ahead of the training dates.",
+    author: { name: "CamCCUL Communications", role: "Communications Department", photo: "" },
+    publishedAt: "2026-07-20",
+    chapter: "Bamenda",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Illustration representing digital portal training for credit union staff",
+      caption: "Digital portal training for Northwest Region staff",
+    },
   },
   {
-    id: "news-3",
-    title: NEWS_TITLE_PLACEHOLDER,
-    slug: "news-article-3",
+    id: "article-19",
+    title: "Updated Liquidity Ratio Requirements",
+    slug: "updated-liquidity-ratio-requirements",
+    language: "en",
     category: "COBAC",
-    excerpt: NEWS_EXCERPT_PLACEHOLDER,
-    content: NEWS_CONTENT_PLACEHOLDER,
-    publishedAt: "2026-07-03",
-    imageUrl: "",
+    tags: ["COBAC", "liquidity", "regulation"],
+    excerpt:
+      "Affiliated credit unions should note the updated liquidity ratio requirements issued in line with COBAC prudential standards.",
+    content:
+      "Affiliated credit unions are advised of updated liquidity ratio requirements issued in line with prevailing COBAC prudential standards. Credit unions should review their current liquidity position against the revised thresholds and take any necessary corrective action.\n\nChapter supervisors will be available to support affiliates in assessing compliance and addressing any gaps identified. Detailed implementation guidance will follow through the usual regulatory communication channels.",
+    author: { name: "CamCCUL Communications", role: "Communications Department", photo: "" },
+    publishedAt: "2026-07-25",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Illustration representing prudential liquidity requirements for credit unions",
+      caption: "Updated liquidity ratio requirements",
+    },
   },
   {
-    id: "news-4",
-    title: NEWS_TITLE_PLACEHOLDER,
-    slug: "news-article-4",
+    id: "article-20",
+    title: "Annual General Meeting 2026 — Notice to Members",
+    slug: "annual-general-meeting-2026",
+    language: "en",
     category: "Announcement",
-    excerpt: NEWS_EXCERPT_PLACEHOLDER,
-    content: NEWS_CONTENT_PLACEHOLDER,
-    publishedAt: "2026-07-04",
-    imageUrl: "",
+    tags: ["AGM", "governance", "announcement"],
+    excerpt:
+      "Notice is given of the 2026 Annual General Meeting. Member credit unions are invited to confirm delegate attendance ahead of the date.",
+    content:
+      "Notice is hereby given of the 2026 Annual General Meeting of the network. Member credit unions are invited to confirm delegate attendance ahead of the scheduled date through their respective chapter offices.\n\nThe agenda will include the presentation of annual financial statements, committee reports, and any resolutions tabled by affiliated credit unions. Further details on the venue and agenda will be circulated closer to the date.",
+    author: { name: "CamCCUL Communications", role: "Communications Department", photo: "" },
+    publishedAt: "2026-08-01",
+    chapter: "Multiple",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Illustration representing an annual general meeting notice",
+      caption: "Annual General Meeting 2026 — notice to members",
+    },
   },
   {
-    id: "news-5",
-    title: NEWS_TITLE_PLACEHOLDER,
-    slug: "news-article-5",
+    id: "article-21",
+    title: "Credit Union Open Day — Bamenda",
+    slug: "credit-union-open-day-bamenda",
+    language: "en",
     category: "Event",
-    excerpt: NEWS_EXCERPT_PLACEHOLDER,
-    content: NEWS_CONTENT_PLACEHOLDER,
-    publishedAt: "2026-07-05",
-    imageUrl: "",
+    tags: ["membership", "Bamenda", "event"],
+    excerpt:
+      "An open day is being held in Bamenda to introduce members of the public to credit union membership and the services on offer.",
+    content:
+      "An open day is being held in Bamenda to introduce members of the public to credit union membership and the range of services offered by affiliated credit unions in the area. Visitors will be able to speak with credit union staff about account opening, savings products, and loan options.\n\nThe event is open to the public and forms part of the network's ongoing efforts to promote financial inclusion in the region.",
+    author: { name: "CamCCUL Communications", role: "Communications Department", photo: "" },
+    publishedAt: "2026-08-05",
+    chapter: "Bamenda",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Illustration representing a community credit union open day",
+      caption: "Credit Union Open Day, Bamenda",
+    },
   },
   {
-    id: "news-6",
-    title: NEWS_TITLE_PLACEHOLDER,
-    slug: "news-article-6",
+    id: "article-22",
+    title: "New AML/CFT Compliance Guidelines Issued",
+    slug: "new-aml-cft-compliance-guidelines",
+    language: "en",
     category: "Circular",
-    excerpt: NEWS_EXCERPT_PLACEHOLDER,
-    content: NEWS_CONTENT_PLACEHOLDER,
-    publishedAt: "2026-07-06",
-    imageUrl: "",
+    tags: ["compliance", "AML", "circular"],
+    excerpt:
+      "Updated anti-money laundering and counter-terrorism financing compliance guidelines have been issued to affiliated credit unions.",
+    content:
+      "Updated anti-money laundering and counter-terrorism financing (AML/CFT) compliance guidelines have been issued to all affiliated credit unions. Credit unions are required to review their internal procedures against the updated guidance and ensure staff are briefed accordingly.\n\nChapter offices will coordinate follow-up sessions to support affiliates in aligning their compliance procedures with the updated requirements.",
+    author: { name: "CamCCUL Communications", role: "Communications Department", photo: "" },
+    publishedAt: "2026-08-10",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Illustration representing anti-money laundering compliance guidance",
+      caption: "New AML/CFT compliance guidelines",
+    },
   },
   {
-    id: "news-7",
-    title: NEWS_TITLE_PLACEHOLDER,
-    slug: "news-article-7",
+    id: "article-23",
+    title: "Loan Portfolio Management Workshop",
+    slug: "loan-portfolio-management-workshop",
+    language: "en",
     category: "Training",
-    excerpt: NEWS_EXCERPT_PLACEHOLDER,
-    content: NEWS_CONTENT_PLACEHOLDER,
-    publishedAt: "2026-07-07",
-    imageUrl: "",
+    tags: ["training", "loan portfolio", "risk management"],
+    excerpt:
+      "A workshop on loan portfolio management is being organised for credit union lending staff, covering delinquency control and recovery strategy.",
+    content:
+      "A workshop on loan portfolio management is being organised for lending staff of affiliated credit unions. Sessions will cover portfolio monitoring, delinquency control, and recovery strategy, with an emphasis on practical tools staff can apply in their day-to-day work.\n\nCredit unions are encouraged to nominate loan officers and branch managers to attend. Registration details will be shared through chapter offices.",
+    author: { name: "CamCCUL Communications", role: "Communications Department", photo: "" },
+    publishedAt: "2026-08-14",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Illustration representing a loan portfolio management training workshop",
+      caption: "Loan portfolio management workshop for lending staff",
+    },
   },
   {
-    id: "news-8",
-    title: NEWS_TITLE_PLACEHOLDER,
-    slug: "news-article-8",
+    id: "article-24",
+    title: "Capital Adequacy Framework Update",
+    slug: "capital-adequacy-framework-update",
+    language: "en",
     category: "COBAC",
-    excerpt: NEWS_EXCERPT_PLACEHOLDER,
-    content: NEWS_CONTENT_PLACEHOLDER,
-    publishedAt: "2026-07-08",
-    imageUrl: "",
+    tags: ["COBAC", "capital adequacy", "regulation"],
+    excerpt:
+      "Affiliated credit unions are notified of an update to the capital adequacy framework in line with COBAC prudential norms.",
+    content:
+      "Affiliated credit unions are notified of an update to the capital adequacy framework applicable under prevailing COBAC prudential norms. Credit unions should assess their current capital position against the updated framework and plan accordingly.\n\nGuidance on implementation timelines and reporting expectations will be shared with chapter offices in due course.",
+    author: { name: "CamCCUL Communications", role: "Communications Department", photo: "" },
+    publishedAt: "2026-08-18",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Illustration representing capital adequacy regulatory requirements",
+      caption: "Capital adequacy framework update",
+    },
   },
   {
-    id: "news-9",
-    title: NEWS_TITLE_PLACEHOLDER,
-    slug: "news-article-9",
+    id: "article-25",
+    title: "Board Chairman Reappointment Confirmed",
+    slug: "board-chairman-reappointment",
+    language: "en",
     category: "Announcement",
-    excerpt: NEWS_EXCERPT_PLACEHOLDER,
-    content: NEWS_CONTENT_PLACEHOLDER,
-    publishedAt: "2026-07-09",
-    imageUrl: "",
+    tags: ["governance", "leadership", "announcement"],
+    excerpt:
+      "The network confirms the reappointment of the Board Chairman for a further term, following the applicable governance procedures.",
+    content:
+      "The network confirms the reappointment of the Board Chairman for a further term, following the applicable governance procedures set out in the network's statutes. The Board expressed its confidence in continued leadership stability as the network progresses through its current strategic priorities.\n\nMember credit unions will be updated on any related governance matters through the usual channels.",
+    author: { name: "CamCCUL Communications", role: "Communications Department", photo: "" },
+    publishedAt: "2026-08-22",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Illustration representing board governance and leadership announcements",
+      caption: "Board Chairman reappointment confirmed",
+    },
   },
   {
-    id: "news-10",
-    title: NEWS_TITLE_PLACEHOLDER,
-    slug: "news-article-10",
+    id: "article-26",
+    title: "International Credit Union Day 2026",
+    slug: "international-credit-union-day-2026",
+    language: "en",
     category: "Event",
-    excerpt: NEWS_EXCERPT_PLACEHOLDER,
-    content: NEWS_CONTENT_PLACEHOLDER,
-    publishedAt: "2026-07-10",
-    imageUrl: "",
+    tags: ["membership", "event", "cooperative movement"],
+    excerpt:
+      "CamCCUL and affiliated credit unions will mark International Credit Union Day 2026 with activities across the network's chapters.",
+    content:
+      "CamCCUL and its affiliated credit unions will mark International Credit Union Day 2026 with activities organised across the network's chapters, celebrating the cooperative movement and its contribution to financial inclusion.\n\nChapters are encouraged to plan local observances, and member credit unions will be informed of network-wide activities as plans are finalised.",
+    author: { name: "CamCCUL Communications", role: "Communications Department", photo: "" },
+    publishedAt: "2026-08-28",
+    chapter: "Multiple",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Illustration representing International Credit Union Day celebrations",
+      caption: "International Credit Union Day 2026",
+    },
   },
-];
+  {
+    id: "article-1-fr",
+    title: "Événements de Deux Jours Organisés par le Réseau CamCCUL pour la Journée de la Femme 2026",
+    slug: "evenements-deux-jours-journee-femme-2026",
+    language: "fr",
+    translationOf: "article-1",
+    category: "network-news",
+    tags: ["femmes", "chapitres", "formation", "entrepreneuriat", "Fako", "Bafoussam", "Douala", "Yaoundé"],
+    excerpt:
+      "À l’approche de la Journée internationale de la femme 2026, le réseau a mené un programme de deux jours dans les chapitres de Fako, Bafoussam, Douala et Yaoundé — formation à la transformation du jus d’ananas, session d’entrepreneuriat sur le Business Model Canvas, fabrication de beignets comme activité génératrice de revenus, et la deuxième édition de la Table Ronde des Femmes de CamCCUL sur les droits économiques, sociaux et culturels des femmes et des filles.",
+    content:
+      "À l’approche de la Journée internationale de la femme 2026, le réseau CamCCUL a organisé un programme de deux jours dans plusieurs chapitres, réunissant des femmes issues des coopératives de crédit affiliées autour de la formation, du dialogue et de la célébration.\n\nDans les chapitres de Fako, Bafoussam, Douala et Yaoundé, les participantes ont pris part à une formation pratique de transformation agroalimentaire axée sur la production de jus d’ananas — une compétence choisie pour son potentiel de génération de revenus et la disponibilité des matières premières dans ces régions. Une session d’entrepreneuriat sur le Business Model Canvas a doté les participantes d’outils pratiques pour planifier et gérer de petites entreprises, tandis qu’un atelier de fabrication de beignets a offert une autre compétence génératrice de revenus accessible.\n\nLe point fort du programme fut la deuxième édition de la Table Ronde des Femmes de CamCCUL, consacrée aux droits économiques, sociaux et culturels des femmes et des filles. Parmi les intervenantes figuraient Mme Ndagha Cordelia, Sous-Directrice au Ministère de la Promotion de la Femme et de la Famille, et Maître N.S. Tumasang.\n\nUn panel clé a examiné les raisons pour lesquelles les femmes peinent encore à accéder aux prêts des coopératives de crédit — citant les exigences de garantie, les plans d’affaires insuffisants, la mauvaise tenue des registres et la pression de la charge de travail sur le personnel féminin des coopératives comme obstacles persistants. La discussion a débouché sur des recommandations concrètes pour rendre les produits des coopératives de crédit plus accessibles aux femmes.\n\nL’événement s’est clôturé par un gâteau anniversaire, une cérémonie de remise de prix récompensant des gestionnaires exceptionnelles à travers le réseau, et une exposition de produits mettant en valeur les articles fabriqués par des femmes membres des coopératives de crédit affiliées.",
+    author: { name: "CamCCUL Communications", role: "Département Communication", photo: "" },
+    publishedAt: "2026-03-30",
+    chapter: "Multiple",
+    featured: true,
+    heroImage: {
+      url: "",
+      alt: "Participantes à la table ronde de la Journée de la Femme 2026 de CamCCUL",
+      caption: "Déléguées à la deuxième édition de la Table Ronde des Femmes de CamCCUL",
+    },
+  },
+  {
+    id: "article-2-fr",
+    title: "CamCCUL et ses Affiliées Célèbrent la 139e Édition de la Journée Internationale du Travail",
+    slug: "139e-journee-internationale-travail-2025",
+    language: "fr",
+    translationOf: "article-2",
+    category: "network-news",
+    tags: ["chapitres", "personnel", "Kumba", "Buea", "Bafoussam", "Yaoundé", "Ngaoundéré"],
+    excerpt:
+      "CamCCUL et ses affiliées ont célébré la 139e Journée internationale du travail le 1er mai 2025 à Kumba, département du Meme, avec des célébrations parallèles à Buea, Bafoussam, Yaoundé et Ngaoundéré. Dix membres du personnel de CamCCUL ont reçu des médailles d’État.",
+    content:
+      "CamCCUL et ses coopératives de crédit affiliées se sont jointes aux travailleurs de tout le Cameroun pour célébrer la 139e Journée internationale du travail le 1er mai 2025. La célébration principale du réseau s’est tenue à Kumba, chef-lieu du département du Meme, sous l’égide du Préfet, M. Ntou’ou Ndong Chamberlin.\n\nDes célébrations parallèles ont été organisées par les affiliées à Buea, Bafoussam, Yaoundé et Ngaoundéré, reflétant le rayonnement national du mouvement des coopératives de crédit.\n\nLe thème 2025 portait sur le dialogue social et le travail décent pour un Cameroun pacifique — un message qui résonne profondément avec l’engagement du mouvement coopératif envers la démocratie économique et la dignité au travail.\n\nEn reconnaissance de leurs services, une dizaine de membres du personnel de CamCCUL ont reçu des médailles d’État lors des célébrations, décernées dans les catégories or, argent et vermeil. Ces distinctions reflètent la contribution de la Ligue au développement du secteur financier camerounais et le dévouement de son personnel.",
+    author: { name: "Kah Calister T.", role: "Chargé de Communication", photo: "" },
+    publishedAt: "2025-05-07",
+    chapter: "Kumba/Mamfe",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Personnel et affiliées de CamCCUL défilant lors des célébrations de la Journée du Travail à Kumba",
+      caption: "Contingent CamCCUL lors du défilé de la 139e Journée Internationale du Travail à Kumba, département du Meme",
+    },
+  },
+  {
+    id: "article-3-fr",
+    title: "Les Coopératives de Crédit du Chapitre de Kumbo Appelées à Renforcer la Collaboration pour la Croissance",
+    slug: "agm-chapitre-kumbo-2024",
+    language: "fr",
+    translationOf: "article-3",
+    category: "network-news",
+    tags: ["AG", "gouvernance", "Kumbo", "adhésion", "COBAC"],
+    excerpt:
+      "L’Assemblée Générale du Chapitre de Kumbo, tenue le 26 avril 2025, a réuni près de 30 délégués. Le chapitre a clôturé 2024 avec 17 coopératives de crédit et 68 991 membres, contre 63 407 en 2023 — un gain net de 5 584 membres.",
+    content:
+      "L’Assemblée Générale Annuelle 2024 du Chapitre de Kumbo, tenue le 26 avril 2025 à l’Immeuble CamCCUL, Commercial Avenue, Bamenda, a réuni près de 30 délégués des coopératives de crédit membres du chapitre.\n\nLe Président du Chapitre, M. Jaff Sylverius Dinnyuy, a annoncé que le chapitre avait clôturé 2024 avec 17 coopératives de crédit et un total de 68 991 membres, contre 63 407 en 2023 — un gain net de 5 584 membres. Le nombre d’agences est également passé de 65 à 74, signe d’une expansion soutenue du chapitre.\n\nMalgré cette croissance, le Président a signalé deux difficultés majeures : la crise sociopolitique en cours dans certaines parties de la région, et la hausse des taux de délinquance sur les prêts, qui menace la qualité du portefeuille. Il a également exprimé des préoccupations quant à l’ouverture d’agences par certaines coopératives de crédit sans respecter la procédure établie.\n\nLes délégués ont été informés que le Superviseur sortant du Chapitre, M. Tebid Solomon, après neuf années de service, est transféré au Département d’Audit de CamCCUL — un mouvement perçu comme un renforcement de la capacité de contrôle interne de la Ligue.\n\nL’Assemblée Générale a comporté des exposés sur le Régime de Protection Interne, la Gestion des Risques de Crédit, les investissements d’Union Bank, ainsi que les dernières directives de la COBAC affectant les activités des coopératives de crédit.",
+    author: { name: "CamCCUL Communications", role: "Département Communication", photo: "" },
+    publishedAt: "2025-05-03",
+    chapter: "Kumbo",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Délégués à l’Assemblée Générale du Chapitre de Kumbo à l’Immeuble CamCCUL de Bamenda",
+      caption: "Le Président du Chapitre, M. Jaff Sylverius Dinnyuy, s’adressant aux délégués lors de l’Assemblée Générale du Chapitre de Kumbo",
+    },
+  },
+  {
+    id: "article-4-fr",
+    title: "Projet Transfragri : Une Plateforme Numérique pour l’Agribusiness",
+    slug: "projet-transfragri-plateforme-numerique-agribusiness",
+    language: "fr",
+    translationOf: "article-4",
+    category: "projects",
+    tags: ["agriculture", "numérisation", "Alou", "Mbouda", "Agence Française de Développement"],
+    excerpt:
+      "Trois coopératives de crédit pilotes ont reçu des ordinateurs portables, des motos, des smartphones et des équipements pour lancer Cagrib.com, une plateforme numérique reliant directement les agriculteurs aux acheteurs. Le projet est financé par l’Agence Française de Développement dans le cadre du Programme d’Appui à la Stratégie Nationale de Finance Inclusive.",
+    content:
+      "Trois coopératives de crédit pilotes — Alou (AlouCCUL), M’mouck (M’mouckCCUL) et Mbouda Centre (MCCCU) — ont reçu un lot d’équipements les 22 et 23 avril 2025 pour lancer la plateforme numérique agribusiness du projet Transfragri.\n\nLe lot d’équipements comprenait des ordinateurs portables, des motos pour les agents de terrain, des smartphones, des groupes électrogènes de secours, des parasurtenseurs et du matériel audio — des outils choisis pour permettre au personnel des coopératives de crédit d’atteindre les agriculteurs dans les zones reculées et de les intégrer à la plateforme numérique.\n\nLa plateforme, Cagrib.com, est conçue pour permettre aux agriculteurs de commercialiser leurs produits directement auprès des acheteurs sans intermédiaires, éliminant ainsi les intermédiaires qui captent habituellement la plus grande part de la valeur agricole. Elle relie également les acteurs de la chaîne de valeur agricole — des fournisseurs d’intrants aux transformateurs et grossistes — créant ainsi un marché intégré.\n\nUn séminaire de renforcement des capacités de trois jours pour les gestionnaires et points focaux s’est tenu du 24 au 26 avril 2025 au Centre d’Autonomisation des Femmes de Mbouda, afin de garantir que les coopératives de crédit pilotes disposent des compétences nécessaires pour accompagner leurs membres agriculteurs sur la plateforme.\n\nOfficiellement intitulé « Construction du Forum Agribusiness du Réseau CamCCUL », le programme a été créé par le Gouvernement camerounais et financé par l’Agence Française de Développement (AFD). Il relève de l’Unité de Gestion du Programme d’Appui à la Stratégie Nationale de Finance Inclusive (SP-NSIF) et est géré par le Ministère des Finances.\n\nParmi le personnel clé de CamCCUL désigné pour le programme figurent : le Directeur Général Adjoint, M. Awah Richard Ndoh, le Chef du Service des Crédits, M. Konang Godwill, le Coordonnateur de l’Unité Agribusiness, M. Afon Ferdinand, et le développeur de la plateforme, M. Lenjo Valery.",
+    author: { name: "Kah Calister T.", role: "Chargé de Communication", photo: "" },
+    publishedAt: "2025-04-30",
+    chapter: "Bafoussam",
+    featured: true,
+    heroImage: {
+      url: "",
+      alt: "Ordinateurs portables, motos et équipements remis aux coopératives de crédit pilotes pour la plateforme agribusiness Transfragri",
+      caption: "Cérémonie de remise d’équipements au Centre d’Autonomisation des Femmes de Mbouda",
+    },
+  },
+  {
+    id: "article-5-en",
+    title: "CamCCUL Successfully Completes Second Phase of TMO Cycle 7 Payments — Filets Sociaux Project",
+    slug: "filets-sociaux-cycle-7-phase-2-payments",
+    language: "en",
+    translationOf: "article-5",
+    category: "projects",
+    tags: ["inclusion", "partnerships", "Adamawa", "East", "World Bank"],
+    excerpt:
+      "Regular Cash Transfer payments made from 25 to 31 March 2025 in the Adamawa and East regions. 7,000 households served along with 119 community relays. Funded by the World Bank in partnership with the Cameroonian government.",
+    content:
+      "The second phase of payment of the Regular Cash Transfers (TMO) for Cycle 7 of the Filets Sociaux Project was successfully carried out from 25 to 31 March 2025 in the Adamawa and East regions.\n\nBy car, motorbike, and at times even by canoe, this mission was marked by the unwavering commitment of CamCCUL's teams who, travelling through the hinterlands of Cameroon's regions, overcame various obstacles to satisfy the populations awaiting this vital support from the World Bank, in partnership with the Cameroonian government. Thanks to effective collaboration between local stakeholders (village chiefs, mayors, sub-prefects, and law enforcement), the field operators of the social projects — young people recruited by the project to serve as relays in passing information between communities and project officials — and CamCCUL's teams, the operation was able to proceed under the best possible conditions.\n\nThe success of this mission is a testament not only to CamCCUL's effectiveness in honouring its commitments, but also to its dedication to improving the living conditions of vulnerable populations. Beneficiaries expressed their gratitude for this grant, which will help them improve their economic and social situation.\n\nAt the end of the operation, 7,000 households had benefited from the grant, including 3,000 across various communes in the Adamawa region and 4,000 in the East region. In parallel, 119 community relays — young people recruited in villages to facilitate collaboration between households and field operators — also received their payment, broken down as 51 in communes of Adamawa and 68 in those of the East.\n\nThe communes concerned by this initiative include Galim-Tignère, Kontha and Mayo Darlé in Adamawa, and Massamena, Nguelemedouka, Mbang and Nguelebok in the East.\n\nCamCCUL remains committed to pursuing its efforts in support of the economic and social inclusion of vulnerable groups, in partnership with its many partners such as the Adaptive Social Safety Nets and Economic Inclusion Project (PSF-AIE). This initiative forms part of a broader effort to strengthen solidarity and the well-being of the Cameroonian population.",
+    author: { name: "Olivera Ngwete", role: "Communications Officer", photo: "" },
+    publishedAt: "2025-04-26",
+    chapter: "Adamawa",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "CamCCUL teams making payments in rural communities in Adamawa and the East",
+      caption: "Distribution of cash transfers in communities benefiting from the Filets Sociaux Project",
+    },
+  },
+  {
+    id: "article-6-fr",
+    title: "La 40e Édition de la Journée Internationale de la Femme — Yaoundé",
+    slug: "journee-femme-2025-yaounde",
+    language: "fr",
+    translationOf: "article-6",
+    category: "network-news",
+    tags: ["femmes", "Yaoundé", "adhésion", "leadership"],
+    excerpt:
+      "La table ronde tenue dans la salle de la Coopérative de Crédit de Bali a réuni des femmes membres qui ont partagé comment l’épargne en coopérative de crédit a transformé leur vie — de la construction de maisons à l’accession à des postes de direction.",
+    content:
+      "Le chapitre de Yaoundé a marqué la 40e Journée internationale de la femme par une table ronde tenue le 7 mars 2025 dans la salle de la Coopérative de Crédit de Bali.\n\nSous le thème du réseau consacré à l’autonomisation des femmes et au renforcement des communautés, les membres ont partagé des témoignages personnels sur la manière dont l’épargne en coopérative de crédit avait transformé leur vie. Parmi les temps forts figuraient une membre de la Coopérative de Crédit de Menji qui a construit sa propre maison grâce à une épargne disciplinée, la première femme vice-présidente de la Coopérative de Crédit de Jakiri qui a évoqué le franchissement des obstacles au leadership coopératif, et Carine Ngum, Directrice Générale Adjointe de la Coopérative de Crédit d’Akum Zone, qui est revenue sur son parcours professionnel.\n\nGrace Tamfu, première responsable genre de CamCCUL et aujourd’hui Coordonnatrice des Coopératives de Crédit pour les régions de Yaoundé, du Sud et de l’Est, a retracé l’histoire et l’évolution de la participation des femmes au mouvement coopératif.\n\nLa responsable genre Juliette Lum Tangi et l’experte en genre et développement Nicoline Nwenushi Wazeh ont présenté des exposés sur les stratégies d’inclusion financière pour les femmes. Le thème de l’événement a été rédigé par Chiamba Victorine Nke, Cheffe des Ressources Humaines à CamCCUL.",
+    author: { name: "Ruth Enjeh", role: "Chargée de Communication", photo: "" },
+    publishedAt: "2025-03-10",
+    chapter: "Yaoundé",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Participantes à la table ronde de la Journée Internationale de la Femme à Yaoundé",
+      caption: "Membres partageant leurs expériences dans la salle de la Coopérative de Crédit de Bali, Yaoundé",
+    },
+  },
+  {
+    id: "article-7-fr",
+    title: "La 40e Édition de la Journée Internationale de la Femme — Chapitre de Fako",
+    slug: "journee-femme-2025-fako",
+    language: "fr",
+    translationOf: "article-7",
+    category: "network-news",
+    tags: ["femmes", "Fako", "radio", "adhésion"],
+    excerpt:
+      "Dix femmes issues de cinq coopératives de crédit ont participé à une table ronde en direct sur Dream FM Buea. Hepsiba Mukeba, Cheffe du Régime de Protection Interne, a encouragé les auditrices à ouvrir un compte comme cadeau pour la Journée de la Femme.",
+    content:
+      "La 40e édition de la Journée internationale de la femme a été célébrée dans plusieurs chapitres du réseau CamCCUL. Les activités marquant cette journée — tables rondes, débats radiophoniques en direct, sport et marche relais — se sont déroulées le 7 mars 2025 à Fako, Bafoussam, Douala et Yaoundé. La Ligue des Coopératives de Crédit du Cameroun (CamCCUL) EMF COOP-CA a fait de la célébration de cette année un moment particulier, visant entre autres à accroître l’adhésion féminine dans les coopératives de crédit. Les femmes du réseau ont été mobilisées sous le thème « Le Réseau CamCCUL Autonomise les Femmes, Renforce les Communautés : Ensemble Nous Avançons », inspiré du thème mondial.\n\nÀ Fako, dix femmes issues de cinq coopératives de crédit — Tole Tea, Buea Police, Ndungated, Mutengene Savings and Loans, et Buea P&T — ont participé à une table ronde en direct sur Dream FM Buea, 86,9 MHz. Ces femmes enthousiastes, accompagnées de représentantes de CamCCUL, ont partagé leurs histoires de réussite depuis leur adhésion à leurs différentes coopératives de crédit, encourageant leurs consœurs à surmonter la peur, braver les obstacles et ouvrir des comptes dans les coopératives de crédit du réseau CamCCUL afin d’améliorer leur vie et celle de leur famille.\n\nLes invitées de l’émission ont également présenté leurs produits et services au grand public afin d’orienter les adhérentes potentielles. Les intervenantes ont rappelé aux femmes qu’elles sont d’excellentes gestionnaires et occupent des postes importants dans la société, et ont lancé un défi à leurs consœurs : ne plus craindre les prêts, citant des exemples de membres possédant des maisons, des propriétés foncières et dirigeant des affaires prospères grâce à des prêts contractés à faible taux d’intérêt. Au cours de l’émission, la Cheffe du Régime de Protection Interne (RPI), Madame Hepsiba Mukeba, a souligné la disponibilité de CamCCUL à autonomiser les femmes et à renforcer les communautés en 2025. Avant la fin de l’émission, les auditrices — en particulier les femmes — ont été invitées à s’offrir un cadeau pour la Journée de la Femme en ouvrant un compte pour elles-mêmes et leurs proches dans une coopérative de crédit du réseau CamCCUL. Les participantes sont reparties avec des souvenirs offerts par CamCCUL, dont des stylos et des t-shirts. CamCCUL, acteur majeur de la microfinance dans la zone CEMAC, est engagée depuis 1968 dans la lutte contre la pauvreté au Cameroun.",
+    author: { name: "CamCCUL Communications", role: "Département Communication", photo: "" },
+    publishedAt: "2025-03-10",
+    chapter: "Fako",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Femmes des coopératives de crédit du chapitre de Fako lors de l’émission de radio sur Dream FM",
+      caption: "Table ronde en direct sur Dream FM Buea, 86,9 MHz, pour la Journée Internationale de la Femme 2025",
+    },
+  },
+  {
+    id: "article-8-fr",
+    title: "La 40e Édition de la Journée Internationale de la Femme — Chapitre de Bafoussam",
+    slug: "journee-femme-2025-bafoussam",
+    language: "fr",
+    translationOf: "article-8",
+    category: "network-news",
+    tags: ["femmes", "Bafoussam", "sport", "adhésion"],
+    excerpt:
+      "Sport et marche relais à travers Bafoussam avec la BaPCCUL Tyo-ville, sous la conduite du coordonnateur zonal, sous le patronage de la Première Dame de la Région. L’un des objectifs affichés de la célébration 2025 était l’augmentation de l’adhésion féminine.",
+    content:
+      "Le chapitre de Bafoussam a marqué la Journée internationale de la femme 2025 par des activités sportives et une marche relais à travers la ville, organisées en partenariat avec la BaPCCUL Tyo-ville et conduites par le coordonnateur zonal.\n\nL’événement s’est déroulé sous le patronage de la Première Dame de la Région de l’Ouest, conférant à la célébration un poids institutionnel.\n\nL’un des objectifs affichés des activités 2025 était l’augmentation de l’adhésion féminine dans les coopératives de crédit du chapitre. Le caractère public de la marche relais — traversant les rues de Bafoussam — a servi à la fois de célébration et de campagne de sensibilisation, attirant l’attention sur les avantages de l’adhésion aux coopératives de crédit pour les femmes entrepreneures, commerçantes et épargnantes.\n\nLa combinaison d’activité physique, de visibilité communautaire et de sensibilisation à l’inclusion financière a fait de cet événement l’une des célébrations les plus visibles de la Journée de la Femme organisées par le chapitre.",
+    author: { name: "CamCCUL Communications", role: "Département Communication", photo: "" },
+    publishedAt: "2025-03-10",
+    chapter: "Bafoussam",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Femmes participant à la marche relais du chapitre de Bafoussam pour la Journée Internationale de la Femme",
+      caption: "Marche relais à travers Bafoussam marquant la Journée Internationale de la Femme 2025",
+    },
+  },
+  {
+    id: "article-9-en",
+    title: "CamCCUL EMF COOP-CA Celebrates Women Around a Round Table in Douala",
+    slug: "womens-celebration-2025-douala",
+    language: "en",
+    translationOf: "article-9",
+    category: "network-news",
+    tags: ["women", "Douala", "leadership", "financial education"],
+    excerpt:
+      "Meeting on 7 March in the MUPECI hall on the theme of women's empowerment and community strengthening. Panel featuring leaders from Mupeci, Nkenccul, and CamCCUL's Centre for Education and Training.",
+    content:
+      "Women from the financial sector, particularly those from Douala's credit unions, gathered around the theme: 'Women's Empowerment and Community Strengthening: A Path to Collective Prosperity.' This meeting, held on 7 March in the MUPECI hall, was an initiative of the Cameroon Cooperative Credit Union League (CamCCUL) EMF Coop-CA to mark the 40th edition of this celebration, and aimed to strengthen women's engagement in the savings and credit movement.\n\nSeveral sub-themes were addressed during the meeting, including the economic empowerment of women in the financial sector, women's leadership towards equitable representation in decision-making bodies, as well as financial education and women's access to resources. These themes generated strong interest among participants, who came in large numbers from the various credit unions of the economic capital.\n\nA panel of experts led the discussions, made up of Ms. Kemoe Irène, branch manager at Mupeci, Ms. Nji Colette, deputy director at Nkenccul, and Ms. Praxedes Banseka, director of CamCCUL's Centre for Education and Training. Participants had the opportunity to learn financial management techniques, account management, and the fundamental principles of credit education.\n\nThe discussions also allowed the women present to speak out about the obstacles hindering their advancement in society, and particularly in the financial sector. Speakers stressed the crucial importance for women of pursuing training, adopting a collaborative mindset, and providing their children with an equitable education to ensure equal opportunities. They also encouraged their fellow women to overcome complacency and to actively engage in their professional development in order to achieve equality with their male counterparts.\n\nAt the end of this enriching day at MUPECI, participants said they were satisfied and enthusiastic, expressing the hope that the event would not only become an annual gathering but would also inspire similar meetings elsewhere.\n\nThis initiative not only strengthened the network of women in the financial sector, but also paved the way for a collective awareness of issues related to economic empowerment and gender equality. Credit unions are thus positioning themselves as key players in promoting women's leadership and community development in Cameroon.",
+    author: { name: "O.D. Ngwete", role: "Communications Officer", photo: "" },
+    publishedAt: "2025-03-10",
+    chapter: "Douala",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Women participants at the round table for Women's Day in Douala",
+      caption: "Panel of women leaders during the celebration at the MUPECI hall, Douala",
+    },
+  },
+  {
+    id: "article-10-fr",
+    title: "Assemblées Générales des Chapitres CamCCUL 2025",
+    slug: "assemblees-generales-chapitres-2025",
+    language: "fr",
+    translationOf: "article-10",
+    category: "network-news",
+    tags: ["AG", "Kumba/Mamfe", "Douala", "gouvernance"],
+    excerpt:
+      "Couverture des Assemblées Générales Annuelles des chapitres de Kumba/Mamfe et de Douala pour la saison 2025. Rapports détaillés complets incluant synthèses financières, élections et plans stratégiques.",
+    content:
+      "La saison 2025 des Assemblées Générales Annuelles s’est poursuivie à travers les chapitres de CamCCUL, avec la tenue des réunions statutaires des chapitres de Kumba/Mamfe et de Douala.\n\nCes assemblées générales s’inscrivent dans le calendrier de gouvernance du réseau, où chaque chapitre rend compte à ses coopératives de crédit membres de sa performance financière, de sa croissance en matière d’adhésion, de la qualité de son portefeuille de prêts et de sa conformité aux exigences réglementaires de la COBAC. Des élections de chapitre sont également organisées lorsque les mandats sont arrivés à échéance.\n\nL’Assemblée Générale du chapitre de Kumba/Mamfe a porté sur la performance du chapitre au cours du dernier exercice financier, notamment les tendances d’adhésion, la mobilisation de l’épargne et les taux de recouvrement des prêts. Les délégués ont discuté des stratégies pour améliorer la qualité du portefeuille dans un contexte économique difficile.\n\nL’Assemblée Générale du chapitre de Douala s’est concentrée sur les opérations urbaines des coopératives de crédit, la numérisation des services et l’extension de la portée vers les communautés mal desservies de la région du Littoral.\n\nLes rapports détaillés complets des deux assemblées générales — incluant les états financiers audités, les rapports des comités et les résolutions — sont en cours de compilation et seront publiés sous forme de documents complémentaires.",
+    author: { name: "CamCCUL Communications", role: "Département Communication", photo: "" },
+    publishedAt: "2025-05-24",
+    chapter: "Multiple",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Délégués lors d’une Assemblée Générale Annuelle d’un chapitre CamCCUL",
+      caption: "Déroulement des Assemblées Générales de chapitres — saison 2025",
+    },
+  },
+  {
+    id: "article-11-fr",
+    title: "Séminaire Spécialisé pour le Personnel des Coopératives de Crédit",
+    slug: "seminaire-specialise-personnel-cooperatives-2024",
+    language: "fr",
+    translationOf: "article-11",
+    category: "training-events",
+    tags: ["formation", "Nkongsamba", "gestion d’agence", "contrôles internes"],
+    excerpt:
+      "Des gestionnaires d’agence et des contrôleurs internes de huit chapitres se sont réunis à Nkongsamba pour une formation spécialisée sur les opérations des coopératives de crédit et les contrôles internes.",
+    content:
+      "Des gestionnaires d’agence et des contrôleurs internes des chapitres de Bamenda, Kumbo, Nkambe, Fako, Kumba/Mamfe, Bafoussam, Douala et Fundong se sont réunis à Nkongsamba pour un séminaire de formation spécialisée en décembre 2024.\n\nLa formation visait à renforcer l’efficacité opérationnelle et les systèmes de contrôle interne à travers le réseau d’agences. Les sessions ont porté sur les meilleures pratiques en matière de gestion d’agence, les procédures de manipulation des espèces, les normes de service aux membres, les exigences de documentation des prêts et les obligations de conformité à la COBAC.\n\nLe rassemblement de personnel issu de huit chapitres différents a créé des opportunités d’apprentissage entre pairs et d’échange d’expériences pratiques provenant de contextes opérationnels variés — des agences urbaines de Douala aux antennes rurales des régions du Nord-Ouest et de l’Ouest.\n\nCe séminaire s’inscrit dans le programme continu de renforcement des capacités de CamCCUL, qui propose des formations ciblées aux différentes catégories de personnel tout au long de l’année.",
+    author: { name: "CamCCUL Communications", role: "Département Communication", photo: "" },
+    publishedAt: "2024-12-13",
+    chapter: "Multiple",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Personnel des coopératives de crédit assistant au séminaire spécialisé à Nkongsamba",
+      caption: "Participants au séminaire spécialisé pour gestionnaires d’agence et contrôleurs internes, Nkongsamba",
+    },
+  },
+  {
+    id: "article-12-fr",
+    title: "Les Dirigeants de la Microfinance se Réunissent à Douala",
+    slug: "dirigeants-microfinance-douala-2024",
+    language: "fr",
+    translationOf: "article-12",
+    category: "network-news",
+    tags: ["gouvernance", "COBAC", "Douala", "réglementation", "CEMAC"],
+    excerpt:
+      "Les institutions de microfinance de la zone CEMAC se sont réunies à Douala pour aborder la mise en œuvre du Règlement de 2017 et de SESAME 4.0. Le Secrétaire Général de la COBAC a salué le leadership de CamCCUL et promis son soutien au plan de restructuration quinquennal.",
+    content:
+      "Les institutions de microfinance de toute la zone CEMAC se sont réunies à Douala pour une rencontre de haut niveau consacrée à la mise en œuvre du Règlement de 2017 régissant la microfinance et au déploiement de SESAME 4.0, la plateforme de reporting réglementaire.\n\nLe Secrétaire Général de la COBAC, M. Marcel Ondele, s’adressant à l’assemblée, a salué le leadership de CamCCUL dans le secteur des coopératives de crédit et reconnu les efforts de la Ligue pour amener ses affiliées en conformité avec le cadre réglementaire en évolution.\n\nFait particulièrement notable, M. Ondele a publiquement promis le soutien de la COBAC au plan de restructuration quinquennal de CamCCUL — un programme complet conçu pour renforcer la capacité de supervision de la Ligue, moderniser ses opérations et positionner le réseau pour une croissance durable.\n\nLa rencontre a souligné le rôle central que joue CamCCUL en tant que pont entre les coopératives de crédit individuelles et le régulateur régional, traduisant les exigences de la COBAC en orientations pratiques adaptées aux institutions financières coopératives desservant les communautés à travers le Cameroun.",
+    author: { name: "CamCCUL Communications", role: "Département Communication", photo: "" },
+    publishedAt: "2024-11-12",
+    chapter: "Douala",
+    featured: true,
+    heroImage: {
+      url: "",
+      alt: "Dirigeants de la microfinance réunis lors de la conférence CEMAC à Douala",
+      caption: "Le Secrétaire Général de la COBAC, M. Marcel Ondele, s’adressant aux dirigeants de la microfinance à Douala",
+    },
+  },
+  {
+    id: "article-13-fr",
+    title: "Le Personnel de CamCCUL Formé à la Plateforme GIMAC",
+    slug: "formation-plateforme-gimac-2024",
+    language: "fr",
+    translationOf: "article-13",
+    category: "training-events",
+    tags: ["numérisation", "Douala", "comptabilité", "GIMAC"],
+    excerpt:
+      "Formation de deux jours à l’Hôtel Lewat, Douala, animée par des experts de GIMAC avec l’appui de CREDIX-CAM, axée sur les fonctions comptables et de communication en lien avec les objectifs de numérisation du réseau.",
+    content:
+      "Le personnel de CamCCUL a participé à une session de formation de deux jours sur la plateforme GIMAC, tenue à l’Hôtel Lewat à Douala et animée par des experts de GIMAC avec l’appui de CREDIX-CAM.\n\nLa formation a porté sur les modules comptabilité et communication du système GIMAC, dotant le personnel des compétences nécessaires pour tirer parti de la plateforme afin d’améliorer l’efficacité du reporting financier et de la communication interne.\n\nCette initiative s’inscrit dans la stratégie globale de numérisation de CamCCUL, qui vise à moderniser les opérations à travers le réseau — du siège aux coopératives de crédit individuelles — grâce à l’adoption de plateformes technologiques appropriées.\n\nLe format pratique a permis aux participants de travailler directement avec le système sous la supervision d’experts, garantissant qu’ils puissent appliquer immédiatement leurs acquis à leur retour dans leurs bureaux respectifs.",
+    author: { name: "CamCCUL Communications", role: "Département Communication", photo: "" },
+    publishedAt: "2024-11-01",
+    chapter: "Douala",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Personnel de CamCCUL lors de la session de formation à la plateforme GIMAC à l’Hôtel Lewat",
+      caption: "Session de formation à la plateforme GIMAC à l’Hôtel Lewat, Douala",
+    },
+  },
+  {
+    id: "article-14-fr",
+    title: "Formation au Système Bancaire Central Alpha pour le Personnel de Maroua",
+    slug: "formation-alpha-core-banking-maroua-2024",
+    language: "fr",
+    translationOf: "article-14",
+    category: "training-events",
+    tags: ["numérisation", "Maroua", "système bancaire central", "Alpha"],
+    excerpt:
+      "Le personnel de la zone de Maroua a été formé au Système Bancaire Central Alpha afin d’améliorer la prestation de services et l’efficacité opérationnelle.",
+    content:
+      "CamCCUL a organisé un programme de formation pour le personnel de la zone de Maroua sur le Système Bancaire Central Alpha, dans le cadre de la démarche du réseau visant à moderniser les opérations des coopératives de crédit grâce à la technologie.\n\nLa formation visait à améliorer la prestation de services au niveau des agences en dotant le personnel des compétences nécessaires pour utiliser efficacement la plateforme bancaire centrale — de la gestion des comptes des membres au traitement des transactions et au reporting financier.\n\nPour les coopératives de crédit de la région de l’Extrême-Nord, où l’accès physique aux infrastructures bancaires est limité, un système bancaire central fiable revêt une importance particulière. Il permet aux coopératives de crédit de servir leurs membres plus efficacement, de tenir des registres précis et de répondre aux exigences de reporting de la COBAC.\n\nLa formation de Maroua s’inscrit parmi plusieurs initiatives régionales de numérisation déployées à travers le réseau, garantissant que le personnel des 10 régions dispose des compétences et des outils nécessaires pour des services financiers coopératifs modernes.",
+    author: { name: "CamCCUL Communications", role: "Département Communication", photo: "" },
+    publishedAt: "2024-11-01",
+    chapter: "Maroua",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Séance de formation du personnel au Système Bancaire Central Alpha à Maroua",
+      caption: "Formation au Système Bancaire Central Alpha pour le personnel de la zone de Maroua",
+    },
+  },
+  {
+    id: "article-15-fr",
+    title: "Le Principe des Coopératives de Crédit : Les Personnes avant le Profit",
+    slug: "principe-cooperatives-credit-personnes-avant-profit",
+    language: "fr",
+    translationOf: "article-15",
+    category: "insights",
+    tags: ["éducation", "principes coopératifs", "adhésion", "inclusion financière"],
+    excerpt:
+      "Ce qui distingue les coopératives de crédit des banques : la propriété et le contrôle par les membres selon le principe d’une personne, une voix, des services abordables pour les populations mal desservies, et le réinvestissement des bénéfices dans la coopérative.",
+    content:
+      "Les coopératives de crédit sont fondamentalement différentes des banques, et comprendre cette différence est essentiel pour apprécier leur rôle dans le système financier camerounais.\n\nLe principe fondateur est la propriété et le contrôle démocratique par les membres. Dans une coopérative de crédit, chaque membre dispose d’une voix — qu’il ait épargné 5 000 XAF ou 5 000 000 XAF. Ce principe d’une personne, une voix garantit que la coopérative sert les intérêts de l’ensemble de ses membres, et non uniquement des plus gros épargnants. Les banques, en revanche, appartiennent à des actionnaires dont le pouvoir de vote est proportionnel à leur investissement.\n\nLes coopératives de crédit existent pour servir les populations mal desservies. Alors que les banques se concentrent sur une clientèle rentable, les coopératives de crédit ont été créées précisément pour atteindre les personnes que le secteur bancaire formel néglige — agriculteurs, commerçants, enseignants et petits entrepreneurs ayant besoin de services financiers abordables.\n\nLes bénéfices sont réinvestis, et non extraits. Lorsqu’une coopérative de crédit dégage un excédent, cet argent revient aux membres sous forme de meilleurs taux d’épargne, de taux d’intérêt réduits sur les prêts, de frais moindres ou de dividendes. Aucun actionnaire extérieur ne prélève de bénéfices au détriment de la communauté.\n\nEnfin, les coopératives de crédit coopèrent entre elles. À travers des réseaux comme CamCCUL, elles partagent ressources, formation et soutien de liquidité. Cette coopération entre coopératives — le sixième des principes coopératifs internationaux — rend chaque coopérative de crédit plus forte qu’elle ne pourrait jamais l’être seule.",
+    author: { name: "CamCCUL Communications", role: "Département Communication", photo: "" },
+    publishedAt: "2024-07-16",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Illustration représentant les principes coopératifs des coopératives de crédit fondés sur la propriété démocratique des membres",
+      caption: "Les coopératives de crédit placent les personnes avant le profit — un principe fondateur du mouvement coopératif",
+    },
+  },
+  {
+    id: "article-16-fr",
+    title: "Les Avantages de l’Affiliation au Réseau CamCCUL",
+    slug: "avantages-affiliation-reseau-camccul",
+    language: "fr",
+    translationOf: "article-16",
+    category: "insights",
+    tags: ["affiliées", "adhésion", "gouvernance", "supervision"],
+    excerpt:
+      "Pour les coopératives de crédit envisageant l’affiliation : contrôle et supervision, formation et développement des compétences, accès à des prêts de liquidité et d’investissement à de meilleures conditions, et stabilité financière grâce aux fonds de garantie du réseau.",
+    content:
+      "Les coopératives de crédit qui s’affilient au réseau CamCCUL accèdent à un système de soutien qu’aucune coopérative indépendante ne peut reproduire seule.\n\nLe premier avantage est le contrôle et la supervision. CamCCUL fournit le cadre réglementaire garantissant qu’une coopérative de crédit opère de manière sûre et transparente, protégeant l’épargne des membres et préservant la confiance du public. Cette supervision n’est pas une contrainte — c’est un gage de qualité qui rassure les membres quant à la sécurité de leur argent.\n\nLa formation et le développement des compétences constituent le second pilier. Grâce aux programmes de renforcement des capacités de CamCCUL, le personnel et les administrateurs des coopératives de crédit affiliées reçoivent une formation professionnelle en gestion financière, gouvernance, gestion des risques et service aux membres. Ce développement professionnel continu élève le niveau de service dans l’ensemble du réseau.\n\nL’accès à des prêts de liquidité et d’investissement à de meilleures conditions constitue un avantage pratique qui a un impact direct sur la capacité d’une coopérative de crédit à servir ses membres. Les ressources mutualisées du réseau permettent aux coopératives de crédit individuelles d’accéder à des financements qu’elles ne pourraient obtenir seules.\n\nEnfin, la stabilité financière apportée par les fonds de garantie du réseau constitue un filet de sécurité. En période de difficulté — qu’elle résulte de chocs économiques, de catastrophes naturelles ou de défis opérationnels — le réseau soutient ses affiliées. Cette sécurité collective incarne concrètement le principe coopératif de la coopération entre coopératives.",
+    author: { name: "CamCCUL Communications", role: "Département Communication", photo: "" },
+    publishedAt: "2024-06-10",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Illustration montrant les avantages de l’affiliation au réseau CamCCUL pour les coopératives de crédit",
+      caption: "Les avantages de l’affiliation au réseau CamCCUL — supervision, formation, liquidité et stabilité",
+    },
+  },
+  {
+    id: "article-17-fr",
+    title: "Annonce des Délais de Déclaration du T3 2026",
+    slug: "delais-declaration-t3-2026",
+    language: "fr",
+    translationOf: "article-17",
+    category: "Circular",
+    tags: ["déclaration", "conformité", "circulaire"],
+    excerpt:
+      "Les coopératives de crédit affiliées sont rappelées des prochains délais de déclaration financière du T3 2026 et des documents requis pour la soumission.",
+    content:
+      "Toutes les coopératives de crédit affiliées sont rappelées des délais de déclaration pour le troisième trimestre 2026. Les chapitres doivent veiller à ce que les états financiers, les mises à jour d’adhésion et les synthèses de portefeuille de prêts soient soumis par les canaux habituels avant la date limite indiquée.\n\nLes coopératives de crédit anticipant des difficultés à respecter le délai doivent en informer leur superviseur de chapitre le plus tôt possible afin que des dispositions appropriées puissent être prises.\n\nDes orientations complémentaires sur la documentation requise et le format de soumission seront communiquées aux bureaux de chapitre en temps voulu.",
+    author: { name: "CamCCUL Communications", role: "Département Communication", photo: "" },
+    publishedAt: "2026-07-15",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Illustration représentant la déclaration financière trimestrielle des coopératives de crédit",
+      caption: "Délais de déclaration du T3 2026",
+    },
+  },
+  {
+    id: "article-18-fr",
+    title: "Formation à la Plateforme Numérique pour la Région du Nord-Ouest",
+    slug: "formation-plateforme-numerique-nord-ouest",
+    language: "fr",
+    translationOf: "article-18",
+    category: "Training",
+    tags: ["numérisation", "formation", "Nord-Ouest"],
+    excerpt:
+      "Un programme de formation sur le portail numérique des membres est organisé pour le personnel des coopératives de crédit de la Région du Nord-Ouest.",
+    content:
+      "CamCCUL organise un programme de formation sur le portail numérique des membres pour le personnel des coopératives de crédit de la Région du Nord-Ouest. Les sessions porteront sur l’utilisation quotidienne de la plateforme, le support des comptes membres et la résolution des problèmes courants.\n\nLa participation est ouverte au personnel d’agence et aux points focaux informatiques des coopératives de crédit affiliées de la région. Les bureaux de chapitre communiqueront le calendrier et les détails du lieu avant les dates de formation.",
+    author: { name: "CamCCUL Communications", role: "Département Communication", photo: "" },
+    publishedAt: "2026-07-20",
+    chapter: "Bamenda",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Illustration représentant la formation au portail numérique pour le personnel des coopératives de crédit",
+      caption: "Formation au portail numérique pour le personnel de la Région du Nord-Ouest",
+    },
+  },
+  {
+    id: "article-19-fr",
+    title: "Mise à Jour des Exigences de Ratio de Liquidité",
+    slug: "mise-a-jour-exigences-ratio-liquidite",
+    language: "fr",
+    translationOf: "article-19",
+    category: "COBAC",
+    tags: ["COBAC", "liquidité", "réglementation"],
+    excerpt:
+      "Les coopératives de crédit affiliées doivent noter la mise à jour des exigences de ratio de liquidité émise conformément aux normes prudentielles de la COBAC.",
+    content:
+      "Les coopératives de crédit affiliées sont informées de la mise à jour des exigences de ratio de liquidité émise conformément aux normes prudentielles en vigueur de la COBAC. Les coopératives de crédit doivent examiner leur position de liquidité actuelle au regard des seuils révisés et prendre toute mesure corrective nécessaire.\n\nLes superviseurs de chapitre seront disponibles pour accompagner les affiliées dans l’évaluation de leur conformité et le traitement de tout écart identifié. Des orientations détaillées sur la mise en œuvre suivront par les canaux habituels de communication réglementaire.",
+    author: { name: "CamCCUL Communications", role: "Département Communication", photo: "" },
+    publishedAt: "2026-07-25",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Illustration représentant les exigences prudentielles de liquidité pour les coopératives de crédit",
+      caption: "Mise à jour des exigences de ratio de liquidité",
+    },
+  },
+  {
+    id: "article-20-fr",
+    title: "Assemblée Générale Annuelle 2026 — Avis aux Membres",
+    slug: "assemblee-generale-annuelle-2026-avis",
+    language: "fr",
+    translationOf: "article-20",
+    category: "Announcement",
+    tags: ["AG", "gouvernance", "annonce"],
+    excerpt:
+      "Avis est donné de l’Assemblée Générale Annuelle 2026. Les coopératives de crédit membres sont invitées à confirmer la présence de leurs délégués avant la date.",
+    content:
+      "Avis est par la présente donné de l’Assemblée Générale Annuelle 2026 du réseau. Les coopératives de crédit membres sont invitées à confirmer la présence de leurs délégués avant la date prévue, par l’intermédiaire de leurs bureaux de chapitre respectifs.\n\nL’ordre du jour comprendra la présentation des états financiers annuels, les rapports des comités, ainsi que toute résolution soumise par les coopératives de crédit affiliées. De plus amples informations sur le lieu et l’ordre du jour seront communiquées à l’approche de la date.",
+    author: { name: "CamCCUL Communications", role: "Département Communication", photo: "" },
+    publishedAt: "2026-08-01",
+    chapter: "Multiple",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Illustration représentant un avis d’assemblée générale annuelle",
+      caption: "Assemblée Générale Annuelle 2026 — avis aux membres",
+    },
+  },
+  {
+    id: "article-21-fr",
+    title: "Journée Portes Ouvertes des Coopératives de Crédit — Bamenda",
+    slug: "journee-portes-ouvertes-bamenda",
+    language: "fr",
+    translationOf: "article-21",
+    category: "Event",
+    tags: ["adhésion", "Bamenda", "événement"],
+    excerpt:
+      "Une journée portes ouvertes est organisée à Bamenda pour présenter au grand public l’adhésion aux coopératives de crédit et les services proposés.",
+    content:
+      "Une journée portes ouvertes est organisée à Bamenda pour présenter au grand public l’adhésion aux coopératives de crédit et l’éventail de services proposés par les coopératives de crédit affiliées de la région. Les visiteurs pourront échanger avec le personnel des coopératives de crédit sur l’ouverture de compte, les produits d’épargne et les options de prêt.\n\nL’événement est ouvert au public et s’inscrit dans les efforts continus du réseau pour promouvoir l’inclusion financière dans la région.",
+    author: { name: "CamCCUL Communications", role: "Département Communication", photo: "" },
+    publishedAt: "2026-08-05",
+    chapter: "Bamenda",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Illustration représentant une journée portes ouvertes communautaire des coopératives de crédit",
+      caption: "Journée Portes Ouvertes des Coopératives de Crédit, Bamenda",
+    },
+  },
+  {
+    id: "article-22-fr",
+    title: "Publication de Nouvelles Directives de Conformité LBC/FT",
+    slug: "nouvelles-directives-conformite-lbc-ft",
+    language: "fr",
+    translationOf: "article-22",
+    category: "Circular",
+    tags: ["conformité", "LBC", "circulaire"],
+    excerpt:
+      "De nouvelles directives de conformité en matière de lutte contre le blanchiment de capitaux et le financement du terrorisme ont été publiées à l’intention des coopératives de crédit affiliées.",
+    content:
+      "De nouvelles directives de conformité en matière de lutte contre le blanchiment de capitaux et le financement du terrorisme (LBC/FT) ont été publiées à l’intention de toutes les coopératives de crédit affiliées. Les coopératives de crédit sont tenues d’examiner leurs procédures internes au regard de ces nouvelles orientations et de veiller à ce que leur personnel soit dûment informé.\n\nLes bureaux de chapitre coordonneront des sessions de suivi pour accompagner les affiliées dans l’alignement de leurs procédures de conformité sur les nouvelles exigences.",
+    author: { name: "CamCCUL Communications", role: "Département Communication", photo: "" },
+    publishedAt: "2026-08-10",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Illustration représentant les orientations de conformité en matière de lutte contre le blanchiment de capitaux",
+      caption: "Nouvelles directives de conformité LBC/FT",
+    },
+  },
+  {
+    id: "article-23-fr",
+    title: "Atelier sur la Gestion du Portefeuille de Prêts",
+    slug: "atelier-gestion-portefeuille-prets",
+    language: "fr",
+    translationOf: "article-23",
+    category: "Training",
+    tags: ["formation", "portefeuille de prêts", "gestion des risques"],
+    excerpt:
+      "Un atelier sur la gestion du portefeuille de prêts est organisé pour le personnel de crédit des coopératives, portant sur le contrôle de la délinquance et les stratégies de recouvrement.",
+    content:
+      "Un atelier sur la gestion du portefeuille de prêts est organisé pour le personnel de crédit des coopératives affiliées. Les sessions porteront sur le suivi du portefeuille, le contrôle de la délinquance et les stratégies de recouvrement, en mettant l’accent sur des outils pratiques applicables au quotidien.\n\nLes coopératives de crédit sont invitées à désigner des agents de crédit et des gestionnaires d’agence pour y participer. Les modalités d’inscription seront communiquées par les bureaux de chapitre.",
+    author: { name: "CamCCUL Communications", role: "Département Communication", photo: "" },
+    publishedAt: "2026-08-14",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Illustration représentant un atelier de formation à la gestion du portefeuille de prêts",
+      caption: "Atelier de gestion du portefeuille de prêts pour le personnel de crédit",
+    },
+  },
+  {
+    id: "article-24-fr",
+    title: "Mise à Jour du Cadre d’Adéquation des Fonds Propres",
+    slug: "mise-a-jour-cadre-adequation-fonds-propres",
+    language: "fr",
+    translationOf: "article-24",
+    category: "COBAC",
+    tags: ["COBAC", "adéquation des fonds propres", "réglementation"],
+    excerpt:
+      "Les coopératives de crédit affiliées sont informées d’une mise à jour du cadre d’adéquation des fonds propres conformément aux normes prudentielles de la COBAC.",
+    content:
+      "Les coopératives de crédit affiliées sont informées d’une mise à jour du cadre d’adéquation des fonds propres applicable en vertu des normes prudentielles en vigueur de la COBAC. Les coopératives de crédit doivent évaluer leur position actuelle en fonds propres au regard du cadre mis à jour et planifier en conséquence.\n\nDes orientations sur les délais de mise en œuvre et les attentes en matière de déclaration seront communiquées aux bureaux de chapitre en temps voulu.",
+    author: { name: "CamCCUL Communications", role: "Département Communication", photo: "" },
+    publishedAt: "2026-08-18",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Illustration représentant les exigences réglementaires d’adéquation des fonds propres",
+      caption: "Mise à jour du cadre d’adéquation des fonds propres",
+    },
+  },
+  {
+    id: "article-25-fr",
+    title: "Confirmation de la Reconduction du Président du Conseil d’Administration",
+    slug: "reconduction-president-conseil-administration",
+    language: "fr",
+    translationOf: "article-25",
+    category: "Announcement",
+    tags: ["gouvernance", "leadership", "annonce"],
+    excerpt:
+      "Le réseau confirme la reconduction du Président du Conseil d’Administration pour un nouveau mandat, conformément aux procédures de gouvernance applicables.",
+    content:
+      "Le réseau confirme la reconduction du Président du Conseil d’Administration pour un nouveau mandat, conformément aux procédures de gouvernance prévues par les statuts du réseau. Le Conseil a exprimé sa confiance dans la continuité du leadership alors que le réseau poursuit ses priorités stratégiques actuelles.\n\nLes coopératives de crédit membres seront tenues informées de toute question de gouvernance connexe par les canaux habituels.",
+    author: { name: "CamCCUL Communications", role: "Département Communication", photo: "" },
+    publishedAt: "2026-08-22",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Illustration représentant la gouvernance du conseil d’administration et les annonces de leadership",
+      caption: "Confirmation de la reconduction du Président du Conseil d’Administration",
+    },
+  },
+  {
+    id: "article-26-fr",
+    title: "Journée Internationale des Coopératives de Crédit 2026",
+    slug: "journee-internationale-cooperatives-credit-2026",
+    language: "fr",
+    translationOf: "article-26",
+    category: "Event",
+    tags: ["adhésion", "événement", "mouvement coopératif"],
+    excerpt:
+      "CamCCUL et ses coopératives de crédit affiliées marqueront la Journée Internationale des Coopératives de Crédit 2026 par des activités organisées à travers les chapitres du réseau.",
+    content:
+      "CamCCUL et ses coopératives de crédit affiliées marqueront la Journée Internationale des Coopératives de Crédit 2026 par des activités organisées à travers les chapitres du réseau, célébrant le mouvement coopératif et sa contribution à l’inclusion financière.\n\nLes chapitres sont encouragés à organiser des célébrations locales, et les coopératives de crédit membres seront informées des activités à l’échelle du réseau à mesure que les plans seront finalisés.",
+    author: { name: "CamCCUL Communications", role: "Département Communication", photo: "" },
+    publishedAt: "2026-08-28",
+    chapter: "Multiple",
+    featured: false,
+    heroImage: {
+      url: "",
+      alt: "Illustration représentant les célébrations de la Journée Internationale des Coopératives de Crédit",
+      caption: "Journée Internationale des Coopératives de Crédit 2026",
+    },
+  },];
 
 const RESOURCE_TITLE_PLACEHOLDER: LocalizedText = {
   en: "[Document Title — to be provided by CamCCUL]",

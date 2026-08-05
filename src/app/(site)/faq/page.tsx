@@ -188,11 +188,11 @@ export default function FaqPage() {
         ]}
       />
 
-      <section className="bg-gray-50 dark:bg-gray-900 min-h-screen py-12">
+      <section className="bg-gray-50 min-h-screen py-12">
         <div className="max-w-3xl mx-auto px-4">
           {sectionsWithOffsets.map((section) => (
             <Fragment key={section.title.en}>
-              <h2 className="text-lg font-display font-bold text-primary-900 dark:text-white mt-12 mb-4 first:mt-0">
+              <h2 className="text-lg font-display font-bold text-primary-900 mt-12 mb-4 first:mt-0">
                 {localize(section.title, language)}
               </h2>
               {section.items.map((item, itemIdx) => {
@@ -204,20 +204,20 @@ export default function FaqPage() {
                       type="button"
                       onClick={() => setOpenIndex(isOpen ? null : index)}
                       aria-expanded={isOpen}
-                      className="w-full text-left flex items-center justify-between py-5 px-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl mb-3 hover:border-primary-300 dark:hover:border-primary-600 transition-colors shadow-sm"
+                      className="w-full text-left flex items-center justify-between py-5 px-6 bg-white border border-gray-200 rounded-xl mb-3 hover:border-primary-300 transition-colors shadow-sm"
                     >
-                      <span className="font-semibold text-primary-900 dark:text-white pr-8">
+                      <span className="font-semibold text-primary-900 pr-8">
                         {localize(item.q, language)}
                       </span>
                       <ChevronDown
                         className={cn(
-                          "h-5 w-5 text-gray-400 dark:text-gray-500 shrink-0 transition-transform duration-200",
+                          "h-5 w-5 text-gray-400 shrink-0 transition-transform duration-200",
                           isOpen && "rotate-180"
                         )}
                       />
                     </button>
                     {isOpen && (
-                      <div className="bg-white dark:bg-gray-800 border-x border-b border-gray-200 dark:border-gray-700 rounded-b-xl px-6 pb-5 -mt-3 pt-5 text-gray-600 dark:text-gray-300 leading-relaxed">
+                      <div className="bg-white border-x border-b border-gray-200 rounded-b-xl px-6 pb-5 -mt-3 pt-5 text-gray-600 leading-relaxed">
                         {localize(item.a, language)}
                       </div>
                     )}

@@ -73,18 +73,18 @@ export default function ContactPage() {
     <>
       <PageHero title={t("contact_page_title")} subtitle={t("contact_page_subtitle")} />
 
-      <div className="bg-gray-50 dark:bg-gray-900 py-20">
+      <div className="bg-gray-50 py-20">
         <div className="max-w-5xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="md:col-span-2">
               <Card className="p-8">
                 {status === "success" ? (
-                  <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-8 text-center">
+                  <div className="bg-green-50 border border-green-200 rounded-xl p-8 text-center">
                     <CheckCircle2 className="h-12 w-12 text-green-500 mx-auto" />
-                    <h2 className="text-2xl font-bold text-green-800 dark:text-green-300 mt-4">
+                    <h2 className="text-2xl font-bold text-green-800 mt-4">
                       {t("contact_thank_you")}
                     </h2>
-                    <p className="text-green-600 dark:text-green-400 mt-2">
+                    <p className="text-green-600 mt-2">
                       {t("contact_thank_you_message")}
                     </p>
                     <Button
@@ -102,9 +102,9 @@ export default function ContactPage() {
                 ) : (
                   <>
                     {status === "error" && (
-                      <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 flex gap-3 mb-6">
+                      <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex gap-3 mb-6">
                         <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
-                        <p className="text-red-700 dark:text-red-300 text-sm">
+                        <p className="text-red-700 text-sm">
                           {t("contact_error_message")}
                         </p>
                       </div>
@@ -114,7 +114,7 @@ export default function ContactPage() {
                       <div className="space-y-1 mb-5">
                         <label
                           htmlFor="name"
-                          className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                          className="text-sm font-medium text-gray-700"
                         >
                           {t("contact_label_name")}
                         </label>
@@ -122,7 +122,7 @@ export default function ContactPage() {
                           id="name"
                           type="text"
                           disabled={status === "submitting"}
-                          className="w-full border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition disabled:opacity-50"
+                          className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition disabled:opacity-50"
                           {...register("name")}
                         />
                         <p className="text-xs text-red-500 min-h-[16px]">
@@ -133,7 +133,7 @@ export default function ContactPage() {
                       <div className="space-y-1 mb-5">
                         <label
                           htmlFor="email"
-                          className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                          className="text-sm font-medium text-gray-700"
                         >
                           {t("contact_label_email")}
                         </label>
@@ -141,7 +141,7 @@ export default function ContactPage() {
                           id="email"
                           type="email"
                           disabled={status === "submitting"}
-                          className="w-full border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition disabled:opacity-50"
+                          className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition disabled:opacity-50"
                           {...register("email")}
                         />
                         <p className="text-xs text-red-500 min-h-[16px]">
@@ -152,7 +152,7 @@ export default function ContactPage() {
                       <div className="space-y-1 mb-5">
                         <label
                           htmlFor="subject"
-                          className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                          className="text-sm font-medium text-gray-700"
                         >
                           {t("contact_label_subject")}
                         </label>
@@ -160,7 +160,7 @@ export default function ContactPage() {
                           id="subject"
                           type="text"
                           disabled={status === "submitting"}
-                          className="w-full border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition disabled:opacity-50"
+                          className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition disabled:opacity-50"
                           {...register("subject")}
                         />
                         <p className="text-xs text-red-500 min-h-[16px]">
@@ -171,7 +171,7 @@ export default function ContactPage() {
                       <div className="space-y-1 mb-5">
                         <label
                           htmlFor="message"
-                          className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                          className="text-sm font-medium text-gray-700"
                         >
                           {t("contact_label_message")}
                         </label>
@@ -179,7 +179,7 @@ export default function ContactPage() {
                           id="message"
                           rows={5}
                           disabled={status === "submitting"}
-                          className="w-full border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition disabled:opacity-50"
+                          className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition disabled:opacity-50"
                           {...register("message")}
                         />
                         <p className="text-xs text-red-500 min-h-[16px]">
@@ -211,48 +211,48 @@ export default function ContactPage() {
 
             <div className="md:col-span-1">
               <Card className="p-6 h-fit sticky top-24">
-                <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-4">
+                <h3 className="font-semibold text-lg text-gray-900 mb-4">
                   {t("contact_info_title")}
                 </h3>
 
                 {infoItems.map(({ icon: Icon, label, value }) => (
                   <div key={label} className="flex gap-3 mb-4">
-                    <div className="bg-primary-100 dark:bg-primary-900/40 rounded-full p-2 h-9 w-9 text-primary-600 dark:text-primary-300 flex-shrink-0 flex items-center justify-center">
+                    <div className="bg-primary-100 rounded-full p-2 h-9 w-9 text-primary-600 flex-shrink-0 flex items-center justify-center">
                       <Icon className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">
+                      <p className="text-xs text-gray-500 uppercase">
                         {label}
                       </p>
-                      <p className="text-sm font-medium text-primary-900 dark:text-white">
+                      <p className="text-sm font-medium text-primary-900">
                         {value}
                       </p>
                     </div>
                   </div>
                 ))}
 
-                <div className="my-4 border-t border-gray-200 dark:border-gray-800" />
+                <div className="my-4 border-t border-gray-200" />
 
-                <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                <h4 className="text-sm font-semibold text-gray-900 mb-2">
                   {t("contact_regional_offices_title")}
                 </h4>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
+                <p className="text-xs text-gray-500">
                   {t("contact_regional_offices_text")}
                 </p>
 
-                <div className="my-4 border-t border-gray-200 dark:border-gray-800" />
+                <div className="my-4 border-t border-gray-200" />
 
-                <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
+                <h4 className="text-sm font-semibold text-gray-900 mb-3">
                   {t("contact_follow_us_online")}
                 </h4>
                 <a
                   href={CAMCCUL_FACEBOOK_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  className="flex items-center gap-3 p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
                 >
                   <FacebookIcon className="h-5 w-5 text-[#1877F2] shrink-0" />
-                  <span className="text-sm font-medium text-primary-900 dark:text-white">
+                  <span className="text-sm font-medium text-primary-900">
                     {t("contact_facebook_link_text")}
                   </span>
                   <ExternalLink className="h-3 w-3 text-gray-400 ml-auto shrink-0" />

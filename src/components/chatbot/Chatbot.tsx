@@ -179,7 +179,7 @@ export function Chatbot() {
         FAB_POSITION_CLASS,
         "origin-bottom-right animate-fade-in",
         "w-80 sm:w-96 max-[400px]:w-[calc(100vw-2rem)] h-[min(24rem,80dvh)]",
-        "bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700",
+        "bg-white rounded-2xl shadow-2xl border border-gray-200",
         "flex flex-col overflow-hidden"
       )}
     >
@@ -198,14 +198,14 @@ export function Chatbot() {
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-950">
+      <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
         {messages.map((message, index) => (
           <div
             key={index}
             className={cn(
               "px-4 py-3 text-sm max-w-[85%] animate-fade-in",
               message.role === "bot"
-                ? "bg-white dark:bg-gray-800 rounded-2xl rounded-bl-md text-gray-800 dark:text-gray-200 shadow-sm mr-auto"
+                ? "bg-white rounded-2xl rounded-bl-md text-gray-800 shadow-sm mr-auto"
                 : "bg-primary-500 text-white rounded-2xl rounded-br-md ml-auto"
             )}
           >
@@ -213,7 +213,7 @@ export function Chatbot() {
           </div>
         ))}
         {isTyping && (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl rounded-bl-md px-4 py-3 text-sm text-gray-400 dark:text-gray-500 shadow-sm max-w-[85%] mr-auto animate-fade-in">
+          <div className="bg-white rounded-2xl rounded-bl-md px-4 py-3 text-sm text-gray-400 shadow-sm max-w-[85%] mr-auto animate-fade-in">
             {t("chatbot_typing")}
           </div>
         )}
@@ -222,7 +222,7 @@ export function Chatbot() {
 
       <form
         onSubmit={handleSubmit}
-        className="border-t border-gray-200 dark:border-gray-700 p-3 flex gap-2 bg-white dark:bg-gray-900 rounded-b-2xl shrink-0"
+        className="border-t border-gray-200 p-3 flex gap-2 bg-white rounded-b-2xl shrink-0"
       >
         <input
           ref={inputRef}
@@ -231,7 +231,7 @@ export function Chatbot() {
           onChange={(e) => setInput(e.target.value)}
           placeholder={t("chatbot_placeholder")}
           aria-label={t("chatbot_input_aria")}
-          className="flex-1 border border-gray-300 dark:border-gray-600 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-800 dark:text-white placeholder:text-gray-400"
+          className="flex-1 border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 placeholder:text-gray-400"
         />
         <button
           type="submit"

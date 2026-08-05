@@ -9,16 +9,16 @@ export default function NotFound() {
   const { t } = useLanguage();
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="text-center max-w-md mx-auto">
-        <Building2 className="h-20 w-20 text-gray-300 dark:text-gray-700 mx-auto" />
-        <p className="font-display text-7xl font-bold text-primary-900 dark:text-white mt-6 tracking-tight">
+        <Building2 className="h-20 w-20 text-gray-300 mx-auto" />
+        <p className="font-display text-7xl font-bold text-primary-900 mt-6 tracking-tight">
           404
         </p>
-        <h1 className="text-xl font-semibold text-gray-600 dark:text-gray-300 mt-2">
+        <h1 className="text-xl font-semibold text-gray-600 mt-2">
           {t("notfound_title")}
         </h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-3 max-w-sm mx-auto leading-relaxed">
+        <p className="text-sm text-gray-500 mt-3 max-w-sm mx-auto leading-relaxed">
           {t("notfound_message")}
         </p>
 

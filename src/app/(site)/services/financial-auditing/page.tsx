@@ -61,35 +61,35 @@ export default function FinancialAuditingPage() {
       />
 
       {/* SECTION 1: OVERVIEW */}
-      <section className="bg-white dark:bg-gray-950 py-20">
+      <section className="bg-white py-20">
         <div className="max-w-4xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="md:col-span-2">
-              <h2 className="font-display text-2xl font-bold text-primary-900 dark:text-white mb-4">
+              <h2 className="font-display text-2xl font-bold text-primary-900 mb-4">
                 {language === "fr" ? "Une Transparence Digne de Confiance" : "Transparency You Can Trust"}
               </h2>
-              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+              <p className="text-gray-700 leading-relaxed mb-4">
                 {language === "fr"
                   ? "L'audit financier est la pierre angulaire de la confiance au sein du mouvement des coopératives de crédit. Chez CamCCUL, notre équipe d'audit mène des examens approfondis et indépendants des états financiers, des contrôles internes et des procédures opérationnelles de chaque affiliée. Nos audits garantissent aux membres, régulateurs et partenaires que les fonds des coopératives sont gérés de manière responsable et transparente."
                   : "Financial auditing is the cornerstone of trust in the cooperative credit union movement. At CamCCUL, our audit team conducts thorough, independent examinations of every affiliate's financial statements, internal controls, and operational procedures. Our audits provide assurance to members, regulators, and partners that credit union funds are managed responsibly and transparently."}
               </p>
-              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+              <p className="text-gray-700 leading-relaxed mb-4">
                 {language === "fr"
                   ? "Nous allons au-delà de la simple vérification des chiffres. Nos auditeurs évaluent la qualité des portefeuilles de prêts, vérifient l'existence et l'évaluation des actifs, testent les environnements de contrôle interne et évaluent la conformité à la fois avec la réglementation de la COBAC et les politiques propres à chaque coopérative. Chaque audit se conclut par des recommandations concrètes d'amélioration."
                   : "We go beyond checking numbers. Our auditors assess the quality of loan portfolios, verify the existence and valuation of assets, test internal control environments, and evaluate compliance with both COBAC regulations and each credit union's own policies. Every audit concludes with actionable recommendations for improvement."}
               </p>
-              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+              <p className="text-gray-700 leading-relaxed">
                 {language === "fr"
                   ? "Notre cycle d'audit comprend des audits statutaires annuels pour toutes les affiliées, des examens trimestriels pour les établissements à risque plus élevé, et des enquêtes spéciales en cas de soupçon d'irrégularités. Nous maintenons une approche basée sur le risque — en allouant davantage de ressources d'audit aux coopératives disposant d'un actif plus important, d'opérations complexes ou de vulnérabilités identifiées."
                   : "Our audit cycle includes annual statutory audits for all affiliates, quarterly reviews for higher-risk institutions, and special investigations when irregularities are suspected. We maintain a risk-based approach — allocating more audit resources to credit unions with larger asset bases, complex operations, or identified vulnerabilities."}
               </p>
             </div>
             <div className="md:col-span-1">
-              <div className="bg-gray-50 dark:bg-gray-900 rounded-xl p-6 sticky top-24">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
+              <div className="bg-gray-50 rounded-xl p-6 sticky top-24">
+                <h3 className="font-semibold text-gray-900 mb-3">
                   {language === "fr" ? "Portée de l'Audit" : "Audit Coverage"}
                 </h3>
-                <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                <ul className="space-y-2 text-sm text-gray-600">
                   {auditCoverage.map((item) => (
                     <li key={item.en}>{localize(item, language)}</li>
                   ))}
@@ -101,19 +101,19 @@ export default function FinancialAuditingPage() {
       </section>
 
       {/* SECTION 2: OUR AUDIT METHODOLOGY */}
-      <section className="bg-gray-50 dark:bg-gray-900 py-20">
+      <section className="bg-gray-50 py-20">
         <div className="max-w-5xl mx-auto px-4">
           <SectionHeader align="center" title={language === "fr" ? "Comment Nous Auditons" : "How We Audit"} />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
             {methodology.map((item) => (
               <Card key={item.title.en} className="p-6">
-                <div className="rounded-full p-3 h-12 w-12 bg-primary-100 dark:bg-primary-900/40 text-primary-600 dark:text-primary-300 flex items-center justify-center mb-4">
+                <div className="rounded-full p-3 h-12 w-12 bg-primary-100 text-primary-600 flex items-center justify-center mb-4">
                   <item.icon className="h-6 w-6" />
                 </div>
-                <h3 className="font-display font-semibold text-lg text-primary-900 dark:text-white mb-2">
+                <h3 className="font-display font-semibold text-lg text-primary-900 mb-2">
                   {localize(item.title, language)}
                 </h3>
-                <p className="text-gray-600 dark:text-gray-300 text-sm">
+                <p className="text-gray-600 text-sm">
                   {localize(item.description, language)}
                 </p>
               </Card>
@@ -123,13 +123,13 @@ export default function FinancialAuditingPage() {
       </section>
 
       {/* SECTION 3: STRENGTHENING CREDIT UNIONS */}
-      <section className="bg-white dark:bg-gray-950 py-20">
+      <section className="bg-white py-20">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <Building2 className="h-16 w-16 text-primary-600 dark:text-primary-400 mx-auto mb-6" />
-          <h2 className="font-display text-2xl font-bold text-primary-900 dark:text-white mb-4">
+          <Building2 className="h-16 w-16 text-primary-600 mx-auto mb-6" />
+          <h2 className="font-display text-2xl font-bold text-primary-900 mb-4">
             {language === "fr" ? "Des Audits Qui Renforcent, Pas Seulement Qui Inspectent" : "Audits That Build, Not Just Inspect"}
           </h2>
-          <p className="max-w-3xl mx-auto text-gray-600 dark:text-gray-300">
+          <p className="max-w-3xl mx-auto text-gray-600">
             {language === "fr"
               ? "Notre philosophie est que les audits doivent renforcer les coopératives de crédit, pas seulement les critiquer. Nous travaillons avec la direction des affiliées pour identifier les faiblesses avant qu'elles ne deviennent des crises, partager les meilleures pratiques observées dans le réseau et former sur les constats d'audit courants. Le résultat : des coopératives plus résilientes, une épargne des membres mieux protégée, et un secteur financier coopératif plus solide pour le Cameroun."
               : "Our philosophy is that audits should strengthen credit unions, not just critique them. We partner with affiliate management to identify weaknesses before they become crises, share best practices observed across the network, and provide training on common audit findings. The result: more resilient credit unions, better protected member savings, and a stronger cooperative financial sector for Cameroon."}

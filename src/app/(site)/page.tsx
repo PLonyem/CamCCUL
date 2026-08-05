@@ -21,7 +21,7 @@ import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { FacebookIcon } from "@/components/ui/SocialIcon";
 import { buttonVariants } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
-import { affiliates, regions, regionLabels, services, newsArticles, newsCategoryLabels } from "@/lib/mock-data";
+import { affiliates, regions, regionLabels, services, newsArticles, CATEGORIES, type NewsCategory } from "@/lib/mock-data";
 import { useLanguage } from "@/context/LanguageContext";
 import { localize, type TranslationKey } from "@/lib/i18n";
 
@@ -92,12 +92,16 @@ const regionCounts = regions.map((region) => ({
 }));
 
 const categoryVariant: Record<
-  string,
+  NewsCategory,
   "default" | "primary" | "accent" | "success" | "warning" | "danger"
 > = {
-  Circular: "primary",
+  "network-news": "primary",
+  projects: "accent",
+  "training-events": "warning",
+  insights: "success",
+  Circular: "danger",
   Training: "accent",
-  COBAC: "warning",
+  COBAC: "primary",
   Announcement: "success",
   Event: "default",
 };
@@ -192,16 +196,16 @@ export default function Home() {
       </section>
 
       {/* SECTION 2: TRUST BAR */}
-      <section className="bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800 py-8">
+      <section className="bg-white border-b border-gray-200 py-8">
         <div className="max-w-7xl mx-auto px-6">
-          <p className="text-center text-sm uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-6">
+          <p className="text-center text-sm uppercase tracking-wider text-gray-400 mb-6">
             {t("home_trust_title")}
           </p>
           <div className="flex flex-wrap justify-center gap-8 md:gap-16">
             {trustBar.map((name) => (
               <span
                 key={name}
-                className="text-lg font-display font-semibold text-gray-400 dark:text-gray-500"
+                className="text-lg font-display font-semibold text-gray-400"
               >
                 {name}
               </span>
@@ -211,19 +215,19 @@ export default function Home() {
       </section>
 
       {/* SECTION 3: MISSION */}
-      <section id="mission" className="bg-white dark:bg-gray-950 py-24">
+      <section id="mission" className="bg-white py-24">
         <AnimatedSection className="max-w-7xl mx-auto px-6">
           <SectionHeader align="center" title={t("home_mission_title")} subtitle={t("home_mission_placeholder")} />
           <div className="mt-12 grid md:grid-cols-3 gap-8">
             {missionCards.map((card) => (
               <Card key={card.titleKey} className="p-8">
-                <div className="w-12 h-12 rounded-lg bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center mb-4">
-                  <card.icon className="h-6 w-6 text-primary-700 dark:text-primary-300" />
+                <div className="w-12 h-12 rounded-lg bg-primary-100 flex items-center justify-center mb-4">
+                  <card.icon className="h-6 w-6 text-primary-700" />
                 </div>
-                <h3 className="font-display font-semibold text-lg text-primary-900 dark:text-white">
+                <h3 className="font-display font-semibold text-lg text-primary-900">
                   {t(card.titleKey)}
                 </h3>
-                <p className="text-gray-600 dark:text-gray-300 mt-2 text-sm">
+                <p className="text-gray-600 mt-2 text-sm">
                   {t("home_mission_card_placeholder")}
                 </p>
               </Card>
@@ -233,7 +237,7 @@ export default function Home() {
       </section>
 
       {/* SECTION 4: SERVICES */}
-      <section className="bg-gray-50 dark:bg-gray-900 py-24">
+      <section className="bg-gray-50 py-24">
         <AnimatedSection className="max-w-7xl mx-auto px-6">
           <SectionHeader align="center" title={t("home_services_title")} />
           <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -247,30 +251,30 @@ export default function Home() {
                   className={cn(
                     "p-6 flex flex-col",
                     isLast &&
-                      "border-accent-500 dark:border-accent-400 border-2 shadow-md bg-accent-50 dark:bg-accent-700/10"
+                      "border-accent-500 border-2 shadow-md bg-accent-50"
                   )}
                 >
                   <div
                     className={cn(
                       "w-12 h-12 rounded-lg flex items-center justify-center mb-4",
                       isLast
-                        ? "bg-accent-100 dark:bg-accent-700/30"
-                        : "bg-primary-100 dark:bg-primary-900/40"
+                        ? "bg-accent-100"
+                        : "bg-primary-100"
                     )}
                   >
                     <Icon
                       className={cn(
                         "h-6 w-6",
                         isLast
-                          ? "text-accent-700 dark:text-accent-300"
-                          : "text-primary-700 dark:text-primary-300"
+                          ? "text-accent-700"
+                          : "text-primary-700"
                       )}
                     />
                   </div>
-                  <h3 className="font-display font-semibold text-lg text-primary-900 dark:text-white">
+                  <h3 className="font-display font-semibold text-lg text-primary-900">
                     {translation ? t(translation.titleKey) : service.title}
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-300 mt-2 text-sm flex-1">
+                  <p className="text-gray-600 mt-2 text-sm flex-1">
                     {translation ? t(translation.descriptionKey) : service.description}
                   </p>
                   <Link
@@ -278,8 +282,8 @@ export default function Home() {
                     className={cn(
                       "inline-flex items-center gap-1 text-sm font-medium mt-4",
                       isLast
-                        ? "text-accent-600 dark:text-accent-400 hover:text-accent-700 dark:hover:text-accent-300"
-                        : "text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
+                        ? "text-accent-600 hover:text-accent-700"
+                        : "text-primary-600 hover:text-primary-700"
                     )}
                   >
                     {t("home_learn_more")}
@@ -293,7 +297,7 @@ export default function Home() {
       </section>
 
       {/* SECTION 5: AFFILIATES SHOWCASE */}
-      <section className="bg-white dark:bg-gray-950 py-24">
+      <section className="bg-white py-24">
         <AnimatedSection className="max-w-7xl mx-auto px-6">
           <SectionHeader
             align="center"
@@ -306,36 +310,36 @@ export default function Home() {
               <Link
                 key={region}
                 href={`/affiliates?region=${encodeURIComponent(region)}`}
-                className="text-center rounded-xl border border-gray-200 dark:border-gray-800 p-4 hover:border-primary-300 dark:hover:border-primary-600 hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
+                className="text-center rounded-xl border border-gray-200 p-4 hover:border-primary-300 hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
               >
-                <p className="text-2xl font-bold text-primary-900 dark:text-white">{count}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <p className="text-2xl font-bold text-primary-900">{count}</p>
+                <p className="text-xs text-gray-500 mt-1">
                   {localize(regionLabels[region], language)}
                 </p>
               </Link>
             ))}
           </div>
 
-          <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 rounded-2xl bg-primary-50 dark:bg-primary-900/40 p-8">
+          <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 rounded-2xl bg-primary-50 p-8">
             <div className="text-center">
-              <p className="text-3xl font-bold text-primary-900 dark:text-white">
+              <p className="text-3xl font-bold text-primary-900">
                 {regions.length}
               </p>
-              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{t("home_stat_regions")}</p>
+              <p className="text-sm text-gray-600 mt-1">{t("home_stat_regions")}</p>
             </div>
             <div className="text-center">
-              <p className="text-3xl font-bold text-primary-900 dark:text-white">
+              <p className="text-3xl font-bold text-primary-900">
                 {affiliates.length}+
               </p>
-              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{t("home_stat_unions")}</p>
+              <p className="text-sm text-gray-600 mt-1">{t("home_stat_unions")}</p>
             </div>
             <div className="text-center">
-              <p className="text-3xl font-bold text-primary-900 dark:text-white">[TBD]</p>
-              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{t("home_stat_members")}</p>
+              <p className="text-3xl font-bold text-primary-900">[TBD]</p>
+              <p className="text-sm text-gray-600 mt-1">{t("home_stat_members")}</p>
             </div>
             <div className="text-center">
-              <p className="text-3xl font-bold text-primary-900 dark:text-white">[TBD]</p>
-              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{t("home_stat_assets")}</p>
+              <p className="text-3xl font-bold text-primary-900">[TBD]</p>
+              <p className="text-sm text-gray-600 mt-1">{t("home_stat_assets")}</p>
             </div>
           </div>
 
@@ -352,13 +356,13 @@ export default function Home() {
       </section>
 
       {/* SECTION 6: LATEST NEWS */}
-      <section className="bg-gray-50 dark:bg-gray-900 py-24">
+      <section className="bg-gray-50 py-24">
         <AnimatedSection className="max-w-7xl mx-auto px-6">
           <div className="flex items-end justify-between mb-12">
             <SectionHeader title={t("home_news_title")} />
             <Link
               href="/news"
-              className="text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 inline-flex items-center gap-1"
+              className="text-sm font-medium text-primary-600 hover:text-primary-700 inline-flex items-center gap-1"
             >
               {t("home_view_all")}
               <ArrowRight className="h-4 w-4" />
@@ -366,39 +370,60 @@ export default function Home() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {newsArticles.slice(0, 3).map((article) => (
-              <Card key={article.id} className="p-6 flex flex-col">
-                <Badge
-                  variant={categoryVariant[article.category] ?? "default"}
-                  className="w-fit mb-3"
-                >
-                  {localize(newsCategoryLabels[article.category] ?? newsCategoryLabels.All, language)}
-                </Badge>
-                <h3 className="font-display font-semibold text-lg text-primary-900 dark:text-white">
-                  {localize(article.title, language)}
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300 mt-2 text-sm flex-1">
-                  {localize(article.excerpt, language)}
-                </p>
-                <p className="text-xs text-gray-400 dark:text-gray-500 mt-4">
-                  {formatDate(article.publishedAt, language)}
-                </p>
-              </Card>
-            ))}
+            {newsArticles
+              .filter((article) => article.language === language)
+              .slice(0, 3)
+              .map((article) => (
+                <Card key={article.id} className="p-6 flex flex-col">
+                  <Badge
+                    variant={categoryVariant[article.category] ?? "default"}
+                    className="w-fit mb-3"
+                  >
+                    {localize(
+                      CATEGORIES.find((c) => c.value === article.category)?.label ?? {
+                        en: article.category,
+                        fr: article.category,
+                      },
+                      language
+                    )}
+                  </Badge>
+                  <h3 className="font-display font-semibold text-lg text-primary-900">
+                    <Link
+                      href={`/news/${article.slug}`}
+                      className="hover:text-accent-600 transition-colors"
+                    >
+                      {article.title}
+                    </Link>
+                  </h3>
+                  <p className="text-gray-600 mt-2 text-sm flex-1 line-clamp-2">
+                    {article.excerpt}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-4">
+                    {formatDate(article.publishedAt, language)}
+                  </p>
+                  <Link
+                    href={`/news/${article.slug}`}
+                    className="text-sm font-medium text-accent-600 hover:text-accent-700 inline-flex items-center gap-1 mt-3"
+                  >
+                    {t("news_read_more_cta")}
+                    <ArrowRight className="h-4 w-4 inline" />
+                  </Link>
+                </Card>
+              ))}
           </div>
         </AnimatedSection>
       </section>
 
       {/* SECTION 7: FAQ */}
-      <section className="bg-white dark:bg-gray-950 py-24 text-center">
+      <section className="bg-white py-24 text-center">
         <AnimatedSection className="max-w-2xl mx-auto px-6 flex flex-col items-center">
-          <div className="w-14 h-14 rounded-full bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center mb-6">
-            <HelpCircle className="h-7 w-7 text-primary-700 dark:text-primary-300" />
+          <div className="w-14 h-14 rounded-full bg-primary-100 flex items-center justify-center mb-6">
+            <HelpCircle className="h-7 w-7 text-primary-700" />
           </div>
-          <h2 className="font-display text-3xl font-bold text-primary-900 dark:text-white">
+          <h2 className="font-display text-3xl font-bold text-primary-900">
             {t("home_faq_title")}
           </h2>
-          <p className="text-gray-600 dark:text-gray-300 mt-4">
+          <p className="text-gray-600 mt-4">
             {t("home_faq_subtitle")}
           </p>
           <Link
@@ -412,7 +437,7 @@ export default function Home() {
       </section>
 
       {/* SECTION 8: CONNECT WITH US */}
-      <section className="bg-white dark:bg-gray-950 py-20">
+      <section className="bg-white py-20">
         <div className="max-w-7xl mx-auto px-6">
           <SectionHeader
             align="center"
@@ -420,16 +445,16 @@ export default function Home() {
             subtitle={t("home_connect_subtitle")}
           />
 
-          <div className="mt-12 max-w-lg mx-auto bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm">
+          <div className="mt-12 max-w-lg mx-auto bg-gray-50 border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
             <div className="h-2 bg-[#1877F2]" />
             <div className="p-8 text-center">
               <div className="w-14 h-14 rounded-full bg-[#1877F2]/10 flex items-center justify-center mx-auto mb-4">
                 <FacebookIcon className="h-7 w-7 text-[#1877F2]" />
               </div>
-              <p className="font-display text-lg font-bold text-primary-900 dark:text-white">
+              <p className="font-display text-lg font-bold text-primary-900">
                 {t("home_connect_handle")}
               </p>
-              <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
+              <p className="text-sm text-gray-600 mt-2">
                 {t("home_connect_description")}
               </p>
               <a

@@ -22,20 +22,20 @@ function RegionSelectCard({
 
   return (
     <Card className="p-8 text-center mx-auto max-w-lg">
-      <Building2 className="h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-      <h2 className="font-display text-2xl font-bold text-primary-900 dark:text-white mb-2">
+      <Building2 className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+      <h2 className="font-display text-2xl font-bold text-primary-900 mb-2">
         {t("affiliates_select_title")}
       </h2>
-      <p className="text-gray-600 dark:text-gray-300 mb-6">
+      <p className="text-gray-600 mb-6">
         {t("affiliates_select_description")}
       </p>
       <select
         value={selectedRegion}
         disabled={disabled}
         onChange={(e) => onChange?.(e.target.value)}
-        className="w-full h-14 rounded-xl border-2 border-gray-300 dark:border-gray-700 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 focus:outline-none text-lg px-6 bg-white dark:bg-gray-800 dark:text-white cursor-pointer"
+        className="w-full h-14 rounded-xl border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 focus:outline-none text-lg px-6 bg-white cursor-pointer"
       >
-        <option value="" disabled className="text-gray-400 dark:text-gray-500">
+        <option value="" disabled className="text-gray-400">
           {t("affiliates_select_placeholder")}
         </option>
         {regions.map((region) => (
@@ -70,7 +70,7 @@ function AffiliatesContent() {
   );
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 min-h-screen py-20">
+    <div className="bg-gray-50 min-h-screen py-20">
       <div className="max-w-5xl mx-auto px-4">
         {selectedRegion === "" ? (
           <RegionSelectCard
@@ -82,17 +82,17 @@ function AffiliatesContent() {
             <Card className="p-6 mb-8 border-l-4 border-primary-500">
               <div className="flex justify-between items-center flex-wrap gap-4">
                 <div>
-                  <p className="font-display text-xl font-bold text-primary-900 dark:text-white">
+                  <p className="font-display text-xl font-bold text-primary-900">
                     {t("affiliates_region_label")} {localize(regionLabels[selectedRegion], language)}
                   </p>
-                  <p className="text-gray-600 dark:text-gray-300 mt-1">
+                  <p className="text-gray-600 mt-1">
                     {t("affiliates_total_label")} {filteredAffiliates.length}
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setSelectedRegion("")}
-                  className="inline-flex items-center rounded-lg border border-gray-300 dark:border-gray-700 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  className="inline-flex items-center rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors"
                 >
                   {t("affiliates_change_region")}
                 </button>
@@ -104,18 +104,18 @@ function AffiliatesContent() {
                 {filteredAffiliates.map((affiliate) => (
                   <div
                     key={affiliate.id}
-                    className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-6 mb-3 hover:shadow-md transition-shadow"
+                    className="bg-white border border-gray-200 rounded-lg p-6 mb-3 hover:shadow-md transition-shadow"
                   >
                     <div>
                       <Building2 className="h-5 w-5 text-primary-500 inline mr-2" />
-                      <span className="font-semibold text-lg text-primary-900 dark:text-white">
+                      <span className="font-semibold text-lg text-primary-900">
                         {affiliate.name}
                       </span>
-                      <span className="text-sm text-gray-500 dark:text-gray-400 ml-2 bg-gray-100 dark:bg-gray-800 rounded px-2 py-0.5">
+                      <span className="text-sm text-gray-500 ml-2 bg-gray-100 rounded px-2 py-0.5">
                         {affiliate.code}
                       </span>
                     </div>
-                    <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-sm text-gray-600 dark:text-gray-300">
+                    <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-sm text-gray-600">
                       <span>
                         <MapPin className="h-3.5 w-3.5 inline mr-1" />
                         {affiliate.city}
@@ -124,7 +124,7 @@ function AffiliatesContent() {
                         <Phone className="h-3.5 w-3.5 inline mr-1" />
                         {affiliate.phone}
                       </span>
-                      <span className="text-accent-600 dark:text-accent-400">
+                      <span className="text-accent-600">
                         <Mail className="h-3.5 w-3.5 inline mr-1" />
                         {affiliate.email}
                       </span>
@@ -134,11 +134,11 @@ function AffiliatesContent() {
               </div>
             ) : (
               <div className="text-center py-12">
-                <SearchX className="h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-                <p className="text-gray-600 dark:text-gray-300">
+                <SearchX className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                <p className="text-gray-600">
                   {t("affiliates_empty_title")}
                 </p>
-                <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+                <p className="text-gray-500 text-sm mt-1">
                   {t("affiliates_empty_subtitle")}
                 </p>
               </div>
@@ -152,7 +152,7 @@ function AffiliatesContent() {
 
 function AffiliatesFallback() {
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 min-h-screen py-20">
+    <div className="bg-gray-50 min-h-screen py-20">
       <div className="max-w-5xl mx-auto px-4">
         <RegionSelectCard selectedRegion="" disabled />
       </div>

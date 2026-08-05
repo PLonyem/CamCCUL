@@ -13,10 +13,10 @@ export function SectionHeader({
 }: SectionHeaderProps) {
   return (
     <div className={cn(align === "center" && "text-center")}>
-      <h2 className="font-display text-3xl font-bold text-primary-900 dark:text-white">
+      <h2 className="font-display text-3xl font-bold text-primary-900">
         {title}
       </h2>
-      {subtitle && <p className="text-gray-600 dark:text-gray-300 mt-2">{subtitle}</p>}
+      {subtitle && <p className="text-gray-600 mt-2">{subtitle}</p>}
     </div>
   );
 }

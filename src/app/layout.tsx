@@ -39,15 +39,9 @@ export default function RootLayout({
     <html
       lang="en"
       data-scroll-behavior="smooth"
-      suppressHydrationWarning
-      className={`${inter.variable} ${lexend.variable} h-full antialiased transition-colors duration-300`}
+      className={`${inter.variable} ${lexend.variable} h-full antialiased`}
     >
       <body className={`${inter.className} min-h-full flex flex-col`}>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem("theme");var d=t?t==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;if(d)document.documentElement.classList.add("dark");}catch(e){}})();`,
-          }}
-        />
         <LanguageProvider>
           <ReloadRedirect />
           {children}

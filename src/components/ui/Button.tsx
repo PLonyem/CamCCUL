@@ -10,8 +10,8 @@ const buttonVariants = cva(
         default: "bg-primary-500 text-white hover:bg-primary-600",
         accent: "bg-accent-600 text-white hover:bg-accent-700",
         outline:
-          "border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800",
-        ghost: "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800",
+          "border border-gray-300 text-gray-700 hover:bg-gray-50",
+        ghost: "text-gray-600 hover:bg-gray-100",
       },
       size: {
         default: "px-4 py-2 text-sm",

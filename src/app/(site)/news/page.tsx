@@ -1,23 +1,26 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Calendar, Newspaper } from "lucide-react";
 import { PageHero } from "@/components/layout/PageHero";
 import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";
-import { newsArticles, newsCategoryLabels } from "@/lib/mock-data";
+import { newsArticles, CATEGORIES, type NewsCategory } from "@/lib/mock-data";
 import { useLanguage } from "@/context/LanguageContext";
 import { localize } from "@/lib/i18n";
 
-const categories = ["All", "Circular", "Training", "COBAC", "Announcement", "Event"];
-
 const categoryVariant: Record<
-  string,
+  NewsCategory,
   "default" | "primary" | "accent" | "success" | "warning" | "danger"
 > = {
-  Circular: "primary",
+  "network-news": "primary",
+  projects: "accent",
+  "training-events": "warning",
+  insights: "success",
+  Circular: "danger",
   Training: "accent",
-  COBAC: "warning",
+  COBAC: "primary",
   Announcement: "success",
   Event: "default",
 };
@@ -35,13 +38,14 @@ function formatDate(dateStr: string, language: "en" | "fr") {
 
 export default function NewsPage() {
   const { t, language } = useLanguage();
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedCategory, setSelectedCategory] = useState<NewsCategory | "All">("All");
   const [currentPage, setCurrentPage] = useState(1);
 
+  const languageArticles = newsArticles.filter((article) => article.language === language);
   const filteredArticles =
     selectedCategory === "All"
-      ? newsArticles
-      : newsArticles.filter((article) => article.category === selectedCategory);
+      ? languageArticles
+      : languageArticles.filter((article) => article.category === selectedCategory);
 
   const totalPages = Math.max(1, Math.ceil(filteredArticles.length / PAGE_SIZE));
   const paginatedArticles = filteredArticles.slice(
@@ -49,7 +53,7 @@ export default function NewsPage() {
     currentPage * PAGE_SIZE
   );
 
-  function handleCategoryChange(category: string) {
+  function handleCategoryChange(category: NewsCategory | "All") {
     setSelectedCategory(category);
     setCurrentPage(1);
   }
@@ -58,27 +62,39 @@ export default function NewsPage() {
     <>
       <PageHero title={t("news_page_title")} subtitle={t("news_page_subtitle")} />
 
-      <div className="sticky top-16 z-20 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 py-4">
+      <div className="sticky top-16 z-20 bg-white border-b border-gray-200 py-4">
         <div className="max-w-4xl mx-auto px-4 flex flex-wrap gap-2">
-          {categories.map((category) => (
+          <button
+            type="button"
+            onClick={() => handleCategoryChange("All")}
+            className={cn(
+              "px-4 py-2 rounded-full text-sm font-medium transition-colors cursor-pointer border-none",
+              selectedCategory === "All"
+                ? "bg-primary-500 text-white"
+                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+            )}
+          >
+            {t("news_category_all")}
+          </button>
+          {CATEGORIES.map((category) => (
             <button
-              key={category}
+              key={category.value}
               type="button"
-              onClick={() => handleCategoryChange(category)}
+              onClick={() => handleCategoryChange(category.value)}
               className={cn(
                 "px-4 py-2 rounded-full text-sm font-medium transition-colors cursor-pointer border-none",
-                selectedCategory === category
+                selectedCategory === category.value
                   ? "bg-primary-500 text-white"
-                  : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               )}
             >
-              {localize(newsCategoryLabels[category], language)}
+              {localize(category.label, language)}
             </button>
           ))}
         </div>
       </div>
 
-      <div className="bg-gray-50 dark:bg-gray-900 min-h-screen py-20">
+      <div className="bg-gray-50 min-h-screen py-20">
         <div className="max-w-4xl mx-auto px-4">
           {filteredArticles.length > 0 ? (
             <>
@@ -86,26 +102,40 @@ export default function NewsPage() {
                 {paginatedArticles.map((article) => (
                   <div
                     key={article.id}
-                    className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 mb-4 hover:shadow-sm transition-shadow"
+                    className="bg-white border border-gray-200 rounded-xl p-6 mb-4 hover:shadow-sm transition-shadow"
                   >
                     <div className="flex items-center gap-3 mb-2">
-                      <span className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500">
+                      <span className="flex items-center gap-1.5 text-xs text-gray-400">
                         <Calendar className="h-3.5 w-3.5" />
                         {formatDate(article.publishedAt, language)}
                       </span>
                       <Badge variant={categoryVariant[article.category] ?? "default"}>
-                        {localize(newsCategoryLabels[article.category] ?? newsCategoryLabels.All, language)}
+                        {localize(
+                          CATEGORIES.find((c) => c.value === article.category)?.label ?? {
+                            en: article.category,
+                            fr: article.category,
+                          },
+                          language
+                        )}
                       </Badge>
                     </div>
-                    <h3 className="text-xl font-semibold text-primary-900 dark:text-white hover:text-accent-600 dark:hover:text-accent-400 transition-colors cursor-pointer mb-2">
-                      {localize(article.title, language)}
+                    <h3 className="text-xl font-semibold text-primary-900 mb-2">
+                      <Link
+                        href={`/news/${article.slug}`}
+                        className="hover:text-accent-600 transition-colors"
+                      >
+                        {article.title}
+                      </Link>
                     </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 mb-3">
-                      {localize(article.excerpt, language)}
+                    <p className="text-sm text-gray-600 line-clamp-2 mb-3">
+                      {article.excerpt}
                     </p>
-                    <span className="text-sm font-medium text-accent-600 dark:text-accent-400 hover:text-accent-700 dark:hover:text-accent-300 cursor-pointer">
+                    <Link
+                      href={`/news/${article.slug}`}
+                      className="text-sm font-medium text-accent-600 hover:text-accent-700"
+                    >
                       {t("news_read_more")}
-                    </span>
+                    </Link>
                   </div>
                 ))}
               </div>
@@ -115,11 +145,11 @@ export default function NewsPage() {
                   type="button"
                   disabled={currentPage === 1}
                   onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
-                  className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 disabled:opacity-50 disabled:pointer-events-none transition-colors"
+                  className="px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-white disabled:opacity-50 disabled:pointer-events-none transition-colors"
                 >
                   {t("news_previous")}
                 </button>
-                <span className="text-sm text-gray-500 dark:text-gray-400">
+                <span className="text-sm text-gray-500">
                   {t("news_page_label")} {currentPage} {t("news_of_label")} {totalPages}
                 </span>
                 <button
@@ -128,7 +158,7 @@ export default function NewsPage() {
                   onClick={() =>
                     setCurrentPage((page) => Math.min(totalPages, page + 1))
                   }
-                  className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 disabled:opacity-50 disabled:pointer-events-none transition-colors"
+                  className="px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-white disabled:opacity-50 disabled:pointer-events-none transition-colors"
                 >
                   {t("news_next")}
                 </button>
@@ -136,9 +166,9 @@ export default function NewsPage() {
             </>
           ) : (
             <div className="text-center py-24">
-              <Newspaper className="h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-              <p className="text-gray-600 dark:text-gray-300">{t("news_empty_title")}</p>
-              <p className="text-gray-400 dark:text-gray-500 text-sm mt-1">
+              <Newspaper className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-600">{t("news_empty_title")}</p>
+              <p className="text-gray-400 text-sm mt-1">
                 {t("news_empty_subtitle")}
               </p>
             </div>
