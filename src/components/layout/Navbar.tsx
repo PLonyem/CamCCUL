@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { regions, regionLabels } from "@/lib/mock-data";
 import { useLanguage } from "@/context/LanguageContext";
 import { localize, type TranslationKey } from "@/lib/i18n";
+import { ChatbotTrigger } from "@/components/chatbot/ChatbotTrigger";
 import logo from "../../../public/logo.jpg";
 
 const navLinks: { key: TranslationKey; href: string }[] = [
@@ -215,7 +216,8 @@ export function Navbar() {
           })}
         </nav>
 
-        <div className="flex items-center gap-1 shrink-0">
+        <div className="flex items-center gap-2 shrink-0">
+          <ChatbotTrigger />
           {languageToggle}
 
           <button

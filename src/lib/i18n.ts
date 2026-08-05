@@ -225,17 +225,15 @@ const en = {
   loading_text: "Loading...",
 
   // ─── Chatbot ──────────────────────────────────────────────────────────
-  chatbot_assistant_name: "CamCCUL Assistant",
+  chatbot_assistant_name: "Cami — CamCCUL Assistant",
+  chatbot_trigger_label: "Chat with Cami",
   chatbot_placeholder: "Type your question...",
-  chatbot_welcome:
-    "Hello! 👋 I'm the CamCCUL virtual assistant. I can help you with questions about the League, finding a credit union near you, our services, or how to get in touch. What would you like to know?",
   chatbot_typing: "Typing...",
   chatbot_open_aria: "Open chat assistant",
   chatbot_close_aria: "Close chat assistant",
   chatbot_input_aria: "Type your message",
   chatbot_send_aria: "Send message",
-  chatbot_error:
-    "Sorry, I'm having trouble connecting right now. Please try again in a moment, or reach CamCCUL directly at +237 233 36 11 82 or info@camccul.cm.",
+  chatbot_disclaimer: "Automated assistant · Not financial advice",
 } as const;
 
 const fr: Record<keyof typeof en, string> = {
@@ -454,17 +452,15 @@ const fr: Record<keyof typeof en, string> = {
   loading_text: "Chargement...",
 
   // ─── Chatbot ──────────────────────────────────────────────────────────
-  chatbot_assistant_name: "Assistant CamCCUL",
+  chatbot_assistant_name: "Cami — Assistante CamCCUL",
+  chatbot_trigger_label: "Discuter avec Cami",
   chatbot_placeholder: "Tapez votre question...",
-  chatbot_welcome:
-    "Bonjour ! 👋 Je suis l'assistant virtuel de CamCCUL. Je peux vous aider avec des questions sur la Ligue, trouver une coopérative de crédit près de chez vous, nos services, ou comment nous contacter. Que souhaitez-vous savoir ?",
   chatbot_typing: "En train d'écrire...",
   chatbot_open_aria: "Ouvrir l'assistant de discussion",
   chatbot_close_aria: "Fermer l'assistant de discussion",
   chatbot_input_aria: "Tapez votre message",
   chatbot_send_aria: "Envoyer le message",
-  chatbot_error:
-    "Désolé, j'ai des difficultés à me connecter en ce moment. Veuillez réessayer dans un instant, ou contactez directement CamCCUL au +237 233 36 11 82 ou à info@camccul.cm.",
+  chatbot_disclaimer: "Assistant automatisé · Pas un conseil financier",
 };
 
 export const translations = { en, fr };
