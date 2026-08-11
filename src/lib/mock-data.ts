@@ -2593,8 +2593,8 @@ export const contactInfo: ContactInfo = {
   phone: "(237) 233 44 57 66",
   email: "camccul@camccul.cm",
   officeHours: {
-    en: "[Office hours to be provided by CamCCUL]",
-    fr: "[Heures d'ouverture à fournir par CamCCUL]",
+    en: "Tuesday–Saturday, 8:00am–4:00pm",
+    fr: "Mardi–Samedi, 8h00–16h00",
   },
 };
 
