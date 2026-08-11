@@ -13,8 +13,6 @@ async function getActiveAffiliates(): Promise<PublicAffiliate[]> {
         name: true,
         region: true,
         city: true,
-        phone: true,
-        email: true,
       },
     });
   } catch (error) {
@@ -31,8 +29,6 @@ async function getActiveAffiliates(): Promise<PublicAffiliate[]> {
         name: a.name,
         region: a.region,
         city: a.city,
-        phone: a.phone,
-        email: a.email,
       }));
   }
 }

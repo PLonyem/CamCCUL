@@ -1,8 +1,16 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Lexend } from "next/font/google";
+import Script from "next/script";
 import { ChatbotProvider } from "@/components/chatbot/Chatbot";
 import { LanguageProvider } from "@/context/LanguageContext";
 import "./globals.css";
+
+// Fires on every page, but only acts inside /admin/*: a real reload (F5) on
+// an admin sub-page bounces to /admin before that page's own content is
+// parsed. `beforeInteractive` runs from <head>, ahead of body/hydration, so
+// there's no flash of the sub-page — unlike a useEffect-based check, which
+// only runs after the whole page has already rendered and hydrated.
+const ADMIN_RELOAD_GUARD_SCRIPT = `(function(){try{if(!location.pathname.startsWith("/admin")||location.pathname==="/admin")return;var e=performance.getEntriesByType("navigation")[0];if(e&&e.type==="reload"){location.replace("/admin");}}catch(err){}})();`;
 
 const inter = Inter({
   variable: "--font-inter",
@@ -41,6 +49,11 @@ export default function RootLayout({
       className={`${inter.variable} ${lexend.variable} h-full antialiased`}
     >
       <body className={`${inter.className} min-h-full flex flex-col`}>
+        <Script
+          id="admin-reload-guard"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{ __html: ADMIN_RELOAD_GUARD_SCRIPT }}
+        />
         <LanguageProvider>
           <ChatbotProvider>{children}</ChatbotProvider>
         </LanguageProvider>

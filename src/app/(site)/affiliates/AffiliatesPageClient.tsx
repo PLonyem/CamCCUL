@@ -2,7 +2,7 @@
 
 import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Building2, MapPin, Phone, Mail, SearchX } from "lucide-react";
+import { Building2, MapPin, Phone, SearchX } from "lucide-react";
 import { PageHero } from "@/components/layout/PageHero";
 import { Card } from "@/components/ui/Card";
 import { regions, regionLabels } from "@/lib/mock-data";
@@ -15,8 +15,6 @@ export interface PublicAffiliate {
   name: string;
   region: string;
   city: string | null;
-  phone: string | null;
-  email: string | null;
 }
 
 function RegionSelectCard({
@@ -130,15 +128,11 @@ function AffiliatesContent({ affiliates }: { affiliates: PublicAffiliate[] }) {
                         <MapPin className="h-3.5 w-3.5 inline mr-1" />
                         {affiliate.city}
                       </span>
-                      <span>
-                        <Phone className="h-3.5 w-3.5 inline mr-1" />
-                        {affiliate.phone}
-                      </span>
-                      <span className="text-accent-600">
-                        <Mail className="h-3.5 w-3.5 inline mr-1" />
-                        {affiliate.email}
-                      </span>
                     </div>
+                    <p className="text-xs text-gray-400 mt-2">
+                      <Phone className="h-3 w-3 inline mr-1" />
+                      {t("affiliates_contact_hq_note")}
+                    </p>
                   </div>
                 ))}
               </div>

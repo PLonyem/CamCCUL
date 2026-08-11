@@ -39,6 +39,7 @@ const en = {
   footer_quick_links: "Quick Links",
   footer_resources: "Resources",
   footer_contact: "Contact Us",
+  footer_contact_page_link: "Reach us via our Contact page",
   footer_copyright: "© 2026 CamCCUL. All rights reserved.",
   footer_privacy: "Privacy Policy",
   footer_terms: "Terms of Service",
@@ -146,6 +147,7 @@ const en = {
   affiliates_change_region: "Change Region",
   affiliates_empty_title: "No credit unions found in this region.",
   affiliates_empty_subtitle: "Please select a different region.",
+  affiliates_contact_hq_note: "Contact CamCCUL headquarters for details",
 
   // ─── Contact page ─────────────────────────────────────────────────────
   contact_page_title: "Contact Us",
@@ -165,8 +167,9 @@ const en = {
   contact_send_message: "Send Message",
   contact_info_title: "Contact Information",
   contact_label_address: "Address",
-  contact_label_phone: "Phone",
   contact_label_office_hours: "Office Hours",
+  contact_immediate_assistance_note:
+    "For immediate assistance, please use the contact form or visit our office during business hours.",
   contact_regional_offices_title: "Regional Offices",
   contact_regional_offices_text:
     "CamCCUL maintains regional offices in all 10 regions. Contact the headquarters for regional office information.",
@@ -266,6 +269,7 @@ const fr: Record<keyof typeof en, string> = {
   footer_quick_links: "Liens Rapides",
   footer_resources: "Ressources",
   footer_contact: "Contactez-Nous",
+  footer_contact_page_link: "Contactez-nous via notre page Contact",
   footer_copyright: "© 2026 CamCCUL. Tous droits réservés.",
   footer_privacy: "Politique de Confidentialité",
   footer_terms: "Conditions d'Utilisation",
@@ -374,6 +378,7 @@ const fr: Record<keyof typeof en, string> = {
   affiliates_change_region: "Changer de Région",
   affiliates_empty_title: "Aucune coopérative de crédit trouvée dans cette région.",
   affiliates_empty_subtitle: "Veuillez sélectionner une autre région.",
+  affiliates_contact_hq_note: "Contactez le siège de CamCCUL pour plus de détails",
 
   // ─── Contact page ─────────────────────────────────────────────────────
   contact_page_title: "Contactez-nous",
@@ -393,8 +398,9 @@ const fr: Record<keyof typeof en, string> = {
   contact_send_message: "Envoyer le Message",
   contact_info_title: "Coordonnées",
   contact_label_address: "Adresse",
-  contact_label_phone: "Téléphone",
   contact_label_office_hours: "Heures d'Ouverture",
+  contact_immediate_assistance_note:
+    "Pour une assistance immédiate, veuillez utiliser le formulaire de contact ou visiter notre bureau pendant les heures ouvrables.",
   contact_regional_offices_title: "Bureaux Régionaux",
   contact_regional_offices_text:
     "CamCCUL maintient des bureaux régionaux dans les 10 régions. Contactez le siège pour toute information sur les bureaux régionaux.",

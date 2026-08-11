@@ -6,8 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
   MapPin,
-  Phone,
-  Mail,
   Clock,
   Loader2,
   CheckCircle2,
@@ -46,8 +44,6 @@ export default function ContactPage() {
 
   const infoItems = [
     { icon: MapPin, label: t("contact_label_address"), value: contactInfo.address },
-    { icon: Phone, label: t("contact_label_phone"), value: contactInfo.phone },
-    { icon: Mail, label: t("contact_label_email"), value: contactInfo.email },
     { icon: Clock, label: t("contact_label_office_hours"), value: localize(contactInfo.officeHours, language) },
   ];
 
@@ -255,6 +251,10 @@ export default function ContactPage() {
                     </div>
                   </div>
                 ))}
+
+                <p className="text-xs text-gray-400 italic mt-4">
+                  {t("contact_immediate_assistance_note")}
+                </p>
 
                 <div className="my-4 border-t border-gray-200" />
 
