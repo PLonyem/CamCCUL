@@ -32,6 +32,7 @@ function buildContactSchema(t: (key: TranslationKey) => string) {
   return z.object({
     name: z.string().min(2, t("contact_validation_name")),
     email: z.string().email(t("contact_validation_email")),
+    phone: z.string().optional(),
     subject: z.string().min(5, t("contact_validation_subject")),
     message: z.string().min(10, t("contact_validation_message")),
   });
@@ -59,10 +60,15 @@ export default function ContactPage() {
     resolver: zodResolver(contactSchema),
   });
 
-  const onSubmit = handleSubmit(async () => {
+  const onSubmit = handleSubmit(async (values) => {
     setStatus("submitting");
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+      if (!res.ok) throw new Error("Failed to submit");
       setStatus("success");
     } catch {
       setStatus("error");
@@ -73,8 +79,8 @@ export default function ContactPage() {
     <>
       <PageHero title={t("contact_page_title")} subtitle={t("contact_page_subtitle")} />
 
-      <div className="bg-gray-50 py-20">
-        <div className="max-w-5xl mx-auto px-4">
+      <div className="bg-gray-50">
+        <div className="max-w-5xl mx-auto px-4 py-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="md:col-span-2">
               <Card className="p-8">
@@ -146,6 +152,25 @@ export default function ContactPage() {
                         />
                         <p className="text-xs text-red-500 min-h-[16px]">
                           {errors.email?.message}
+                        </p>
+                      </div>
+
+                      <div className="space-y-1 mb-5">
+                        <label
+                          htmlFor="phone"
+                          className="text-sm font-medium text-gray-700"
+                        >
+                          {t("contact_label_phone_number")}
+                        </label>
+                        <input
+                          id="phone"
+                          type="tel"
+                          disabled={status === "submitting"}
+                          className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition disabled:opacity-50"
+                          {...register("phone")}
+                        />
+                        <p className="text-xs text-red-500 min-h-[16px]">
+                          {errors.phone?.message}
                         </p>
                       </div>
 

@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin } from "lucide-react";
+import { MapPin, Phone, Mail } from "lucide-react";
 import { contactInfo } from "@/lib/mock-data";
+import { HQ_PHONE, HQ_EMAIL } from "@/lib/camccul-location";
 import { useLanguage } from "@/context/LanguageContext";
-import type { TranslationKey } from "@/lib/i18n";
+import { localize, type TranslationKey } from "@/lib/i18n";
 import { SocialIcon } from "@/components/ui/SocialIcon";
 import logo from "../../../public/logo.jpg";
 
@@ -28,7 +29,7 @@ const resourceLinks: { key: TranslationKey; href: string }[] = [
 ];
 
 export function Footer() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   return (
     <footer className="bg-primary-900 text-white pt-16 pb-8">
@@ -79,12 +80,27 @@ export function Footer() {
             <h3 className="font-semibold text-sm uppercase tracking-wider mb-4">
               {t("footer_contact")}
             </h3>
-            <div className="flex items-start gap-2 text-sm text-gray-400 mb-2">
+            <div className="flex items-start gap-2 text-sm text-gray-400 mb-4">
               <MapPin className="h-4 w-4 mt-0.5 shrink-0" />
-              <span>{contactInfo.address}</span>
+              <div>
+                <p>Commercial Avenue, Bamenda</p>
+                <p>Opposite MTN Office</p>
+              </div>
             </div>
-            <p className="text-sm text-gray-400 mb-2">{contactInfo.phone}</p>
-            <p className="text-sm text-gray-400">{contactInfo.email}</p>
+
+            <div className="my-3 border-t border-primary-700" />
+
+            <div className="flex items-center gap-2 text-sm text-gray-400 mb-2">
+              <Phone className="h-4 w-4 shrink-0" />
+              <span>{HQ_PHONE}</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-gray-400 mb-2">
+              <Mail className="h-4 w-4 shrink-0" />
+              <span>{HQ_EMAIL}</span>
+            </div>
+            <p className="text-sm text-gray-400">
+              {localize(contactInfo.officeHours, language)}
+            </p>
 
             <div className="border-t border-primary-700 my-4" />
 

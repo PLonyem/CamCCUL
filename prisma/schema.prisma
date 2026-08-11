@@ -1,0 +1,99 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         String   @default("admin")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("admin_users")
+}
+
+model NewsArticle {
+  id               String    @id @default(cuid())
+  title            String
+  slug             String    @unique
+  language         String    @default("en")
+  category         String
+  tags             String[]
+  excerpt          String    @db.Text
+  content          String    @db.Text
+  authorName       String
+  authorRole       String?
+  chapter          String?
+  featured         Boolean   @default(false)
+  published        Boolean   @default(false)
+  publishedAt      DateTime?
+  heroImageUrl     String?
+  heroImageAlt     String?
+  heroImageCaption String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([category])
+  @@index([published])
+  @@index([publishedAt])
+  @@index([language])
+  @@map("news_articles")
+}
+
+model Affiliate {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  name      String
+  region    String
+  city      String?
+  address   String?
+  phone     String?
+  email     String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([region])
+  @@index([name])
+  @@map("affiliates")
+}
+
+model Resource {
+  id            String   @id @default(cuid())
+  title         String
+  description   String?  @db.Text
+  category      String
+  fileType      String?
+  fileSize      Int?
+  fileUrl       String?
+  downloadCount Int      @default(0)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([category])
+  @@map("resources")
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String
+  message   String   @db.Text
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("contact_messages")
+}

@@ -198,6 +198,17 @@ export const CHAPTERS: string[] = [
   "Multiple",
 ];
 
+// Canonical Resource.category values used for filtering — these have no
+// separate label mapping (unlike CATEGORIES/regionLabels) since they're
+// English-only identifiers; format for display with a simple PascalCase
+// word-splitter rather than adding bilingual labels for a 4-value set.
+export const RESOURCE_CATEGORIES: string[] = [
+  "ReportingTemplate",
+  "COBACRegulation",
+  "TrainingMaterial",
+  "Form",
+];
+
 export const affiliates: Affiliate[] = [
   {
     id: "nw-001",

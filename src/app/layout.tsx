@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Lexend } from "next/font/google";
 import { ChatbotProvider } from "@/components/chatbot/Chatbot";
-import { ReloadRedirect } from "@/components/ReloadRedirect";
 import { LanguageProvider } from "@/context/LanguageContext";
 import "./globals.css";
 
@@ -43,10 +42,7 @@ export default function RootLayout({
     >
       <body className={`${inter.className} min-h-full flex flex-col`}>
         <LanguageProvider>
-          <ChatbotProvider>
-            <ReloadRedirect />
-            {children}
-          </ChatbotProvider>
+          <ChatbotProvider>{children}</ChatbotProvider>
         </LanguageProvider>
       </body>
     </html>

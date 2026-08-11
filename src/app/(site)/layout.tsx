@@ -1,5 +1,6 @@
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { ReloadRedirect } from "@/components/ReloadRedirect";
 
 export default function SiteLayout({
   children,
@@ -8,6 +9,7 @@ export default function SiteLayout({
 }>) {
   return (
     <div className="min-h-full flex flex-col flex-1">
+      <ReloadRedirect />
       <Navbar />
       <main className="flex-1">{children}</main>
       <Footer />
