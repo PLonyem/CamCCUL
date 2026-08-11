@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin } from "lucide-react";
+import { MapPin, Mail } from "lucide-react";
 import { contactInfo } from "@/lib/mock-data";
 import { useLanguage } from "@/context/LanguageContext";
 import { localize, type TranslationKey } from "@/lib/i18n";
@@ -86,12 +86,13 @@ export function Footer() {
                 <p>Opposite MTN Office</p>
               </div>
             </div>
-            <Link
-              href="/contact"
-              className="text-sm text-gray-400 hover:text-white transition-colors underline underline-offset-2"
+            <a
+              href={`mailto:${contactInfo.email}`}
+              className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"
             >
-              {t("footer_contact_page_link")}
-            </Link>
+              <Mail className="h-4 w-4 shrink-0" />
+              {t("contact_label_email")}
+            </a>
 
             <div className="my-3 border-t border-primary-700" />
 

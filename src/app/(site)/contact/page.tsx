@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
   MapPin,
+  Mail,
   Clock,
   Loader2,
   CheckCircle2,
@@ -42,8 +43,19 @@ export default function ContactPage() {
 
   const contactSchema = useMemo(() => buildContactSchema(t), [t]);
 
-  const infoItems = [
+  const infoItems: {
+    icon: typeof MapPin;
+    label: string;
+    value: string;
+    href?: string;
+  }[] = [
     { icon: MapPin, label: t("contact_label_address"), value: contactInfo.address },
+    {
+      icon: Mail,
+      label: t("contact_label_email"),
+      value: contactInfo.email,
+      href: `mailto:${contactInfo.email}`,
+    },
     { icon: Clock, label: t("contact_label_office_hours"), value: localize(contactInfo.officeHours, language) },
   ];
 
@@ -236,7 +248,7 @@ export default function ContactPage() {
                   {t("contact_info_title")}
                 </h3>
 
-                {infoItems.map(({ icon: Icon, label, value }) => (
+                {infoItems.map(({ icon: Icon, label, value, href }) => (
                   <div key={label} className="flex gap-3 mb-4">
                     <div className="bg-primary-100 rounded-full p-2 h-9 w-9 text-primary-600 flex-shrink-0 flex items-center justify-center">
                       <Icon className="h-5 w-5" />
@@ -245,9 +257,18 @@ export default function ContactPage() {
                       <p className="text-xs text-gray-500 uppercase">
                         {label}
                       </p>
-                      <p className="text-sm font-medium text-primary-900">
-                        {value}
-                      </p>
+                      {href ? (
+                        <a
+                          href={href}
+                          className="text-sm font-medium text-primary-900 hover:text-accent-600 hover:underline transition-colors"
+                        >
+                          {value}
+                        </a>
+                      ) : (
+                        <p className="text-sm font-medium text-primary-900">
+                          {value}
+                        </p>
+                      )}
                     </div>
                   </div>
                 ))}

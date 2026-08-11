@@ -2591,7 +2591,7 @@ export const affiliates: Affiliate[] = [
 export const contactInfo: ContactInfo = {
   address: "P.O. Box 2011, Bamenda, North West Region, Cameroon",
   phone: "(237) 233 44 57 66",
-  email: "camccul@camccul.com",
+  email: "camccul@camccul.cm",
   officeHours: {
     en: "[Office hours to be provided by CamCCUL]",
     fr: "[Heures d'ouverture à fournir par CamCCUL]",
