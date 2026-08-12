@@ -25,12 +25,10 @@ const en = {
   nav_services_capacity: "Capacity Building",
   nav_services_digitalization: "Digitalization of Credit Unions",
   nav_tagline: "Cameroon Cooperative Credit Union League",
-  nav_affiliates_all_regions: "All Regions",
   nav_language_aria: "Change language",
   nav_menu_open_aria: "Toggle menu",
   nav_menu_close_aria: "Close menu",
   nav_services_toggle_aria: "Toggle services",
-  nav_regions_toggle_aria: "Toggle regions",
   nav_find_credit_union: "Find a Credit Union",
 
   // ─── Footer ───────────────────────────────────────────────────────────
@@ -254,12 +252,10 @@ const fr: Record<keyof typeof en, string> = {
   nav_services_capacity: "Renforcement des Capacités",
   nav_services_digitalization: "Digitalisation des Coopératives",
   nav_tagline: "Ligue des Coopératives de Crédit du Cameroun",
-  nav_affiliates_all_regions: "Toutes les Régions",
   nav_language_aria: "Changer de langue",
   nav_menu_open_aria: "Basculer le menu",
   nav_menu_close_aria: "Fermer le menu",
   nav_services_toggle_aria: "Basculer les services",
-  nav_regions_toggle_aria: "Basculer les régions",
   nav_find_credit_union: "Trouver une Coopérative",
 
   // ─── Footer ───────────────────────────────────────────────────────────

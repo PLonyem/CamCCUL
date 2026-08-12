@@ -6,9 +6,8 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Menu, X, ChevronDown, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { regions, regionLabels } from "@/lib/mock-data";
 import { useLanguage } from "@/context/LanguageContext";
-import { localize, type TranslationKey } from "@/lib/i18n";
+import { type TranslationKey } from "@/lib/i18n";
 import { ChatbotTrigger } from "@/components/chatbot/ChatbotTrigger";
 import logo from "../../../public/logo.jpg";
 
@@ -34,8 +33,6 @@ export function Navbar() {
   const pathname = usePathname();
   const { language, setLanguage, t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
-  const [isMobileRegionsOpen, setIsMobileRegionsOpen] = useState(false);
-  const [isAffiliatesOpen, setIsAffiliatesOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [isMobileServicesOpen, setIsMobileServicesOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -160,62 +157,6 @@ export function Navbar() {
               );
             }
 
-            if (link.key === "nav_affiliates") {
-              return (
-                <div
-                  key={link.href}
-                  className="relative"
-                  onMouseEnter={() => setIsAffiliatesOpen(true)}
-                  onMouseLeave={() => setIsAffiliatesOpen(false)}
-                  onFocus={() => setIsAffiliatesOpen(true)}
-                  onBlur={(e) => {
-                    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-                      setIsAffiliatesOpen(false);
-                    }
-                  }}
-                >
-                  <Link
-                    href={link.href}
-                    className={cn(
-                      "flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-primary-600 transition-colors py-2",
-                      isActive && "text-primary-600 font-semibold"
-                    )}
-                  >
-                    {t(link.key)}
-                    <ChevronDown className="h-3.5 w-3.5" />
-                  </Link>
-
-                  <div
-                    className={cn(
-                      "absolute left-0 top-full w-56 rounded-lg border border-gray-200 bg-white py-2 shadow-lg transition-opacity duration-150",
-                      isAffiliatesOpen
-                        ? "opacity-100 visible"
-                        : "opacity-0 invisible pointer-events-none"
-                    )}
-                  >
-                    <Link
-                      href="/affiliates"
-                      onClick={() => setIsAffiliatesOpen(false)}
-                      className="block px-4 py-2.5 text-sm font-medium text-primary-700 hover:bg-gray-50 rounded-md"
-                    >
-                      {t("nav_affiliates_all_regions")}
-                    </Link>
-                    <div className="my-1 border-t border-gray-100" />
-                    {regions.map((region) => (
-                      <Link
-                        key={region}
-                        href={`/affiliates?region=${encodeURIComponent(region)}`}
-                        onClick={() => setIsAffiliatesOpen(false)}
-                        className="block px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-primary-600 rounded-md"
-                      >
-                        {localize(regionLabels[region], language)}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              );
-            }
-
             return (
               <Link
                 key={link.href}
@@ -333,56 +274,6 @@ export function Navbar() {
                         className="block py-3 text-base text-gray-500 hover:text-primary-600"
                       >
                         {t(service.key)}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              );
-            }
-
-            if (link.key === "nav_affiliates") {
-              return (
-                <div key={link.href} className="border-b border-gray-100">
-                  <div className="flex items-center justify-between">
-                    <Link
-                      href={link.href}
-                      onClick={closeMobileMenu}
-                      className={cn(
-                        "flex-1 py-4 text-lg font-medium text-gray-700",
-                        isActive && "text-primary-600 font-semibold"
-                      )}
-                    >
-                      {t(link.key)}
-                    </Link>
-                    <button
-                      type="button"
-                      aria-label={t("nav_regions_toggle_aria")}
-                      aria-expanded={isMobileRegionsOpen}
-                      onClick={() => setIsMobileRegionsOpen((prev) => !prev)}
-                      className="inline-flex items-center justify-center min-h-11 min-w-11 p-2 text-gray-500"
-                    >
-                      <ChevronDown
-                        className={cn(
-                          "h-5 w-5 transition-transform",
-                          isMobileRegionsOpen && "rotate-180"
-                        )}
-                      />
-                    </button>
-                  </div>
-                  <div
-                    className={cn(
-                      "overflow-hidden pl-4 transition-[max-height] duration-300 ease-in-out",
-                      isMobileRegionsOpen ? "max-h-[600px]" : "max-h-0"
-                    )}
-                  >
-                    {regions.map((region) => (
-                      <Link
-                        key={region}
-                        href={`/affiliates?region=${encodeURIComponent(region)}`}
-                        onClick={closeMobileMenu}
-                        className="block py-3 text-base text-gray-500 hover:text-primary-600"
-                      >
-                        {localize(regionLabels[region], language)}
                       </Link>
                     ))}
                   </div>
