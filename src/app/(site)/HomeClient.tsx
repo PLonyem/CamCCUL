@@ -2,46 +2,12 @@
 
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
-import {
-  Shield,
-  Building2,
-  Globe,
-  Calendar,
-  GraduationCap,
-  FileSearch,
-  Network,
-} from "lucide-react";
-import { regions, regionLabels, services } from "@/lib/mock-data";
+import { Shield, Building2, Globe, Calendar } from "lucide-react";
+import { regions, regionLabels } from "@/lib/mock-data";
 import { useLanguage } from "@/context/LanguageContext";
 import { localize, type TranslationKey } from "@/lib/i18n";
 
 const yearsOfService = new Date().getFullYear() - 1968;
-
-const serviceIcons: Record<string, LucideIcon> = {
-  Shield,
-  FileSearch,
-  GraduationCap,
-  Network,
-};
-
-const serviceTranslationKeys: Record<string, { titleKey: TranslationKey; shortDescriptionKey: TranslationKey }> = {
-  "/services/regulatory-supervision": {
-    titleKey: "nav_services_regulatory",
-    shortDescriptionKey: "home_service_regulatory_short",
-  },
-  "/services/financial-auditing": {
-    titleKey: "nav_services_auditing",
-    shortDescriptionKey: "home_service_auditing_short",
-  },
-  "/services/capacity-building": {
-    titleKey: "nav_services_capacity",
-    shortDescriptionKey: "home_service_capacity_short",
-  },
-  "/services/digitalization": {
-    titleKey: "nav_services_digitalization",
-    shortDescriptionKey: "home_service_digitalization_short",
-  },
-};
 
 function formatDate(dateStr: string, language: "en" | "fr") {
   return new Date(dateStr).toLocaleDateString(language === "fr" ? "fr-FR" : "en-US", {
@@ -170,77 +136,7 @@ export function HomeClient({ affiliateCount, regionCounts, recentArticles }: Hom
         </div>
       </section>
 
-      {/* BAND 5: WHAT WE DO — pale blue tint */}
-      <section className="bg-primary-500/6 py-14 md:py-24">
-        <div className="max-w-[1200px] mx-auto px-4">
-          <h2 className="text-[26px] md:text-4xl font-display font-bold text-primary-900">
-            {t("home_services_title")}
-          </h2>
-          <p className="text-base md:text-lg leading-[1.6] text-primary-700 max-w-2xl mt-4">
-            {t("home_what_we_do_subtitle")}
-          </p>
-
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
-            {services.map((service) => {
-              const Icon = serviceIcons[service.icon] ?? Shield;
-              const translation = serviceTranslationKeys[service.href];
-              return (
-                <BandCard key={service.title} className="p-6 flex flex-col h-full">
-                  <Icon className="h-7 w-7 text-primary-500 mb-4" aria-hidden="true" strokeWidth={1.5} />
-                  <h3 className="font-display font-semibold text-lg text-primary-900">
-                    {translation ? t(translation.titleKey) : service.title}
-                  </h3>
-                  <p className="text-base leading-[1.6] text-primary-700 mt-2 flex-1">
-                    {translation ? t(translation.shortDescriptionKey) : service.description}
-                  </p>
-                  <Link
-                    href={service.href}
-                    className="inline-flex items-center text-sm font-medium text-primary-500 hover:text-primary-600 mt-4"
-                  >
-                    {t("home_learn_more")}
-                  </Link>
-                </BandCard>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* BAND 6: ABOUT CAMCCUL — white. No real photograph exists yet, so
-          the right column is a plain brand panel rather than a stock image
-          standing in for one. */}
-      <section className="bg-white py-14 md:py-24">
-        <div className="max-w-[1200px] mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-[26px] md:text-4xl font-display font-bold text-primary-900">
-                {t("home_about_title")}
-              </h2>
-              <p className="text-base md:text-lg leading-[1.6] text-primary-700 mt-8">
-                {t("footer_about")}
-              </p>
-              <p className="text-base leading-[1.6] text-primary-700 mt-4">
-                {t("about_presence_paragraph")}
-              </p>
-              <Link
-                href="/about"
-                className="inline-flex items-center text-sm font-medium text-primary-500 hover:text-primary-600 mt-8"
-              >
-                {t("about_read_more")}
-              </Link>
-            </div>
-
-            <div
-              className="hidden md:flex items-center justify-center bg-primary-500/6 border border-primary-100 rounded-xl aspect-[4/3]"
-              aria-hidden="true"
-            >
-              <Building2 className="h-16 w-16 text-primary-300" strokeWidth={1} />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* BAND 7: OUR REACH ACROSS CAMEROON — pale blue tint */}
+      {/* BAND 5: OUR REACH ACROSS CAMEROON — pale blue tint */}
       <section className="bg-primary-500/6 py-14 md:py-24">
         <div className="max-w-[1200px] mx-auto px-4">
           <h2 className="text-[26px] md:text-4xl font-display font-bold text-primary-900">
@@ -276,7 +172,7 @@ export function HomeClient({ affiliateCount, regionCounts, recentArticles }: Hom
         </div>
       </section>
 
-      {/* BAND 8: LATEST NEWS — white. No article images exist yet, so cards
+      {/* BAND 6: LATEST NEWS — white. No article images exist yet, so cards
           show date + title only rather than a placeholder image block. */}
       <section className="bg-white py-14 md:py-24">
         <div className="max-w-[1200px] mx-auto px-4">
@@ -316,7 +212,7 @@ export function HomeClient({ affiliateCount, regionCounts, recentArticles }: Hom
         </div>
       </section>
 
-      {/* BAND 9: CALL TO ACTION — the page's one other solid-blue band */}
+      {/* BAND 7: CALL TO ACTION — the page's one other solid-blue band */}
       <section className="bg-primary-500 py-14 md:py-24">
         <div className="max-w-[1200px] mx-auto px-4 text-center">
           <h2 className="text-[26px] md:text-4xl font-display font-bold text-white">
