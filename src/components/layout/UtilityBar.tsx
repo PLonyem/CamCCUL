@@ -14,7 +14,7 @@ export function UtilityBar() {
 
   return (
     <div className="w-full bg-primary-900 text-white h-10">
-      <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-between text-xs">
+      <div className="max-w-[1200px] mx-auto px-4 h-full flex items-center justify-between text-xs">
         <div className="flex items-center gap-6">
           <span className="hidden md:flex items-center gap-1.5">
             <MapPin className="h-3.5 w-3.5 shrink-0" />

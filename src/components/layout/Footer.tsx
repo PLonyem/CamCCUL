@@ -32,7 +32,7 @@ export function Footer() {
 
   return (
     <footer className="bg-primary-900 text-white pt-16 pb-8">
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="max-w-[1200px] mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center gap-2">
@@ -41,13 +41,13 @@ export function Footer() {
               </div>
               <span className="font-display font-bold text-lg">CamCCUL</span>
             </div>
-            <p className="text-sm text-gray-400 mt-2">{t("footer_tagline")}</p>
-            <p className="text-sm text-gray-400 mt-2">{t("footer_about")}</p>
+            <p className="text-sm text-primary-200 mt-2">{t("footer_tagline")}</p>
+            <p className="text-sm text-primary-200 mt-2">{t("footer_about")}</p>
 
             <form onSubmit={(e) => e.preventDefault()} className="mt-4">
               <label
                 htmlFor="newsletter-email"
-                className="text-xs font-semibold uppercase tracking-wider text-gray-300"
+                className="text-xs font-semibold uppercase tracking-wider text-primary-200"
               >
                 {t("newsletter_heading")}
               </label>
@@ -57,11 +57,11 @@ export function Footer() {
                   type="email"
                   required
                   placeholder={t("newsletter_placeholder")}
-                  className="min-w-0 flex-1 rounded-lg bg-primary-800 border border-primary-700 px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-accent-500"
+                  className="min-w-0 flex-1 rounded-lg bg-primary-800 border border-primary-700 px-3 py-2 text-sm text-white placeholder-primary-300 focus:outline-none focus:ring-2 focus:ring-white"
                 />
                 <button
                   type="submit"
-                  className="shrink-0 rounded-lg bg-accent-600 hover:bg-accent-700 text-white text-sm font-medium px-4 py-2 transition-colors"
+                  className="shrink-0 rounded-lg bg-white hover:bg-primary-50 text-primary-700 text-sm font-medium px-4 py-2 transition-colors"
                 >
                   {t("newsletter_button")}
                 </button>
@@ -77,7 +77,7 @@ export function Footer() {
               <Link
                 key={link.key}
                 href={link.href}
-                className="text-sm text-gray-400 hover:text-white transition-colors block mb-2"
+                className="text-sm text-primary-200 hover:text-white transition-colors block mb-2"
               >
                 {t(link.key)}
               </Link>
@@ -92,7 +92,7 @@ export function Footer() {
               <Link
                 key={link.key}
                 href={link.href}
-                className="text-sm text-gray-400 hover:text-white transition-colors block mb-2"
+                className="text-sm text-primary-200 hover:text-white transition-colors block mb-2"
               >
                 {t(link.key)}
               </Link>
@@ -103,7 +103,7 @@ export function Footer() {
             <h3 className="font-semibold text-sm uppercase tracking-wider mb-4">
               {t("footer_contact")}
             </h3>
-            <div className="flex items-start gap-2 text-sm text-gray-400 mb-2">
+            <div className="flex items-start gap-2 text-sm text-primary-200 mb-2">
               <MapPin className="h-4 w-4 mt-0.5 shrink-0" />
               <div>
                 <p>Commercial Avenue, Bamenda</p>
@@ -112,7 +112,7 @@ export function Footer() {
             </div>
             <a
               href={`mailto:${contactInfo.email}`}
-              className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"
+              className="flex items-center gap-2 text-sm text-primary-200 hover:text-white transition-colors"
             >
               <Mail className="h-4 w-4 shrink-0" />
               {t("contact_label_email")}
@@ -120,7 +120,7 @@ export function Footer() {
 
             <div className="my-3 border-t border-primary-700" />
 
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-primary-200">
               {localize(contactInfo.officeHours, language)}
             </p>
 
@@ -138,7 +138,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-primary-700 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-400 gap-4">
+        <div className="border-t border-primary-700 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-primary-200 gap-4">
           <p>{t("footer_copyright")}</p>
           <div className="flex items-center gap-6">
             <Link href="/privacy" className="hover:text-white transition-colors">

@@ -7,17 +7,23 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Sampled directly from public/logo.jpg (dominant pixel cluster
+        // ~#442875) — the logo's real color is a deep purple/indigo, not
+        // blue, despite "brand blue" being how it's often described. This
+        // scale is generated at that exact hue (262°) and saturation (49%),
+        // varying only lightness, so every shade is provably "the same
+        // color at a different lightness" rather than an approximation.
         primary: {
-          50: "#E8F0FE",
-          100: "#D0E1FD",
-          200: "#A1C3FB",
-          300: "#72A5F9",
-          400: "#4387F7",
-          500: "#205295",
-          600: "#1A4282",
-          700: "#144272",
-          800: "#0E3162",
-          900: "#0A2647",
+          50: "#f6f4fb",
+          100: "#ebe4f6",
+          200: "#d4c6eb",
+          300: "#b49cdd",
+          400: "#7549c1",
+          500: "#452876",
+          600: "#37215f",
+          700: "#2c1a4c",
+          800: "#211439",
+          900: "#180e2a",
         },
         accent: {
           50: "#CCFBF1",

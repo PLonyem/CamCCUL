@@ -203,7 +203,7 @@ export function ChatbotProvider({ children }: { children: ReactNode }) {
   const canSend = input.trim().length > 0 && !isTyping;
 
   const fab = (
-    <div className={cn(FAB_POSITION_CLASS, "lg:hidden animate-chatbot-float")}>
+    <div className={cn(FAB_POSITION_CLASS, "animate-chatbot-float")}>
       <span className="absolute inset-0 rounded-full bg-primary-500 animate-chatbot-pulse" />
       <button
         type="button"

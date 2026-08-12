@@ -8,7 +8,6 @@ import { Menu, X, ChevronDown, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
 import { type TranslationKey } from "@/lib/i18n";
-import { ChatbotTrigger } from "@/components/chatbot/ChatbotTrigger";
 import logo from "../../../public/logo.jpg";
 
 const navLinks: { key: TranslationKey; href: string }[] = [
@@ -76,7 +75,7 @@ export function Navbar() {
       type="button"
       onClick={toggleLanguage}
       aria-label={t("nav_language_aria")}
-      className="inline-flex items-center justify-center gap-1 min-h-11 min-w-11 px-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+      className="inline-flex items-center justify-center gap-1 min-h-11 min-w-11 px-2 rounded-lg text-primary-700 hover:bg-primary-50 transition-colors"
     >
       <Globe className="h-5 w-5" />
       <span className="text-xs font-semibold uppercase">{language}</span>
@@ -86,20 +85,20 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-40 bg-white border-b border-gray-200 transition-shadow",
+        "sticky top-0 z-40 bg-white border-b border-primary-100 transition-shadow",
         isScrolled && "shadow-sm"
       )}
     >
-      <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
+      <div className="max-w-[1200px] mx-auto px-4 h-16 flex items-center justify-between gap-4">
         <Link href="/" className="flex items-center gap-3 min-w-0">
-          <div className="w-10 h-10 rounded-lg bg-white ring-1 ring-gray-200 flex items-center justify-center overflow-hidden p-1 shrink-0">
+          <div className="w-10 h-10 rounded-lg bg-white ring-1 ring-primary-100 flex items-center justify-center overflow-hidden p-1 shrink-0">
             <Image src={logo} alt="CamCCUL logo" className="h-full w-full object-contain" priority />
           </div>
           <div className="min-w-0">
             <span className="font-display font-bold text-xl text-primary-900 block leading-tight truncate">
               CamCCUL
             </span>
-            <span className="hidden md:block text-xs text-gray-500 truncate">
+            <span className="hidden md:block text-xs text-primary-600 truncate">
               {t("nav_tagline")}
             </span>
           </div>
@@ -125,7 +124,7 @@ export function Navbar() {
                 >
                   <span
                     className={cn(
-                      "flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-primary-600 transition-colors py-2 cursor-default",
+                      "flex items-center gap-1 text-sm font-medium text-primary-700 hover:text-primary-600 transition-colors py-2 cursor-default",
                       isActive && "text-primary-600 font-semibold"
                     )}
                   >
@@ -135,7 +134,7 @@ export function Navbar() {
 
                   <div
                     className={cn(
-                      "absolute left-0 top-full w-64 rounded-lg border border-gray-200 bg-white shadow-lg py-2 transition-opacity duration-150",
+                      "absolute left-0 top-full w-64 rounded-lg border border-primary-100 bg-white shadow-lg py-2 transition-opacity duration-150",
                       isServicesOpen
                         ? "opacity-100 visible"
                         : "opacity-0 invisible pointer-events-none"
@@ -146,7 +145,7 @@ export function Navbar() {
                         key={service.href}
                         href={service.href}
                         onClick={() => setIsServicesOpen(false)}
-                        className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+                        className="block px-4 py-2.5 text-sm text-primary-700 hover:bg-primary-50 rounded-md transition-colors"
                       >
                         {t(service.key)}
                       </Link>
@@ -161,7 +160,7 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "text-sm font-medium text-gray-600 hover:text-primary-600 transition-colors",
+                  "text-sm font-medium text-primary-700 hover:text-primary-600 transition-colors",
                   isActive && "text-primary-600 font-semibold"
                 )}
               >
@@ -178,12 +177,11 @@ export function Navbar() {
           >
             {t("nav_find_credit_union")}
           </Link>
-          <ChatbotTrigger />
           {languageToggle}
 
           <button
             type="button"
-            className="md:hidden inline-flex items-center justify-center min-h-11 min-w-11 p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+            className="md:hidden inline-flex items-center justify-center min-h-11 min-w-11 p-2 rounded-lg text-primary-700 hover:bg-primary-50 transition-colors"
             aria-label={t("nav_menu_open_aria")}
             aria-expanded={isOpen}
             onClick={() => setIsOpen((prev) => !prev)}
@@ -210,7 +208,7 @@ export function Navbar() {
         aria-hidden={!isOpen}
         className={cn(
           "md:hidden absolute left-0 right-0 top-full z-40 flex flex-col bg-white p-6",
-          "max-h-[calc(100dvh-4rem)] overflow-y-auto shadow-xl border-b border-gray-200",
+          "max-h-[calc(100dvh-4rem)] overflow-y-auto shadow-xl border-b border-primary-100",
           "transition-all duration-300 ease-in-out",
           isOpen
             ? "opacity-100 translate-y-0"
@@ -221,7 +219,7 @@ export function Navbar() {
           type="button"
           onClick={closeMobileMenu}
           aria-label={t("nav_menu_close_aria")}
-          className="self-end inline-flex items-center justify-center min-h-11 min-w-11 p-2 -mr-2 mb-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+          className="self-end inline-flex items-center justify-center min-h-11 min-w-11 p-2 -mr-2 mb-2 rounded-lg text-primary-700 hover:bg-primary-50 transition-colors"
         >
           <X className="h-6 w-6" />
         </button>
@@ -232,13 +230,13 @@ export function Navbar() {
 
             if (link.key === "nav_services") {
               return (
-                <div key={link.href} className="border-b border-gray-100">
+                <div key={link.href} className="border-b border-primary-100">
                   <div className="flex items-center justify-between">
                     <Link
                       href={link.href}
                       onClick={closeMobileMenu}
                       className={cn(
-                        "flex-1 py-4 text-lg font-medium text-gray-700",
+                        "flex-1 py-4 text-lg font-medium text-primary-700",
                         isActive && "text-primary-600 font-semibold"
                       )}
                     >
@@ -249,7 +247,7 @@ export function Navbar() {
                       aria-label={t("nav_services_toggle_aria")}
                       aria-expanded={isMobileServicesOpen}
                       onClick={() => setIsMobileServicesOpen((prev) => !prev)}
-                      className="inline-flex items-center justify-center min-h-11 min-w-11 p-2 text-gray-500"
+                      className="inline-flex items-center justify-center min-h-11 min-w-11 p-2 text-primary-500"
                     >
                       <ChevronDown
                         className={cn(
@@ -270,7 +268,7 @@ export function Navbar() {
                         key={service.href}
                         href={service.href}
                         onClick={closeMobileMenu}
-                        className="block py-3 text-base text-gray-500 hover:text-primary-600"
+                        className="block py-3 text-base text-primary-600 hover:text-primary-500"
                       >
                         {t(service.key)}
                       </Link>
@@ -286,7 +284,7 @@ export function Navbar() {
                 href={link.href}
                 onClick={closeMobileMenu}
                 className={cn(
-                  "py-4 text-lg font-medium text-gray-700 border-b border-gray-100",
+                  "py-4 text-lg font-medium text-primary-700 border-b border-primary-100",
                   isActive && "text-primary-600 font-semibold"
                 )}
               >

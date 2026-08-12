@@ -63,20 +63,11 @@ const en = {
   home_hero_button: "Explore Our Services",
   home_glance_title: "League at a Glance",
   home_glance_affiliates_label: "Affiliated Credit Unions",
-  home_glance_affiliates_trend: "Live count from directory",
   home_glance_regions_label: "Regions Covered",
-  home_glance_regions_trend: "All of Cameroon",
   home_glance_years_label: "Years of Service",
-  home_glance_years_trend: "Since 1968",
-  home_glance_members_label: "Members Served",
-  home_glance_members_trend: "[Data pending]",
-  home_glance2_active_affiliates: "Active Affiliates",
-  home_glance2_total_members: "Total Members",
-  home_glance2_assets_supervised: "Assets Supervised",
-  home_glance2_reports_per_month: "Reports per Month",
   home_trust_title: "Recognized & Regulated By",
   home_trust_mof: "Ministry of Finance",
-  home_mission_title: "Our Mission",
+  home_about_title: "About CamCCUL",
   home_services_title: "What We Do",
   home_what_we_do_subtitle:
     "Comprehensive support for credit unions across all 10 regions of Cameroon.",
@@ -100,9 +91,8 @@ const en = {
   home_affiliates_title: "Our Reach Across Cameroon",
   home_reach_subtitle_suffix:
     "affiliate credit unions serving members in every region of the country.",
-  home_reach_headquarters: "CamCCUL Headquarters",
   home_news_title: "Latest News & Circulars",
-  home_view_all: "Learn more →",
+  home_view_all: "View all →",
   home_faq_subtitle:
     "Find answers to common questions about CamCCUL, credit unions, and our services.",
   newsletter_heading: "Stay Updated",
@@ -131,6 +121,7 @@ const en = {
   about_presence_paragraph:
     "CamCCUL operates as the umbrella body for affiliated credit unions organized across all ten regions of Cameroon. Each affiliate operates independently within its community while adhering to the regulatory, reporting, and capacity-building standards set by the League, allowing members nationwide to access consistent, cooperative financial services close to home.",
   about_milestone_present: "Present",
+  about_read_more: "Read more",
 
   // ─── Affiliates page ──────────────────────────────────────────────────
   affiliates_page_title: "Our Affiliate Credit Unions",
@@ -290,20 +281,11 @@ const fr: Record<keyof typeof en, string> = {
   home_hero_button: "Découvrir Nos Services",
   home_glance_title: "La Ligue en un Coup d'Œil",
   home_glance_affiliates_label: "Coopératives Affiliées",
-  home_glance_affiliates_trend: "Décompte en direct de l'annuaire",
   home_glance_regions_label: "Régions Couvertes",
-  home_glance_regions_trend: "Tout le Cameroun",
   home_glance_years_label: "Années de Service",
-  home_glance_years_trend: "Depuis 1968",
-  home_glance_members_label: "Membres Servis",
-  home_glance_members_trend: "[Données en attente]",
-  home_glance2_active_affiliates: "Affiliées Actives",
-  home_glance2_total_members: "Total des Membres",
-  home_glance2_assets_supervised: "Actifs Supervisés",
-  home_glance2_reports_per_month: "Rapports par Mois",
   home_trust_title: "Reconnu et Réglementé Par",
   home_trust_mof: "Ministère des Finances",
-  home_mission_title: "Notre Mission",
+  home_about_title: "À Propos de CamCCUL",
   home_services_title: "Ce Que Nous Faisons",
   home_what_we_do_subtitle:
     "Un accompagnement complet pour les coopératives de crédit dans les 10 régions du Cameroun.",
@@ -327,9 +309,8 @@ const fr: Record<keyof typeof en, string> = {
   home_affiliates_title: "Notre Présence à Travers le Cameroun",
   home_reach_subtitle_suffix:
     "coopératives de crédit affiliées au service de membres dans chaque région du pays.",
-  home_reach_headquarters: "Siège de CamCCUL",
   home_news_title: "Dernières Actualités et Circulaires",
-  home_view_all: "En savoir plus →",
+  home_view_all: "Voir tout →",
   home_faq_subtitle:
     "Trouvez des réponses aux questions courantes sur CamCCUL, les coopératives de crédit et nos services.",
   newsletter_heading: "Restez Informé",
@@ -358,6 +339,7 @@ const fr: Record<keyof typeof en, string> = {
   about_presence_paragraph:
     "CamCCUL agit comme organe faîtier des coopératives de crédit affiliées organisées dans les dix régions du Cameroun. Chaque affiliée opère de manière indépendante au sein de sa communauté tout en respectant les normes de réglementation, de reporting et de renforcement des capacités fixées par la Ligue, permettant aux membres à travers le pays d'accéder à des services financiers coopératifs cohérents, près de chez eux.",
   about_milestone_present: "Présent",
+  about_read_more: "En savoir plus",
 
   // ─── Affiliates page ──────────────────────────────────────────────────
   affiliates_page_title: "Nos Coopératives de Crédit Affiliées",
