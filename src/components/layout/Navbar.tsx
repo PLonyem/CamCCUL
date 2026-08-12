@@ -27,10 +27,17 @@ const serviceLinks: { key: TranslationKey; href: string }[] = [
   { key: "nav_services_digitalization", href: "/services/digitalization" },
 ];
 
+const aboutLinks: { key: TranslationKey; href: string }[] = [
+  { key: "home_about_title", href: "/about" },
+  { key: "home_services_title", href: "/services" },
+];
+
 export function Navbar() {
   const pathname = usePathname();
   const { language, setLanguage, t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
+  const [isAboutOpen, setIsAboutOpen] = useState(false);
+  const [isMobileAboutOpen, setIsMobileAboutOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [isMobileServicesOpen, setIsMobileServicesOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -107,6 +114,53 @@ export function Navbar() {
         <nav className="hidden md:flex items-center gap-8 shrink-0">
           {navLinks.map((link) => {
             const isActive = isLinkActive(link.href);
+
+            if (link.key === "nav_about") {
+              return (
+                <div
+                  key={link.href}
+                  className="relative"
+                  onMouseEnter={() => setIsAboutOpen(true)}
+                  onMouseLeave={() => setIsAboutOpen(false)}
+                  onFocus={() => setIsAboutOpen(true)}
+                  onBlur={(e) => {
+                    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                      setIsAboutOpen(false);
+                    }
+                  }}
+                >
+                  <span
+                    className={cn(
+                      "flex items-center gap-1 text-sm font-medium text-primary-700 hover:text-primary-600 transition-colors py-2 cursor-default",
+                      isActive && "text-primary-600 font-semibold"
+                    )}
+                  >
+                    {t(link.key)}
+                    <ChevronDown className="h-3.5 w-3.5" />
+                  </span>
+
+                  <div
+                    className={cn(
+                      "absolute left-0 top-full w-56 rounded-lg border border-primary-100 bg-white shadow-lg py-2 transition-opacity duration-150",
+                      isAboutOpen
+                        ? "opacity-100 visible"
+                        : "opacity-0 invisible pointer-events-none"
+                    )}
+                  >
+                    {aboutLinks.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setIsAboutOpen(false)}
+                        className="block px-4 py-2.5 text-sm text-primary-700 hover:bg-primary-50 rounded-md transition-colors"
+                      >
+                        {t(item.key)}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              );
+            }
 
             if (link.key === "nav_services") {
               return (
@@ -227,6 +281,56 @@ export function Navbar() {
         <nav className="flex flex-col">
           {navLinks.map((link) => {
             const isActive = isLinkActive(link.href);
+
+            if (link.key === "nav_about") {
+              return (
+                <div key={link.href} className="border-b border-primary-100">
+                  <div className="flex items-center justify-between">
+                    <Link
+                      href={link.href}
+                      onClick={closeMobileMenu}
+                      className={cn(
+                        "flex-1 py-4 text-lg font-medium text-primary-700",
+                        isActive && "text-primary-600 font-semibold"
+                      )}
+                    >
+                      {t(link.key)}
+                    </Link>
+                    <button
+                      type="button"
+                      aria-label={t("nav_about_toggle_aria")}
+                      aria-expanded={isMobileAboutOpen}
+                      onClick={() => setIsMobileAboutOpen((prev) => !prev)}
+                      className="inline-flex items-center justify-center min-h-11 min-w-11 p-2 text-primary-500"
+                    >
+                      <ChevronDown
+                        className={cn(
+                          "h-5 w-5 transition-transform",
+                          isMobileAboutOpen && "rotate-180"
+                        )}
+                      />
+                    </button>
+                  </div>
+                  <div
+                    className={cn(
+                      "overflow-hidden pl-4 transition-[max-height] duration-300 ease-in-out",
+                      isMobileAboutOpen ? "max-h-[200px]" : "max-h-0"
+                    )}
+                  >
+                    {aboutLinks.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={closeMobileMenu}
+                        className="block py-3 text-base text-primary-600 hover:text-primary-500"
+                      >
+                        {t(item.key)}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              );
+            }
 
             if (link.key === "nav_services") {
               return (

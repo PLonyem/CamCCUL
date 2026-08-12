@@ -29,6 +29,7 @@ const en = {
   nav_menu_open_aria: "Toggle menu",
   nav_menu_close_aria: "Close menu",
   nav_services_toggle_aria: "Toggle services",
+  nav_about_toggle_aria: "Toggle about",
   nav_find_credit_union: "Find a Credit Union",
 
   // ─── Footer ───────────────────────────────────────────────────────────
@@ -247,6 +248,7 @@ const fr: Record<keyof typeof en, string> = {
   nav_menu_open_aria: "Basculer le menu",
   nav_menu_close_aria: "Fermer le menu",
   nav_services_toggle_aria: "Basculer les services",
+  nav_about_toggle_aria: "Basculer à propos",
   nav_find_credit_union: "Trouver une Coopérative",
 
   // ─── Footer ───────────────────────────────────────────────────────────
