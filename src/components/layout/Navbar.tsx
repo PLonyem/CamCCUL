@@ -38,6 +38,16 @@ export function Navbar() {
   const [isAffiliatesOpen, setIsAffiliatesOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [isMobileServicesOpen, setIsMobileServicesOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    function handleScroll() {
+      setIsScrolled(window.scrollY > 0);
+    }
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Close the mobile menu on navigation. Adjusted during render (rather than
   // in an effect) so the menu never flashes open on the destination page.
@@ -78,7 +88,12 @@ export function Navbar() {
   );
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-gray-200">
+    <header
+      className={cn(
+        "sticky top-0 z-40 bg-white border-b border-gray-200 transition-shadow",
+        isScrolled && "shadow-sm"
+      )}
+    >
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
         <Link href="/" className="flex items-center gap-3 min-w-0">
           <div className="w-10 h-10 rounded-lg bg-white ring-1 ring-gray-200 flex items-center justify-center overflow-hidden p-1 shrink-0">
@@ -217,6 +232,12 @@ export function Navbar() {
         </nav>
 
         <div className="flex items-center gap-2 shrink-0">
+          <Link
+            href="/affiliates"
+            className="hidden md:inline-flex items-center bg-primary-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors"
+          >
+            {t("nav_find_credit_union")}
+          </Link>
           <ChatbotTrigger />
           {languageToggle}
 
@@ -384,6 +405,14 @@ export function Navbar() {
             );
           })}
         </nav>
+
+        <Link
+          href="/affiliates"
+          onClick={closeMobileMenu}
+          className="mt-6 flex items-center justify-center w-full bg-primary-500 text-white px-4 py-3 rounded-lg text-base font-medium hover:bg-primary-600 transition-colors"
+        >
+          {t("nav_find_credit_union")}
+        </Link>
       </div>
     </header>
   );

@@ -31,6 +31,7 @@ const en = {
   nav_menu_close_aria: "Close menu",
   nav_services_toggle_aria: "Toggle services",
   nav_regions_toggle_aria: "Toggle regions",
+  nav_find_credit_union: "Find a Credit Union",
 
   // ─── Footer ───────────────────────────────────────────────────────────
   footer_tagline: "Cameroon Cooperative Credit Union League",
@@ -57,7 +58,8 @@ const en = {
 
   // ─── Homepage ─────────────────────────────────────────────────────────
   home_hero_badge: "Regulated by COBAC",
-  home_hero_title: "Supervising 220+ Credit Unions Across Cameroon",
+  home_hero_title_prefix: "Supervising",
+  home_hero_title_suffix: "Credit Unions Across Cameroon",
   home_hero_subtitle:
     "Empowering financial inclusion through transparent regulation, modern technology, and capacity building for cooperative credit unions since 1968.",
   home_hero_button: "Explore Our Services",
@@ -70,15 +72,16 @@ const en = {
   home_glance_years_trend: "Since 1968",
   home_glance_members_label: "Members Served",
   home_glance_members_trend: "[Data pending]",
+  home_glance2_active_affiliates: "Active Affiliates",
+  home_glance2_total_members: "Total Members",
+  home_glance2_assets_supervised: "Assets Supervised",
+  home_glance2_reports_per_month: "Reports per Month",
   home_trust_title: "Recognized & Regulated By",
   home_trust_mof: "Ministry of Finance",
   home_mission_title: "Our Mission",
-  home_mission_placeholder:
-    "CamCCUL's mission statement will appear here. This placeholder text demonstrates the layout and formatting of the mission section. The official mission statement will be provided by the League's communications department.",
-  home_mission_card_financial_inclusion: "Financial Inclusion",
-  home_mission_card_placeholder:
-    "[Service description to be provided by CamCCUL. This placeholder demonstrates the services section layout.]",
   home_services_title: "What We Do",
+  home_what_we_do_subtitle:
+    "Comprehensive support for credit unions across all 10 regions of Cameroon.",
   home_service_regulatory_desc:
     "As the apex supervisory body for cooperative credit unions in Cameroon, CamCCUL is responsible for ensuring that every affiliate operates in compliance with COBAC regulations and international best practices. Our supervision framework is designed to protect member deposits, maintain financial stability, and promote confidence in the cooperative financial sector.",
   home_service_auditing_desc:
@@ -86,30 +89,27 @@ const en = {
   home_service_capacity_desc:
     "CamCCUL offers robust capacity building training for its affiliate credit unions, equipping staff with essential skills and knowledge to manage their institutions effectively.",
   home_service_digitalization_desc:
-    "Spearheading the digitalization of our 220 affiliate credit unions, streamlining operations and enhancing service delivery through innovative technology.",
-  home_learn_more: "Learn more",
+    "Spearheading the digitalization of our {count} affiliate credit unions, streamlining operations and enhancing service delivery through innovative technology.",
+  home_service_regulatory_short:
+    "Ensuring every affiliate credit union complies with COBAC regulations to protect member deposits and maintain financial stability.",
+  home_service_auditing_short:
+    "Independent, thorough audits of every affiliate's finances and controls — protecting member savings through transparent oversight.",
+  home_service_capacity_short:
+    "Training programs equipping credit union staff and boards with the skills to manage their institutions effectively.",
+  home_service_digitalization_short:
+    "Modernizing credit union operations with digital tools for faster reporting, better oversight, and improved member service.",
+  home_learn_more: "Learn more →",
   home_affiliates_title: "Our Reach Across Cameroon",
-  home_affiliates_subtitle:
-    "Affiliated credit unions organized across all 10 regions of Cameroon.",
-  home_stat_regions: "Regions",
-  home_stat_unions: "Unions",
-  home_stat_members: "Members",
-  home_stat_assets: "Assets",
-  home_find_cu_button: "Find a Credit Union Near You",
-  home_news_title: "Latest News & Updates",
-  home_view_all: "View All",
-  home_faq_title: "Have Questions?",
+  home_reach_subtitle_suffix:
+    "affiliate credit unions serving members in every region of the country.",
+  home_reach_headquarters: "CamCCUL Headquarters",
+  home_news_title: "Latest News & Circulars",
+  home_view_all: "Learn more →",
   home_faq_subtitle:
     "Find answers to common questions about CamCCUL, credit unions, and our services.",
-  home_faq_button: "View FAQs",
-  home_connect_title: "Connect With Us",
-  home_connect_subtitle:
-    "Follow CamCCUL on Facebook for the latest updates, event photos, and community stories.",
-  home_connect_handle: "Follow us @CamCCUL",
-  home_connect_description:
-    "Get real-time updates on League activities, training sessions, AGM coverage, and stories from credit unions across Cameroon.",
-  home_connect_button: "Follow CamCCUL on Facebook",
-  home_connect_note: "Opens in a new tab",
+  newsletter_heading: "Stay Updated",
+  newsletter_placeholder: "Your email address",
+  newsletter_button: "Subscribe",
 
   // ─── FAQ page ─────────────────────────────────────────────────────────
   faq_page_title: "Frequently Asked Questions",
@@ -129,7 +129,7 @@ const en = {
     "The dedicated leadership guiding CamCCUL's strategic direction.",
   about_presence_title: "Our Presence Across Cameroon",
   about_presence_subtitle:
-    "220+ affiliate credit unions serving members in every region of the country.",
+    "{count}+ affiliate credit unions serving members in every region of the country.",
   about_presence_paragraph:
     "CamCCUL operates as the umbrella body for affiliated credit unions organized across all ten regions of Cameroon. Each affiliate operates independently within its community while adhering to the regulatory, reporting, and capacity-building standards set by the League, allowing members nationwide to access consistent, cooperative financial services close to home.",
   about_milestone_present: "Present",
@@ -207,18 +207,18 @@ const en = {
   // ─── Services index page ──────────────────────────────────────────────
   services_page_title: "Our Services",
   services_page_subtitle:
-    "CamCCUL supports its 220+ affiliate credit unions through four core services: regulatory supervision, financial auditing, capacity building, and digitalization.",
+    "CamCCUL supports its {count}+ affiliate credit unions through four core services: regulatory supervision, financial auditing, capacity building, and digitalization.",
   services_learn_more: "Learn more",
 
   // ─── Services detail pages (hero subtitles) ──────────────────────────
   service_regulatory_subtitle:
-    "Ensuring compliance and financial stability across all 220 affiliate credit unions.",
+    "Ensuring compliance and financial stability across all {count} affiliate credit unions.",
   service_auditing_subtitle:
     "Independent, rigorous audits ensuring transparency and accountability across all affiliate credit unions.",
   service_capacity_subtitle:
     "Equipping credit union staff with essential skills, knowledge, and tools for operational excellence.",
   service_digitalization_subtitle:
-    "Transforming operations and service delivery through innovative technology across all 220 affiliate credit unions.",
+    "Transforming operations and service delivery through innovative technology across all {count} affiliate credit unions.",
 
   // ─── Not found / loading ──────────────────────────────────────────────
   notfound_title: "Page Not Found",
@@ -260,6 +260,7 @@ const fr: Record<keyof typeof en, string> = {
   nav_menu_close_aria: "Fermer le menu",
   nav_services_toggle_aria: "Basculer les services",
   nav_regions_toggle_aria: "Basculer les régions",
+  nav_find_credit_union: "Trouver une Coopérative",
 
   // ─── Footer ───────────────────────────────────────────────────────────
   footer_tagline: "Ligue des Coopératives de Crédit du Cameroun",
@@ -286,8 +287,8 @@ const fr: Record<keyof typeof en, string> = {
 
   // ─── Homepage ─────────────────────────────────────────────────────────
   home_hero_badge: "Réglementé par la COBAC",
-  home_hero_title:
-    "Superviser Plus de 220 Coopératives de Crédit à Travers le Cameroun",
+  home_hero_title_prefix: "Superviser",
+  home_hero_title_suffix: "Coopératives de Crédit à Travers le Cameroun",
   home_hero_subtitle:
     "Promouvoir l'inclusion financière par une réglementation transparente, la technologie moderne et le renforcement des capacités des coopératives de crédit depuis 1968.",
   home_hero_button: "Découvrir Nos Services",
@@ -300,15 +301,16 @@ const fr: Record<keyof typeof en, string> = {
   home_glance_years_trend: "Depuis 1968",
   home_glance_members_label: "Membres Servis",
   home_glance_members_trend: "[Données en attente]",
+  home_glance2_active_affiliates: "Affiliées Actives",
+  home_glance2_total_members: "Total des Membres",
+  home_glance2_assets_supervised: "Actifs Supervisés",
+  home_glance2_reports_per_month: "Rapports par Mois",
   home_trust_title: "Reconnu et Réglementé Par",
   home_trust_mof: "Ministère des Finances",
   home_mission_title: "Notre Mission",
-  home_mission_placeholder:
-    "La déclaration de mission de CamCCUL apparaîtra ici. Ce texte provisoire illustre la mise en page et le format de la section mission. La déclaration de mission officielle sera fournie par le département de communication de la Ligue.",
-  home_mission_card_financial_inclusion: "Inclusion Financière",
-  home_mission_card_placeholder:
-    "[Description du service à fournir par CamCCUL. Ce texte provisoire illustre la mise en page de la section services.]",
   home_services_title: "Ce Que Nous Faisons",
+  home_what_we_do_subtitle:
+    "Un accompagnement complet pour les coopératives de crédit dans les 10 régions du Cameroun.",
   home_service_regulatory_desc:
     "En tant qu'organe suprême de supervision des coopératives de crédit au Cameroun, CamCCUL veille à ce que chaque affilié opère en conformité avec la réglementation de la COBAC et les meilleures pratiques internationales. Notre cadre de supervision est conçu pour protéger les dépôts des membres, maintenir la stabilité financière et promouvoir la confiance dans le secteur financier coopératif.",
   home_service_auditing_desc:
@@ -316,30 +318,27 @@ const fr: Record<keyof typeof en, string> = {
   home_service_capacity_desc:
     "CamCCUL propose des programmes solides de renforcement des capacités pour ses coopératives de crédit affiliées, dotant le personnel des compétences et connaissances essentielles pour gérer efficacement leurs institutions.",
   home_service_digitalization_desc:
-    "Pilotage de la digitalisation de nos 220 coopératives de crédit affiliées, rationalisant les opérations et améliorant la prestation de services grâce à des technologies innovantes.",
-  home_learn_more: "En savoir plus",
+    "Pilotage de la digitalisation de nos {count} coopératives de crédit affiliées, rationalisant les opérations et améliorant la prestation de services grâce à des technologies innovantes.",
+  home_service_regulatory_short:
+    "Nous veillons à ce que chaque coopérative affiliée respecte la réglementation de la COBAC pour protéger l'épargne des membres.",
+  home_service_auditing_short:
+    "Des audits indépendants et rigoureux des finances de chaque affiliée, pour protéger l'épargne des membres en toute transparence.",
+  home_service_capacity_short:
+    "Des formations qui dotent le personnel et les conseils des coopératives des compétences nécessaires pour bien gérer leurs institutions.",
+  home_service_digitalization_short:
+    "Nous modernisons les opérations des coopératives grâce au numérique : rapports plus rapides, meilleure supervision, meilleur service.",
+  home_learn_more: "En savoir plus →",
   home_affiliates_title: "Notre Présence à Travers le Cameroun",
-  home_affiliates_subtitle:
-    "Coopératives de crédit affiliées organisées dans les 10 régions du Cameroun.",
-  home_stat_regions: "Régions",
-  home_stat_unions: "Coopératives",
-  home_stat_members: "Membres",
-  home_stat_assets: "Actifs",
-  home_find_cu_button: "Trouvez une Coopérative Près de Chez Vous",
-  home_news_title: "Dernières Actualités",
-  home_view_all: "Voir Tout",
-  home_faq_title: "Des Questions ?",
+  home_reach_subtitle_suffix:
+    "coopératives de crédit affiliées au service de membres dans chaque région du pays.",
+  home_reach_headquarters: "Siège de CamCCUL",
+  home_news_title: "Dernières Actualités et Circulaires",
+  home_view_all: "En savoir plus →",
   home_faq_subtitle:
     "Trouvez des réponses aux questions courantes sur CamCCUL, les coopératives de crédit et nos services.",
-  home_faq_button: "Voir la FAQ",
-  home_connect_title: "Restez Connectés",
-  home_connect_subtitle:
-    "Suivez CamCCUL sur Facebook pour les dernières actualités, photos d'événements et récits de la communauté.",
-  home_connect_handle: "Suivez-nous @CamCCUL",
-  home_connect_description:
-    "Recevez des mises à jour en temps réel sur les activités de la Ligue, les sessions de formation, la couverture des AGO et les récits des coopératives de crédit à travers le Cameroun.",
-  home_connect_button: "Suivre CamCCUL sur Facebook",
-  home_connect_note: "S'ouvre dans un nouvel onglet",
+  newsletter_heading: "Restez Informé",
+  newsletter_placeholder: "Votre adresse courriel",
+  newsletter_button: "S'abonner",
 
   // ─── FAQ page ─────────────────────────────────────────────────────────
   faq_page_title: "Foire Aux Questions",
@@ -359,7 +358,7 @@ const fr: Record<keyof typeof en, string> = {
     "La direction dévouée qui guide l'orientation stratégique de CamCCUL.",
   about_presence_title: "Notre Présence à Travers le Cameroun",
   about_presence_subtitle:
-    "Plus de 220 coopératives de crédit affiliées au service des membres dans chaque région du pays.",
+    "Plus de {count} coopératives de crédit affiliées au service des membres dans chaque région du pays.",
   about_presence_paragraph:
     "CamCCUL agit comme organe faîtier des coopératives de crédit affiliées organisées dans les dix régions du Cameroun. Chaque affiliée opère de manière indépendante au sein de sa communauté tout en respectant les normes de réglementation, de reporting et de renforcement des capacités fixées par la Ligue, permettant aux membres à travers le pays d'accéder à des services financiers coopératifs cohérents, près de chez eux.",
   about_milestone_present: "Présent",
@@ -437,18 +436,18 @@ const fr: Record<keyof typeof en, string> = {
   // ─── Services index page ──────────────────────────────────────────────
   services_page_title: "Nos Services",
   services_page_subtitle:
-    "CamCCUL accompagne ses plus de 220 coopératives de crédit affiliées à travers quatre services essentiels : supervision réglementaire, audit financier, renforcement des capacités et digitalisation.",
+    "CamCCUL accompagne ses plus de {count} coopératives de crédit affiliées à travers quatre services essentiels : supervision réglementaire, audit financier, renforcement des capacités et digitalisation.",
   services_learn_more: "En savoir plus",
 
   // ─── Services detail pages (hero subtitles) ──────────────────────────
   service_regulatory_subtitle:
-    "Garantir la conformité et la stabilité financière des 220 coopératives de crédit affiliées.",
+    "Garantir la conformité et la stabilité financière des {count} coopératives de crédit affiliées.",
   service_auditing_subtitle:
     "Des audits indépendants et rigoureux garantissant transparence et responsabilité dans toutes les coopératives de crédit affiliées.",
   service_capacity_subtitle:
     "Doter le personnel des coopératives de crédit des compétences, connaissances et outils essentiels à l'excellence opérationnelle.",
   service_digitalization_subtitle:
-    "Transformer les opérations et la prestation de services grâce à des technologies innovantes dans les 220 coopératives de crédit affiliées.",
+    "Transformer les opérations et la prestation de services grâce à des technologies innovantes dans les {count} coopératives de crédit affiliées.",
 
   // ─── Not found / loading ──────────────────────────────────────────────
   notfound_title: "Page Introuvable",

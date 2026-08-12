@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/Card";
 import { regions, regionLabels } from "@/lib/mock-data";
 import { useLanguage } from "@/context/LanguageContext";
 import { localize } from "@/lib/i18n";
+import { isPlaceholder } from "@/lib/utils";
 
 export interface PublicAffiliate {
   id: string;
@@ -123,12 +124,14 @@ function AffiliatesContent({ affiliates }: { affiliates: PublicAffiliate[] }) {
                         {affiliate.code}
                       </span>
                     </div>
-                    <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-sm text-gray-600">
-                      <span>
-                        <MapPin className="h-3.5 w-3.5 inline mr-1" />
-                        {affiliate.city}
-                      </span>
-                    </div>
+                    {!isPlaceholder(affiliate.city) && (
+                      <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-sm text-gray-600">
+                        <span>
+                          <MapPin className="h-3.5 w-3.5 inline mr-1" />
+                          {affiliate.city}
+                        </span>
+                      </div>
+                    )}
                     <p className="text-xs text-gray-400 mt-2">
                       <Phone className="h-3 w-3 inline mr-1" />
                       {t("affiliates_contact_hq_note")}

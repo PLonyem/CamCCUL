@@ -3,7 +3,10 @@ import { Inter, Lexend } from "next/font/google";
 import Script from "next/script";
 import { ChatbotProvider } from "@/components/chatbot/Chatbot";
 import { LanguageProvider } from "@/context/LanguageContext";
+import { affiliates } from "@/lib/mock-data";
 import "./globals.css";
+
+const affiliateCount = affiliates.filter((a) => a.isActive).length;
 
 // Fires on every page, but only acts inside /admin/*: a real reload (F5) on
 // an admin sub-page bounces to /admin before that page's own content is
@@ -24,8 +27,7 @@ const lexend = Lexend({
 
 export const metadata: Metadata = {
   title: "CamCCUL — Cameroon Cooperative Credit Union League",
-  description:
-    "Supervising 220+ credit unions across all 10 regions of Cameroon since 1968.",
+  description: `Supervising ${affiliateCount}+ credit unions across all 10 regions of Cameroon since 1968.`,
 };
 
 export const viewport: Viewport = {

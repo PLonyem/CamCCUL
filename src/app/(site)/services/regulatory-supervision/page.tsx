@@ -6,6 +6,9 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Card } from "@/components/ui/Card";
 import { useLanguage } from "@/context/LanguageContext";
 import { localize, type LocalizedText } from "@/lib/i18n";
+import { affiliates } from "@/lib/mock-data";
+
+const affiliateCount = affiliates.filter((a) => a.isActive).length;
 
 const supervisoryAreas: LocalizedText[] = [
   { en: "Capital Adequacy", fr: "Adéquation des Fonds Propres" },
@@ -52,7 +55,7 @@ export default function RegulatorySupervisionPage() {
     <>
       <PageHero
         title={t("nav_services_regulatory")}
-        subtitle={t("service_regulatory_subtitle")}
+        subtitle={t("service_regulatory_subtitle").replace("{count}", String(affiliateCount))}
         breadcrumb={[
           { label: t("nav_home"), href: "/" },
           { label: t("nav_services"), href: "/services" },

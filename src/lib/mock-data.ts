@@ -2589,7 +2589,7 @@ export const affiliates: Affiliate[] = [
 ];
 
 export const contactInfo: ContactInfo = {
-  address: "P.O. Box 2011, Bamenda, North West Region, Cameroon",
+  address: "Commercial Avenue, Bamenda — Opposite MTN Office",
   phone: "(237) 233 44 57 66",
   email: "camccul@camccul.cm",
   officeHours: {
@@ -3866,7 +3866,7 @@ export const services: Service[] = [
   {
     icon: "Network",
     title: "Digitalization of Credit Unions",
-    description: "Spearheading the digitalization of our 220 affiliate credit unions, streamlining operations and enhancing service delivery through innovative technology.",
+    description: "Spearheading the digitalization of our affiliate credit unions, streamlining operations and enhancing service delivery through innovative technology.",
     href: "/services/digitalization",
   },
 ];

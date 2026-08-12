@@ -1,10 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { resources as mockResources } from "@/lib/mock-data";
+import { isPlaceholder } from "@/lib/utils";
 import { ResourcesPageClient, type PublicResource } from "./ResourcesPageClient";
 
 async function getActiveResources(): Promise<PublicResource[]> {
   try {
-    return await prisma.resource.findMany({
+    const resources = await prisma.resource.findMany({
       where: { isActive: true },
       orderBy: { title: "asc" },
       select: {
@@ -15,6 +16,10 @@ async function getActiveResources(): Promise<PublicResource[]> {
         fileType: true,
       },
     });
+    // The seed script copied mock-data.ts's placeholder resources straight
+    // into the database, so even the "real" query path can still return
+    // "[Document Title — to be provided by CamCCUL]" rows.
+    return resources.filter((r) => !isPlaceholder(r.title));
   } catch (error) {
     console.error(
       "Database unavailable, falling back to mock resource data:",
@@ -24,6 +29,7 @@ async function getActiveResources(): Promise<PublicResource[]> {
     // schema only has a single string field, so English is used here to
     // match how these were originally seeded.
     return [...mockResources]
+      .filter((r) => !isPlaceholder(r.title.en))
       .map((r) => ({
         id: r.id,
         title: r.title.en,

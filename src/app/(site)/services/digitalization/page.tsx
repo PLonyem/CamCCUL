@@ -10,6 +10,9 @@ import { buttonVariants } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
 import { localize, type LocalizedText } from "@/lib/i18n";
+import { affiliates } from "@/lib/mock-data";
+
+const affiliateCount = affiliates.filter((a) => a.isActive).length;
 
 const whyItMatters: { icon: typeof Clock; title: LocalizedText; description: LocalizedText }[] = [
   {
@@ -24,8 +27,8 @@ const whyItMatters: { icon: typeof Clock; title: LocalizedText; description: Loc
     icon: Shield,
     title: { en: "Better Oversight", fr: "Meilleure Supervision" },
     description: {
-      en: "Automated validation and real-time dashboards help League auditors identify risks early, protecting member savings across all 220 affiliates.",
-      fr: "La validation automatisée et les tableaux de bord en temps réel aident les auditeurs de la Ligue à identifier les risques rapidement, protégeant l'épargne des membres dans les 220 affiliées.",
+      en: `Automated validation and real-time dashboards help League auditors identify risks early, protecting member savings across all ${affiliateCount} affiliates.`,
+      fr: `La validation automatisée et les tableaux de bord en temps réel aident les auditeurs de la Ligue à identifier les risques rapidement, protégeant l'épargne des membres dans les ${affiliateCount} affiliées.`,
     },
   },
   {
@@ -40,8 +43,8 @@ const whyItMatters: { icon: typeof Clock; title: LocalizedText; description: Loc
 
 const phase1Features: LocalizedText[] = [
   {
-    en: "Searchable directory of all 220+ affiliate credit unions across all 10 regions",
-    fr: "Annuaire consultable des plus de 220 coopératives de crédit affiliées dans les 10 régions",
+    en: `Searchable directory of all ${affiliateCount}+ affiliate credit unions across all 10 regions`,
+    fr: `Annuaire consultable des plus de ${affiliateCount} coopératives de crédit affiliées dans les 10 régions`,
   },
   {
     en: "Downloadable COBAC templates, circulars, and training materials",
@@ -102,7 +105,7 @@ export default function DigitalizationPage() {
     <>
       <PageHero
         title={t("nav_services_digitalization")}
-        subtitle={t("service_digitalization_subtitle")}
+        subtitle={t("service_digitalization_subtitle").replace("{count}", String(affiliateCount))}
         breadcrumb={[
           { label: t("nav_home"), href: "/" },
           { label: t("nav_services"), href: "/services" },

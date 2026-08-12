@@ -5,9 +5,11 @@ import type { LucideIcon } from "lucide-react";
 import { Shield, FileSearch, GraduationCap, Network, ArrowRight } from "lucide-react";
 import { PageHero } from "@/components/layout/PageHero";
 import { Card } from "@/components/ui/Card";
-import { services } from "@/lib/mock-data";
+import { services, affiliates } from "@/lib/mock-data";
 import { useLanguage } from "@/context/LanguageContext";
 import type { TranslationKey } from "@/lib/i18n";
+
+const affiliateCount = affiliates.filter((a) => a.isActive).length;
 
 const serviceIcons: Record<string, LucideIcon> = {
   Shield,
@@ -42,7 +44,7 @@ export default function ServicesPage() {
     <>
       <PageHero
         title={t("services_page_title")}
-        subtitle={t("services_page_subtitle")}
+        subtitle={t("services_page_subtitle").replace("{count}", String(affiliateCount))}
         breadcrumb={[
           { label: t("nav_home"), href: "/" },
           { label: t("nav_services"), href: "/services" },
@@ -64,7 +66,10 @@ export default function ServicesPage() {
                     {translation ? t(translation.titleKey) : service.title}
                   </h2>
                   <p className="text-gray-600 text-sm leading-relaxed mb-6 flex-1">
-                    {translation ? t(translation.descriptionKey) : service.description}
+                    {(translation ? t(translation.descriptionKey) : service.description).replace(
+                      "{count}",
+                      String(affiliateCount)
+                    )}
                   </p>
                   <Link
                     href={service.href}

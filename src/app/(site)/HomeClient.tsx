@@ -4,34 +4,25 @@ import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import {
   Shield,
-  ArrowRight,
   Building2,
   Globe,
   Calendar,
   Users,
+  Landmark,
+  FileText,
   GraduationCap,
   FileSearch,
   Network,
-  HelpCircle,
+  MapPin,
 } from "lucide-react";
-import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
-import { AnimatedSection } from "@/components/ui/AnimatedSection";
-import { FacebookIcon } from "@/components/ui/SocialIcon";
 import { buttonVariants } from "@/components/ui/Button";
-import { cn } from "@/lib/utils";
-import { regions, regionLabels, services, CATEGORIES, type NewsCategory } from "@/lib/mock-data";
+import { regions, regionLabels, services, CATEGORIES, mission } from "@/lib/mock-data";
 import { useLanguage } from "@/context/LanguageContext";
 import { localize, type TranslationKey } from "@/lib/i18n";
 
 const yearsOfService = new Date().getFullYear() - 1968;
-
-const missionCards: { icon: LucideIcon; titleKey: TranslationKey }[] = [
-  { icon: Shield, titleKey: "nav_services_regulatory" },
-  { icon: GraduationCap, titleKey: "nav_services_capacity" },
-  { icon: Users, titleKey: "home_mission_card_financial_inclusion" },
-];
 
 const serviceIcons: Record<string, LucideIcon> = {
   Shield,
@@ -40,39 +31,30 @@ const serviceIcons: Record<string, LucideIcon> = {
   Network,
 };
 
-const serviceTranslationKeys: Record<string, { titleKey: TranslationKey; descriptionKey: TranslationKey }> = {
+const serviceTranslationKeys: Record<string, { titleKey: TranslationKey; shortDescriptionKey: TranslationKey }> = {
   "/services/regulatory-supervision": {
     titleKey: "nav_services_regulatory",
-    descriptionKey: "home_service_regulatory_desc",
+    shortDescriptionKey: "home_service_regulatory_short",
   },
   "/services/financial-auditing": {
     titleKey: "nav_services_auditing",
-    descriptionKey: "home_service_auditing_desc",
+    shortDescriptionKey: "home_service_auditing_short",
   },
   "/services/capacity-building": {
     titleKey: "nav_services_capacity",
-    descriptionKey: "home_service_capacity_desc",
+    shortDescriptionKey: "home_service_capacity_short",
   },
   "/services/digitalization": {
     titleKey: "nav_services_digitalization",
-    descriptionKey: "home_service_digitalization_desc",
+    shortDescriptionKey: "home_service_digitalization_short",
   },
 };
 
-const categoryVariant: Record<
-  NewsCategory,
-  "default" | "primary" | "accent" | "success" | "warning" | "danger"
-> = {
-  "network-news": "primary",
-  projects: "accent",
-  "training-events": "warning",
-  insights: "success",
-  Circular: "danger",
-  Training: "accent",
-  COBAC: "primary",
-  Announcement: "success",
-  Event: "default",
-};
+// The mission statement is authored in mock-data.ts alongside the site's
+// other real-world content (contact info, affiliates); until CamCCUL
+// supplies the real text it stays a placeholder, and this band hides
+// itself rather than show filler copy.
+const isMissionPlaceholder = mission.en.toLowerCase().includes("placeholder");
 
 function formatDate(dateStr: string, language: "en" | "fr") {
   return new Date(dateStr).toLocaleDateString(language === "fr" ? "fr-FR" : "en-US", {
@@ -103,7 +85,7 @@ export function HomeClient({ affiliateCount, regionCounts, recentArticles }: Hom
   const { t, language } = useLanguage();
   const trustBar = ["COBAC", t("home_trust_mof"), "ANEMCAM", "ACCOSCA"];
 
-  const glanceStats: { icon: LucideIcon; value: string; labelKey: TranslationKey; trendKey: TranslationKey }[] = [
+  const allGlanceStats: { icon: LucideIcon; value: string; labelKey: TranslationKey; trendKey: TranslationKey }[] = [
     {
       icon: Building2,
       value: `${affiliateCount}+`,
@@ -129,6 +111,22 @@ export function HomeClient({ affiliateCount, regionCounts, recentArticles }: Hom
       trendKey: "home_glance_members_trend",
     },
   ];
+  const glanceStats = allGlanceStats.filter((stat) => stat.value !== "[TBD]");
+
+  // Total Members, Assets Supervised, and Reports per Month have no data
+  // source yet (no such fields exist anywhere in the schema or mock data) —
+  // each card is dropped rather than showing a fabricated or "TBD" number.
+  const glanceCards: { icon: LucideIcon; value: number | null; labelKey: TranslationKey }[] = [
+    { icon: Building2, value: affiliateCount, labelKey: "home_glance2_active_affiliates" },
+    { icon: Users, value: null, labelKey: "home_glance2_total_members" },
+    { icon: Landmark, value: null, labelKey: "home_glance2_assets_supervised" },
+    { icon: FileText, value: null, labelKey: "home_glance2_reports_per_month" },
+  ].filter(
+    (card): card is { icon: LucideIcon; value: number; labelKey: TranslationKey } =>
+      card.value !== null
+  );
+
+  const missionText = localize(mission, language);
 
   return (
     <>
@@ -143,7 +141,7 @@ export function HomeClient({ affiliateCount, regionCounts, recentArticles }: Hom
           }}
         />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6 py-24 md:py-32 grid md:grid-cols-2 gap-12 items-center">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 py-24 md:py-32 grid md:grid-cols-2 gap-12 items-center">
           <div>
             <span className="inline-flex items-center gap-2 rounded-full bg-white/20 backdrop-blur px-4 py-1.5 text-sm text-white mb-6">
               <Shield className="h-4 w-4" />
@@ -151,7 +149,7 @@ export function HomeClient({ affiliateCount, regionCounts, recentArticles }: Hom
             </span>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-white leading-tight">
-              {t("home_hero_title")}
+              {t("home_hero_title_prefix")} {affiliateCount}+ {t("home_hero_title_suffix")}
             </h1>
 
             <p className="text-lg text-gray-200 mt-6 max-w-lg">
@@ -160,10 +158,14 @@ export function HomeClient({ affiliateCount, regionCounts, recentArticles }: Hom
 
             <div className="mt-8 flex flex-wrap gap-4">
               <Link
+                href="/affiliates"
+                className={buttonVariants({ variant: "default", size: "lg" })}
+              >
+                {t("nav_find_credit_union")}
+              </Link>
+              <Link
                 href="/services"
-                className={cn(
-                  buttonVariants({ variant: "accent", size: "lg" })
-                )}
+                className="inline-flex items-center gap-2 rounded-lg font-medium transition-colors border border-white/40 text-white hover:bg-white/10 px-6 py-3 text-base"
               >
                 {t("home_hero_button")}
               </Link>
@@ -206,18 +208,38 @@ export function HomeClient({ affiliateCount, regionCounts, recentArticles }: Hom
         </svg>
       </section>
 
-      {/* SECTION 2: TRUST BAR */}
-      <section className="bg-white border-b border-gray-200 py-8">
-        <div className="max-w-7xl mx-auto px-6">
-          <p className="text-center text-sm uppercase tracking-wider text-gray-400 mb-6">
-            {t("home_trust_title")}
-          </p>
-          <div className="flex flex-wrap justify-center gap-8 md:gap-16">
+      {/* BAND 2: LEAGUE AT A GLANCE */}
+      <section className="bg-white py-14 md:py-24">
+        <div className="max-w-7xl mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-display font-bold text-primary-900 text-center">
+            {t("home_glance_title")}
+          </h2>
+
+          <div className="mt-12 flex flex-wrap justify-center gap-6">
+            {glanceCards.map((card) => (
+              <div
+                key={card.labelKey}
+                className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 w-full sm:w-56 text-center"
+              >
+                <card.icon className="h-6 w-6 text-primary-600 mx-auto mb-3" />
+                <p className="text-2xl font-bold text-primary-900">
+                  {card.value}+
+                </p>
+                <p className="text-sm text-gray-600 mt-1">{t(card.labelKey)}</p>
+              </div>
+            ))}
+          </div>
+
+          <div
+            className="mt-12 flex flex-wrap items-center justify-center gap-8"
+            aria-label={t("home_trust_title")}
+          >
             {trustBar.map((name) => (
               <span
                 key={name}
-                className="text-lg font-display font-semibold text-gray-400"
+                className="flex items-center gap-1.5 text-xs text-gray-400"
               >
+                <Shield className="h-3 w-3" />
                 {name}
               </span>
             ))}
@@ -225,103 +247,74 @@ export function HomeClient({ affiliateCount, regionCounts, recentArticles }: Hom
         </div>
       </section>
 
-      {/* SECTION 3: MISSION */}
-      <section id="mission" className="bg-white py-24">
-        <AnimatedSection className="max-w-7xl mx-auto px-6">
-          <SectionHeader align="center" title={t("home_mission_title")} subtitle={t("home_mission_placeholder")} />
-          <div className="mt-12 grid md:grid-cols-3 gap-8">
-            {missionCards.map((card) => (
-              <Card key={card.titleKey} className="p-8">
-                <div className="w-12 h-12 rounded-lg bg-primary-100 flex items-center justify-center mb-4">
-                  <card.icon className="h-6 w-6 text-primary-700" />
-                </div>
-                <h3 className="font-display font-semibold text-lg text-primary-900">
-                  {t(card.titleKey)}
-                </h3>
-                <p className="text-gray-600 mt-2 text-sm">
-                  {t("home_mission_card_placeholder")}
-                </p>
-              </Card>
-            ))}
+      {/* BAND 3: OUR MISSION — hidden until CamCCUL provides real copy */}
+      {!isMissionPlaceholder && (
+        <section className="bg-gray-50 py-14 md:py-24">
+          <div className="max-w-7xl mx-auto px-4 text-center">
+            <h2 className="text-3xl md:text-4xl font-display font-bold text-primary-900">
+              {t("home_mission_title")}
+            </h2>
+            <p className="text-base md:text-lg text-gray-600 max-w-3xl mx-auto mt-4">
+              {missionText}
+            </p>
           </div>
-        </AnimatedSection>
-      </section>
+        </section>
+      )}
 
-      {/* SECTION 4: SERVICES */}
-      <section className="bg-gray-50 py-24">
-        <AnimatedSection className="max-w-7xl mx-auto px-6">
-          <SectionHeader align="center" title={t("home_services_title")} />
-          <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {services.map((service, index) => {
+      {/* BAND 4: WHAT WE DO */}
+      <section className="bg-white py-14 md:py-24">
+        <div className="max-w-7xl mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-display font-bold text-primary-900">
+            {t("home_services_title")}
+          </h2>
+          <p className="text-base md:text-lg text-gray-600 max-w-2xl mt-4">
+            {t("home_what_we_do_subtitle")}
+          </p>
+
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
+            {services.map((service) => {
               const Icon = serviceIcons[service.icon] ?? Shield;
-              const isLast = index === services.length - 1;
               const translation = serviceTranslationKeys[service.href];
               return (
-                <Card
-                  key={service.title}
-                  className={cn(
-                    "p-6 flex flex-col",
-                    isLast &&
-                      "border-accent-500 border-2 shadow-md bg-accent-50"
-                  )}
-                >
-                  <div
-                    className={cn(
-                      "w-12 h-12 rounded-lg flex items-center justify-center mb-4",
-                      isLast
-                        ? "bg-accent-100"
-                        : "bg-primary-100"
-                    )}
-                  >
-                    <Icon
-                      className={cn(
-                        "h-6 w-6",
-                        isLast
-                          ? "text-accent-700"
-                          : "text-primary-700"
-                      )}
-                    />
+                <Card key={service.title} className="p-6 flex flex-col h-full">
+                  <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center mb-4">
+                    <Icon className="h-6 w-6 text-primary-700" />
                   </div>
                   <h3 className="font-display font-semibold text-lg text-primary-900">
                     {translation ? t(translation.titleKey) : service.title}
                   </h3>
-                  <p className="text-gray-600 mt-2 text-sm flex-1">
-                    {translation ? t(translation.descriptionKey) : service.description}
+                  <p className="text-gray-600 mt-2 text-sm md:text-base leading-relaxed flex-1">
+                    {translation ? t(translation.shortDescriptionKey) : service.description}
                   </p>
                   <Link
                     href={service.href}
-                    className={cn(
-                      "inline-flex items-center gap-1 text-sm font-medium mt-4",
-                      isLast
-                        ? "text-accent-600 hover:text-accent-700"
-                        : "text-primary-600 hover:text-primary-700"
-                    )}
+                    className="inline-flex items-center text-sm font-medium text-primary-600 hover:text-primary-700 mt-4"
                   >
                     {t("home_learn_more")}
-                    <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Card>
               );
             })}
           </div>
-        </AnimatedSection>
+        </div>
       </section>
 
-      {/* SECTION 5: AFFILIATES SHOWCASE */}
-      <section className="bg-white py-24">
-        <AnimatedSection className="max-w-7xl mx-auto px-6">
-          <SectionHeader
-            align="center"
-            title={t("home_affiliates_title")}
-            subtitle={t("home_affiliates_subtitle")}
-          />
+      {/* BAND 5: OUR REACH ACROSS CAMEROON */}
+      <section className="bg-gray-50 py-14 md:py-24">
+        <div className="max-w-7xl mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-display font-bold text-primary-900 text-center">
+            {t("home_affiliates_title")}
+          </h2>
+          <p className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto mt-4 text-center">
+            {affiliateCount}+ {t("home_reach_subtitle_suffix")}
+          </p>
 
-          <div className="mt-12 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+          <div className="mt-12 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
             {regionCounts.map(({ region, count }) => (
               <Link
                 key={region}
                 href={`/affiliates?region=${encodeURIComponent(region)}`}
-                className="text-center rounded-xl border border-gray-200 p-4 hover:border-primary-300 hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
+                className="text-center rounded-xl border border-gray-200 shadow-sm bg-white p-4 hover:border-primary-300 transition-colors"
               >
                 <p className="text-2xl font-bold text-primary-900">{count}</p>
                 <p className="text-xs text-gray-500 mt-1">
@@ -331,65 +324,57 @@ export function HomeClient({ affiliateCount, regionCounts, recentArticles }: Hom
             ))}
           </div>
 
-          <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 rounded-2xl bg-primary-50 p-8">
-            <div className="text-center">
-              <p className="text-3xl font-bold text-primary-900">
-                {regions.length}
-              </p>
-              <p className="text-sm text-gray-600 mt-1">{t("home_stat_regions")}</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl font-bold text-primary-900">
-                {affiliateCount}+
-              </p>
-              <p className="text-sm text-gray-600 mt-1">{t("home_stat_unions")}</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl font-bold text-primary-900">[TBD]</p>
-              <p className="text-sm text-gray-600 mt-1">{t("home_stat_members")}</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl font-bold text-primary-900">[TBD]</p>
-              <p className="text-sm text-gray-600 mt-1">{t("home_stat_assets")}</p>
+          <div className="mt-12 max-w-md mx-auto bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 rounded-full bg-primary-100 flex items-center justify-center shrink-0">
+                <MapPin className="h-5 w-5 text-primary-600" />
+              </div>
+              <div>
+                <p className="font-display font-semibold text-primary-900">
+                  {t("home_reach_headquarters")}
+                </p>
+                <p className="text-sm text-gray-600 mt-1">Commercial Avenue, Bamenda</p>
+                <p className="text-sm text-gray-600">Opposite MTN Office</p>
+                <p className="font-mono text-xs text-gray-500 mt-2 select-all">
+                  X42W+MRM
+                </p>
+              </div>
             </div>
           </div>
 
           <div className="mt-12 text-center">
             <Link
               href="/affiliates"
-              className={buttonVariants({ variant: "default", size: "lg" })}
+              className="text-sm font-medium text-primary-600 hover:text-primary-700"
             >
-              {t("home_find_cu_button")}
-              <ArrowRight className="h-5 w-5" />
+              {t("home_learn_more")}
             </Link>
           </div>
-        </AnimatedSection>
+        </div>
       </section>
 
-      {/* SECTION 6: LATEST NEWS */}
-      <section className="bg-gray-50 py-24">
-        <AnimatedSection className="max-w-7xl mx-auto px-6">
-          <div className="flex items-end justify-between mb-12">
-            <SectionHeader title={t("home_news_title")} />
+      {/* BAND 6: LATEST NEWS (last band — gets the larger bottom padding) */}
+      <section className="bg-white pt-14 md:pt-24 pb-24 md:pb-32">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex items-end justify-between flex-wrap gap-4 mb-12">
+            <h2 className="text-3xl md:text-4xl font-display font-bold text-primary-900">
+              {t("home_news_title")}
+            </h2>
             <Link
               href="/news"
-              className="text-sm font-medium text-primary-600 hover:text-primary-700 inline-flex items-center gap-1"
+              className="text-sm font-medium text-primary-600 hover:text-primary-700"
             >
               {t("home_view_all")}
-              <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-6">
             {recentArticles
               .filter((article) => article.language === language)
               .slice(0, 3)
               .map((article) => (
-                <Card key={article.id} className="p-6 flex flex-col">
-                  <Badge
-                    variant={categoryVariant[article.category as NewsCategory] ?? "default"}
-                    className="w-fit mb-3"
-                  >
+                <Card key={article.id} className="p-6 flex flex-col h-full">
+                  <Badge variant="default" className="w-fit mb-3">
                     {localize(
                       CATEGORIES.find((c) => c.value === article.category)?.label ?? {
                         en: article.category,
@@ -401,84 +386,19 @@ export function HomeClient({ affiliateCount, regionCounts, recentArticles }: Hom
                   <h3 className="font-display font-semibold text-lg text-primary-900">
                     <Link
                       href={`/news/${article.slug}`}
-                      className="hover:text-accent-600 transition-colors"
+                      className="hover:text-primary-600 transition-colors"
                     >
                       {article.title}
                     </Link>
                   </h3>
-                  <p className="text-gray-600 mt-2 text-sm flex-1 line-clamp-2">
-                    {article.excerpt}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-4">
+                  <p className="text-xs text-gray-400 mt-2">
                     {formatDate(article.publishedAt, language)}
                   </p>
-                  <Link
-                    href={`/news/${article.slug}`}
-                    className="text-sm font-medium text-accent-600 hover:text-accent-700 inline-flex items-center gap-1 mt-3"
-                  >
-                    {t("news_read_more_cta")}
-                    <ArrowRight className="h-4 w-4 inline" />
-                  </Link>
+                  <p className="text-gray-600 mt-2 text-sm md:text-base leading-relaxed flex-1 line-clamp-2">
+                    {article.excerpt}
+                  </p>
                 </Card>
               ))}
-          </div>
-        </AnimatedSection>
-      </section>
-
-      {/* SECTION 7: FAQ */}
-      <section className="bg-white py-24 text-center">
-        <AnimatedSection className="max-w-2xl mx-auto px-6 flex flex-col items-center">
-          <div className="w-14 h-14 rounded-full bg-primary-100 flex items-center justify-center mb-6">
-            <HelpCircle className="h-7 w-7 text-primary-700" />
-          </div>
-          <h2 className="font-display text-3xl font-bold text-primary-900">
-            {t("home_faq_title")}
-          </h2>
-          <p className="text-gray-600 mt-4">
-            {t("home_faq_subtitle")}
-          </p>
-          <Link
-            href="/faq"
-            className={cn(buttonVariants({ variant: "default", size: "lg" }), "mt-8")}
-          >
-            {t("home_faq_button")}
-            <ArrowRight className="h-5 w-5" />
-          </Link>
-        </AnimatedSection>
-      </section>
-
-      {/* SECTION 8: CONNECT WITH US */}
-      <section className="bg-white py-20">
-        <div className="max-w-7xl mx-auto px-6">
-          <SectionHeader
-            align="center"
-            title={t("home_connect_title")}
-            subtitle={t("home_connect_subtitle")}
-          />
-
-          <div className="mt-12 max-w-lg mx-auto bg-gray-50 border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
-            <div className="h-2 bg-[#1877F2]" />
-            <div className="p-8 text-center">
-              <div className="w-14 h-14 rounded-full bg-[#1877F2]/10 flex items-center justify-center mx-auto mb-4">
-                <FacebookIcon className="h-7 w-7 text-[#1877F2]" />
-              </div>
-              <p className="font-display text-lg font-bold text-primary-900">
-                {t("home_connect_handle")}
-              </p>
-              <p className="text-sm text-gray-600 mt-2">
-                {t("home_connect_description")}
-              </p>
-              <a
-                href="https://www.facebook.com/CamCCUL/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-6 inline-flex items-center gap-2 bg-[#1877F2] hover:bg-[#166fe5] text-white font-semibold px-6 py-3 rounded-lg transition-colors"
-              >
-                <FacebookIcon className="h-5 w-5" />
-                {t("home_connect_button")}
-              </a>
-              <p className="text-xs text-gray-400 mt-2">{t("home_connect_note")}</p>
-            </div>
           </div>
         </div>
       </section>

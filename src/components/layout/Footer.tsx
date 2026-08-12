@@ -43,6 +43,30 @@ export function Footer() {
             </div>
             <p className="text-sm text-gray-400 mt-2">{t("footer_tagline")}</p>
             <p className="text-sm text-gray-400 mt-2">{t("footer_about")}</p>
+
+            <form onSubmit={(e) => e.preventDefault()} className="mt-4">
+              <label
+                htmlFor="newsletter-email"
+                className="text-xs font-semibold uppercase tracking-wider text-gray-300"
+              >
+                {t("newsletter_heading")}
+              </label>
+              <div className="mt-2 flex gap-2">
+                <input
+                  id="newsletter-email"
+                  type="email"
+                  required
+                  placeholder={t("newsletter_placeholder")}
+                  className="min-w-0 flex-1 rounded-lg bg-primary-800 border border-primary-700 px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-accent-500"
+                />
+                <button
+                  type="submit"
+                  className="shrink-0 rounded-lg bg-accent-600 hover:bg-accent-700 text-white text-sm font-medium px-4 py-2 transition-colors"
+                >
+                  {t("newsletter_button")}
+                </button>
+              </div>
+            </form>
           </div>
 
           <div>
