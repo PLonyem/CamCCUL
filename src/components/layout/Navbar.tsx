@@ -15,7 +15,6 @@ const navLinks: { key: TranslationKey; href: string }[] = [
   { key: "nav_home", href: "/" },
   { key: "nav_about", href: "/about" },
   { key: "nav_services", href: "/services" },
-  { key: "nav_affiliates", href: "/affiliates" },
   { key: "nav_resources", href: "/resources" },
   { key: "nav_news", href: "/news" },
   { key: "nav_faq", href: "/faq" },
