@@ -117,9 +117,8 @@ export default function CreditUnionProfileTemplatePage() {
           {/* SECTION 3 */}
           <section>
             <SectionTitle>Section 3: Credit Union Profile</SectionTitle>
-            <BlankLines label="Brief History of the Credit Union (500 words max)" count={3} />
+            <BlankLines label="Brief History of the Credit Union (500 words max)" count={15} />
             <FieldRow label="Current Number of Members" />
-            <FieldRow label="Number of Branches" />
 
             <div className="py-2.5">
               <p className="text-sm mb-2">Services Offered (tick all that apply):</p>
