@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 
 interface RejectDialogProps {
   open: boolean;
-  chapterName: string | null;
+  creditUnionName: string | null;
   isSubmitting?: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: (note: string) => void;
@@ -14,7 +14,7 @@ interface RejectDialogProps {
 
 export function RejectDialog({
   open,
-  chapterName,
+  creditUnionName,
   isSubmitting = false,
   onOpenChange,
   onConfirm,
@@ -36,9 +36,9 @@ export function RejectDialog({
             Reject profile?
           </Dialog.Title>
           <Dialog.Description className="mt-2 text-sm text-gray-500">
-            {chapterName ? `"${chapterName}" ` : "This chapter's "}
+            {creditUnionName ? `"${creditUnionName}" ` : "This credit union's "}
             profile will stay hidden from the public site. You can optionally
-            leave a note explaining why, for whoever follows up with the chapter.
+            leave a note explaining why, for whoever follows up with the credit union.
           </Dialog.Description>
 
           <label htmlFor="reject-note" className="sr-only">

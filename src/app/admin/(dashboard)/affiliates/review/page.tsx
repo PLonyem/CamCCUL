@@ -71,8 +71,8 @@ function statusVariant(status: string | null): "success" | "danger" | "warning" 
   return "warning";
 }
 
-function regionLabel(region: string): string {
-  return regionLabels[region]?.en ?? region;
+function chapterLabelFor(region: string): string {
+  return `${regionLabels[region]?.en ?? region} Chapter`;
 }
 
 function formatDate(iso: string | null): string {
@@ -88,17 +88,6 @@ function formatFileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
-
-function parseMemberCreditUnions(value: unknown): { name: string; code: string }[] {
-  if (!Array.isArray(value)) return [];
-  return value.filter(
-    (entry): entry is { name: string; code: string } =>
-      typeof entry === "object" &&
-      entry !== null &&
-      typeof (entry as Record<string, unknown>).name === "string" &&
-      typeof (entry as Record<string, unknown>).code === "string"
-  );
 }
 
 export default function ChapterReviewPage() {
@@ -159,9 +148,10 @@ export default function ChapterReviewPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Review Chapter Profiles</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Review Credit Union Profiles</h1>
         <p className="text-sm text-gray-600 mt-1">
-          Approve or reject submitted chapter profiles before they appear on the public site.
+          Approve or reject credit union profile submissions before they appear on the public
+          website.
         </p>
       </div>
 
@@ -194,7 +184,7 @@ export default function ChapterReviewPage() {
         </div>
       ) : chapters.length === 0 ? (
         <div className="bg-white border border-gray-200 rounded-xl p-8 text-center text-gray-400 text-sm">
-          No chapter profiles found for this filter.
+          No credit union profiles found for this filter.
         </div>
       ) : (
         <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
@@ -204,8 +194,8 @@ export default function ChapterReviewPage() {
                 <tr>
                   <th className="w-10 px-4 py-3" />
                   <th className="text-left font-medium text-gray-500 px-4 py-3">Code</th>
-                  <th className="text-left font-medium text-gray-500 px-4 py-3">Chapter Name</th>
-                  <th className="text-left font-medium text-gray-500 px-4 py-3">Region</th>
+                  <th className="text-left font-medium text-gray-500 px-4 py-3">Credit Union Name</th>
+                  <th className="text-left font-medium text-gray-500 px-4 py-3">Chapter</th>
                   <th className="text-left font-medium text-gray-500 px-4 py-3">Upload Date</th>
                   <th className="text-left font-medium text-gray-500 px-4 py-3">Status</th>
                   <th className="text-right font-medium text-gray-500 px-4 py-3">Actions</th>
@@ -216,7 +206,6 @@ export default function ChapterReviewPage() {
                   const isExpanded = expandedId === chapter.id;
                   const isActioning = actioningId === chapter.id;
                   const document = chapter.documents[0] ?? null;
-                  const memberCreditUnions = parseMemberCreditUnions(chapter.memberCreditUnions);
 
                   return (
                     <Fragment key={chapter.id}>
@@ -236,7 +225,7 @@ export default function ChapterReviewPage() {
                         <td className="px-4 py-3 font-mono text-xs text-gray-600">{chapter.code}</td>
                         <td className="px-4 py-3 font-bold text-gray-900">{chapter.name}</td>
                         <td className="px-4 py-3">
-                          <Badge variant="primary">{regionLabel(chapter.region)}</Badge>
+                          <Badge variant="primary">{chapterLabelFor(chapter.region)}</Badge>
                         </td>
                         <td className="px-4 py-3 text-gray-600">{formatDate(chapter.profileUpdatedAt)}</td>
                         <td className="px-4 py-3">
@@ -331,34 +320,46 @@ export default function ChapterReviewPage() {
                                       <dd className="line-clamp-2">{chapter.briefHistory}</dd>
                                     </div>
                                   )}
+                                  {chapter.yearEstablished != null && (
+                                    <div>
+                                      <dt className="text-xs text-gray-500 inline">Year Founded: </dt>
+                                      <dd className="inline">{chapter.yearEstablished}</dd>
+                                    </div>
+                                  )}
                                   {chapter.chapterPresident && (
                                     <div>
-                                      <dt className="text-xs text-gray-500 inline">President: </dt>
+                                      <dt className="text-xs text-gray-500 inline">Board Chairperson: </dt>
                                       <dd className="inline">{chapter.chapterPresident}</dd>
                                     </div>
                                   )}
                                   {chapter.chapterSupervisor && (
                                     <div>
-                                      <dt className="text-xs text-gray-500 inline">Supervisor: </dt>
+                                      <dt className="text-xs text-gray-500 inline">General Manager: </dt>
                                       <dd className="inline">{chapter.chapterSupervisor}</dd>
                                     </div>
                                   )}
                                   {chapter.totalMembers != null && (
                                     <div>
-                                      <dt className="text-xs text-gray-500 inline">Total Members: </dt>
+                                      <dt className="text-xs text-gray-500 inline">Number of Members: </dt>
                                       <dd className="inline">{chapter.totalMembers}</dd>
                                     </div>
                                   )}
-                                  {memberCreditUnions.length > 0 && (
+                                  {chapter.branchCount != null && (
                                     <div>
-                                      <dt className="text-xs text-gray-500 mb-1">Member Credit Unions</dt>
-                                      <dd className="flex flex-wrap gap-1.5">
-                                        {memberCreditUnions.map((mcu, i) => (
-                                          <Badge key={i} variant="default">
-                                            {mcu.name} ({mcu.code})
-                                          </Badge>
-                                        ))}
-                                      </dd>
+                                      <dt className="text-xs text-gray-500 inline">Number of Branches: </dt>
+                                      <dd className="inline">{chapter.branchCount}</dd>
+                                    </div>
+                                  )}
+                                  {chapter.boardSize != null && (
+                                    <div>
+                                      <dt className="text-xs text-gray-500 inline">Number of Board Members: </dt>
+                                      <dd className="inline">{chapter.boardSize}</dd>
+                                    </div>
+                                  )}
+                                  {chapter.staffCount != null && (
+                                    <div>
+                                      <dt className="text-xs text-gray-500 inline">Number of Staff: </dt>
+                                      <dd className="inline">{chapter.staffCount}</dd>
                                     </div>
                                   )}
                                   {chapter.services.length > 0 && (
@@ -390,7 +391,7 @@ export default function ChapterReviewPage() {
 
       <RejectDialog
         open={!!rejectTarget}
-        chapterName={rejectTarget?.name ?? null}
+        creditUnionName={rejectTarget?.name ?? null}
         isSubmitting={actioningId === rejectTarget?.id}
         onOpenChange={(open) => !open && setRejectTarget(null)}
         onConfirm={async (note) => {

@@ -5,9 +5,9 @@ import { ArrowLeft } from "lucide-react";
 import { PrintButton } from "./PrintButton";
 
 export const metadata: Metadata = {
-  title: "Chapter Profile Form — CamCCUL",
+  title: "Credit Union Profile Form — CamCCUL",
   description:
-    "Printable form for CamCCUL chapters to submit their profile and member credit union information.",
+    "Printable form for CamCCUL-affiliated credit unions to submit their profile information.",
 };
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
@@ -55,19 +55,7 @@ function Checkbox({ label }: { label: string }) {
   );
 }
 
-function CreditUnionRow({ index }: { index: number }) {
-  return (
-    <div className="flex items-end gap-4 py-2.5 border-b border-black/70 text-sm">
-      <span className="shrink-0 font-medium">{index}.</span>
-      <span className="shrink-0">Name:</span>
-      <span className="flex-[2]" />
-      <span className="shrink-0">Code:</span>
-      <span className="flex-1" />
-    </div>
-  );
-}
-
-export default function ChapterProfileTemplatePage() {
+export default function CreditUnionProfileTemplatePage() {
   return (
     <div className="bg-white text-black">
       <div className="max-w-4xl mx-auto px-4 py-8 print:px-0 print:py-0">
@@ -95,11 +83,11 @@ export default function ChapterProfileTemplatePage() {
             />
           </div>
           <div>
-            <h1 className="text-2xl font-bold">Chapter Profile Form</h1>
+            <h1 className="text-2xl font-bold">Credit Union Profile Form</h1>
             <p className="text-sm mt-2 max-w-2xl">
-              Please complete all fields for your chapter and its member
-              credit unions. This information will be displayed on the
-              CamCCUL website directory.
+              Please complete all fields for your credit union. This
+              information will appear on the CamCCUL website when visitors
+              click on your credit union in the Affiliates directory.
             </p>
             <p className="text-xs text-black/60 mt-2">Form Version: August 2026</p>
           </div>
@@ -108,17 +96,18 @@ export default function ChapterProfileTemplatePage() {
         <div className="space-y-10">
           {/* SECTION 1 */}
           <section>
-            <SectionTitle>Section 1: Chapter Information</SectionTitle>
-            <FieldRow label="Chapter Name" />
-            <FieldRow label="Region" />
-            <FieldRow label="Year Chapter Was Established" />
+            <SectionTitle>Section 1: Credit Union Information</SectionTitle>
+            <FieldRow label="Credit Union Full Name" />
+            <FieldRow label="Chapter (e.g., Northwest Chapter, Southwest Chapter)" />
+            <FieldRow label="CamCCUL Affiliation Code" />
+            <FieldRow label="Year Founded" />
             <FieldRow label="Physical Address" />
             <FieldRow label="City/Town" />
           </section>
 
           {/* SECTION 2 */}
           <section>
-            <SectionTitle>Section 2: Chapter Contact Information</SectionTitle>
+            <SectionTitle>Section 2: Contact Information</SectionTitle>
             <FieldRow label="Primary Phone Number" />
             <FieldRow label="Secondary Phone Number" optional />
             <FieldRow label="Email Address" />
@@ -127,16 +116,13 @@ export default function ChapterProfileTemplatePage() {
 
           {/* SECTION 3 */}
           <section>
-            <SectionTitle>Section 3: Chapter Profile</SectionTitle>
-            <BlankLines label="Brief History of the Chapter (500 words max)" count={3} />
-            <FieldRow label="Number of Member Credit Unions in Chapter" />
-            <FieldRow label="Total Members Across All Credit Unions" />
-            <FieldRow label="Number of Branches Across Chapter" />
+            <SectionTitle>Section 3: Credit Union Profile</SectionTitle>
+            <BlankLines label="Brief History of the Credit Union (500 words max)" count={3} />
+            <FieldRow label="Current Number of Members" />
+            <FieldRow label="Number of Branches" />
 
             <div className="py-2.5">
-              <p className="text-sm mb-2">
-                Services Offered by Chapter Members (tick all that apply):
-              </p>
+              <p className="text-sm mb-2">Services Offered (tick all that apply):</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6">
                 <Checkbox label="Savings Accounts" />
                 <Checkbox label="Loans (Personal)" />
@@ -159,30 +145,16 @@ export default function ChapterProfileTemplatePage() {
 
           {/* SECTION 4 */}
           <section>
-            <SectionTitle>Section 4: Chapter Leadership</SectionTitle>
-            <FieldRow label="Chapter President Name" />
-            <FieldRow label="Chapter Supervisor Name" />
+            <SectionTitle>Section 4: Leadership</SectionTitle>
+            <FieldRow label="Board Chairperson Name" />
+            <FieldRow label="General Manager Name" />
             <FieldRow label="Number of Board Members" />
-            <FieldRow label="Number of Chapter Staff" />
+            <FieldRow label="Number of Staff" />
           </section>
 
           {/* SECTION 5 */}
-          <section>
-            <SectionTitle>Section 5: Member Credit Unions</SectionTitle>
-            <p className="text-sm mb-3">
-              List all credit unions affiliated to this chapter:
-            </p>
-            <CreditUnionRow index={1} />
-            <CreditUnionRow index={2} />
-            <CreditUnionRow index={3} />
-            <p className="text-xs italic text-black/60 mt-3">
-              (Add more lines as needed)
-            </p>
-          </section>
-
-          {/* SECTION 6 */}
           <section className="break-inside-avoid">
-            <SectionTitle>Section 6: Declaration</SectionTitle>
+            <SectionTitle>Section 5: Declaration</SectionTitle>
             <p className="text-sm mb-4">
               I certify that the information provided above is accurate and
               complete.

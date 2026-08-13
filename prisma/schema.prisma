@@ -55,6 +55,15 @@ model Affiliate {
   code      String   @unique
   name      String
   region    String
+  // Full display label for `region`, e.g. "Northwest Chapter" — kept as a
+  // separate nullable field rather than replacing `region`, since `region`
+  // (the bare code like "NORTHWEST") is depended on throughout the app:
+  // filtering, the CSV importer, deep links (?region=...), the admin
+  // affiliate form, and the regionLabels lookup table. Valid values:
+  // "Northwest Chapter", "Southwest Chapter", "Littoral Chapter",
+  // "Centre Chapter", "West Chapter", "Adamawa Chapter", "North Chapter",
+  // "Far North Chapter", "East Chapter", "South Chapter".
+  chapter   String?
   city      String?
   address   String?
   phone     String?

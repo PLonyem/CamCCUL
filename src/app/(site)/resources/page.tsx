@@ -9,9 +9,9 @@ import { ResourcesPageClient, type PublicResource } from "./ResourcesPageClient"
 // need seeding into the live database.
 const CHAPTER_PROFILE_TEMPLATE_RESOURCE: PublicResource = {
   id: "res-chapter-profile-template",
-  title: "Chapter Profile Form",
+  title: "Credit Union Profile Form",
   description:
-    "Download and complete this form to update your chapter's profile on the CamCCUL website directory. Each chapter should submit one form covering all its member credit unions.",
+    "Download and complete this form to update your credit union's profile on the CamCCUL website. Once submitted, your information will appear when visitors click on your credit union in the Affiliates directory.",
   category: "Form",
   fileType: "PDF",
   fileUrl: "/api/resources/chapter-profile-template",

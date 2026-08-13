@@ -3846,12 +3846,12 @@ export const resources: Resource[] = [
   {
     id: "res-chapter-profile-template",
     title: {
-      en: "Chapter Profile Form",
-      fr: "Formulaire de Profil de Chapitre",
+      en: "Credit Union Profile Form",
+      fr: "Formulaire de Profil de Coopérative de Crédit",
     },
     description: {
-      en: "Download and complete this form to update your chapter's profile on the CamCCUL website directory. Each chapter should submit one form covering all its member credit unions.",
-      fr: "Téléchargez et complétez ce formulaire pour mettre à jour le profil de votre chapitre dans l'annuaire du site web de CamCCUL. Chaque chapitre doit soumettre un formulaire couvrant toutes ses coopératives membres.",
+      en: "Download and complete this form to update your credit union's profile on the CamCCUL website. Once submitted, your information will appear when visitors click on your credit union in the Affiliates directory.",
+      fr: "Téléchargez et complétez ce formulaire pour mettre à jour le profil de votre coopérative de crédit sur le site web de CamCCUL. Une fois soumis, vos informations apparaîtront lorsque les visiteurs cliqueront sur votre coopérative de crédit dans l'annuaire des Affiliés.",
     },
     category: "Form",
     fileType: "PDF",

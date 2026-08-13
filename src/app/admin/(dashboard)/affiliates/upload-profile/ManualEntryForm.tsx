@@ -1,14 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { AlertCircle, Plus, Trash2 } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { regionLabels } from "@/lib/mock-data";
 import type { ChapterOption } from "./ChapterCombobox";
 import type { ExtractedChapterFields } from "@/lib/chapter-profile-extraction";
+
+// Admin UI stays English-only — mirrors the format used on the public
+// directory and the credit union combobox.
+function chapterLabelFor(region: string): string {
+  return `${regionLabels[region]?.en ?? region} Chapter`;
+}
 
 const SERVICE_OPTIONS = [
   "Savings Accounts",
@@ -27,7 +33,6 @@ const manualEntrySchema = z.object({
   phone: z.string(),
   email: z.union([z.literal(""), z.string().email("Invalid email address")]),
   history: z.string(),
-  memberCreditUnionCount: z.string(),
   totalMembers: z.string(),
   branchCount: z.string(),
   servicesOffered: z.array(z.string()),
@@ -36,9 +41,6 @@ const manualEntrySchema = z.object({
   supervisorName: z.string(),
   boardMemberCount: z.string(),
   staffCount: z.string(),
-  memberCreditUnions: z.array(
-    z.object({ name: z.string(), code: z.string() })
-  ),
 });
 
 type ManualEntryValues = z.infer<typeof manualEntrySchema>;
@@ -50,7 +52,6 @@ const emptyDefaults: ManualEntryValues = {
   phone: "",
   email: "",
   history: "",
-  memberCreditUnionCount: "",
   totalMembers: "",
   branchCount: "",
   servicesOffered: [],
@@ -59,7 +60,6 @@ const emptyDefaults: ManualEntryValues = {
   supervisorName: "",
   boardMemberCount: "",
   staffCount: "",
-  memberCreditUnions: [{ name: "", code: "" }],
 };
 
 function toDefaults(extracted?: ExtractedChapterFields | null): ManualEntryValues {
@@ -72,7 +72,6 @@ function toDefaults(extracted?: ExtractedChapterFields | null): ManualEntryValue
     phone: extracted.phone ?? "",
     email: extracted.email ?? "",
     history: extracted.history ?? "",
-    memberCreditUnionCount: extracted.memberCreditUnionCount?.toString() ?? "",
     totalMembers: extracted.totalMembers?.toString() ?? "",
     branchCount: extracted.branchCount?.toString() ?? "",
     presidentName: extracted.presidentName ?? "",
@@ -95,7 +94,6 @@ function buildProfilePayload(values: ManualEntryValues) {
     email: values.email || null,
     yearEstablished: toNullableNumber(values.yearEstablished),
     briefHistory: values.history || null,
-    memberCreditUnionCount: toNullableNumber(values.memberCreditUnionCount),
     totalMembers: toNullableNumber(values.totalMembers),
     branchCount: toNullableNumber(values.branchCount),
     services,
@@ -103,9 +101,6 @@ function buildProfilePayload(values: ManualEntryValues) {
     chapterSupervisor: values.supervisorName || null,
     boardSize: toNullableNumber(values.boardMemberCount),
     staffCount: toNullableNumber(values.staffCount),
-    memberCreditUnions: values.memberCreditUnions.filter(
-      (mcu) => mcu.name.trim() || mcu.code.trim()
-    ),
   };
 }
 
@@ -130,16 +125,10 @@ export function ManualEntryForm({
   const {
     register,
     handleSubmit,
-    control,
     formState: { errors },
   } = useForm<ManualEntryValues>({
     resolver: zodResolver(manualEntrySchema),
     defaultValues: toDefaults(extractedFields),
-  });
-
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "memberCreditUnions",
   });
 
   const submit = handleSubmit(async (values) => {
@@ -172,11 +161,11 @@ export function ManualEntryForm({
         </div>
       )}
 
-      {/* Chapter identity — auto-filled from the selection above, read-only here */}
+      {/* Credit union identity — auto-filled from the selection above, read-only here */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 bg-gray-50 rounded-lg p-4">
         <div>
           <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-            Chapter Name
+            Credit Union Name
           </p>
           <p className="text-sm text-gray-900 mt-1">{chapter.name}</p>
         </div>
@@ -185,22 +174,20 @@ export function ManualEntryForm({
           <p className="text-sm text-gray-900 mt-1">{chapter.code}</p>
         </div>
         <div>
-          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Region</p>
-          <p className="text-sm text-gray-900 mt-1">
-            {regionLabels[chapter.region]?.en ?? chapter.region}
-          </p>
+          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Chapter</p>
+          <p className="text-sm text-gray-900 mt-1">{chapterLabelFor(chapter.region)}</p>
         </div>
       </div>
 
-      {/* Chapter information */}
+      {/* Credit union information */}
       <div className="space-y-5">
         <h3 className="text-sm font-semibold text-primary-900 uppercase tracking-wide">
-          Chapter Information
+          Credit Union Information
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <div className="space-y-1">
             <label htmlFor="yearEstablished" className={labelClass}>
-              Year Established
+              Year Founded
             </label>
             <input
               id="yearEstablished"
@@ -240,14 +227,14 @@ export function ManualEntryForm({
         </div>
       </div>
 
-      {/* Chapter profile */}
+      {/* Credit union profile */}
       <div className="space-y-5">
         <h3 className="text-sm font-semibold text-primary-900 uppercase tracking-wide">
-          Chapter Profile
+          Credit Union Profile
         </h3>
         <div className="space-y-1">
           <label htmlFor="history" className={labelClass}>
-            Brief History of the Chapter
+            Brief History
           </label>
           <textarea
             id="history"
@@ -257,22 +244,10 @@ export function ManualEntryForm({
             {...register("history")}
           />
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-          <div className="space-y-1">
-            <label htmlFor="memberCreditUnionCount" className={labelClass}>
-              Number of Member Credit Unions
-            </label>
-            <input
-              id="memberCreditUnionCount"
-              type="number"
-              disabled={isSubmitting}
-              className={inputClass}
-              {...register("memberCreditUnionCount")}
-            />
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <div className="space-y-1">
             <label htmlFor="totalMembers" className={labelClass}>
-              Total Members
+              Number of Members
             </label>
             <input
               id="totalMembers"
@@ -330,12 +305,12 @@ export function ManualEntryForm({
       {/* Leadership */}
       <div className="space-y-5">
         <h3 className="text-sm font-semibold text-primary-900 uppercase tracking-wide">
-          Chapter Leadership
+          Leadership
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <div className="space-y-1">
             <label htmlFor="presidentName" className={labelClass}>
-              Chapter President
+              Board Chairperson
             </label>
             <input
               id="presidentName"
@@ -347,7 +322,7 @@ export function ManualEntryForm({
           </div>
           <div className="space-y-1">
             <label htmlFor="supervisorName" className={labelClass}>
-              Chapter Supervisor
+              General Manager
             </label>
             <input
               id="supervisorName"
@@ -384,63 +359,6 @@ export function ManualEntryForm({
             />
           </div>
         </div>
-      </div>
-
-      {/* Member credit unions */}
-      <div className="space-y-3">
-        <h3 className="text-sm font-semibold text-primary-900 uppercase tracking-wide">
-          Member Credit Unions
-        </h3>
-        <div className="space-y-3">
-          {fields.map((field, index) => (
-            <div key={field.id} className="flex items-start gap-3">
-              <div className="flex-1 space-y-1">
-                <label htmlFor={`mcu-name-${index}`} className="sr-only">
-                  Credit union name
-                </label>
-                <input
-                  id={`mcu-name-${index}`}
-                  type="text"
-                  placeholder="Name"
-                  disabled={isSubmitting}
-                  className={inputClass}
-                  {...register(`memberCreditUnions.${index}.name` as const)}
-                />
-              </div>
-              <div className="w-40 space-y-1">
-                <label htmlFor={`mcu-code-${index}`} className="sr-only">
-                  Credit union code
-                </label>
-                <input
-                  id={`mcu-code-${index}`}
-                  type="text"
-                  placeholder="Code"
-                  disabled={isSubmitting}
-                  className={inputClass}
-                  {...register(`memberCreditUnions.${index}.code` as const)}
-                />
-              </div>
-              <button
-                type="button"
-                onClick={() => remove(index)}
-                disabled={isSubmitting}
-                aria-label="Remove credit union"
-                className="mt-2.5 text-gray-400 hover:text-red-500 transition-colors disabled:opacity-50"
-              >
-                <Trash2 className="h-4 w-4" />
-              </button>
-            </div>
-          ))}
-        </div>
-        <button
-          type="button"
-          onClick={() => append({ name: "", code: "" })}
-          disabled={isSubmitting}
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-primary-600 hover:text-primary-700 disabled:opacity-50"
-        >
-          <Plus className="h-4 w-4" />
-          Add Credit Union
-        </button>
       </div>
 
       <div className="pt-2">

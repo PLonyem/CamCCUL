@@ -19,7 +19,7 @@ import type { ExtractedChapterFields } from "@/lib/chapter-profile-extraction";
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ACCEPTED_EXTENSIONS = ".pdf,.doc,.docx,.jpg,.jpeg,.png";
 
-export default function UploadChapterProfilePage() {
+export default function UploadCreditUnionProfilePage() {
   const [chapters, setChapters] = useState<ChapterOption[]>([]);
   const [chaptersError, setChaptersError] = useState<string | null>(null);
   const [selectedChapter, setSelectedChapter] = useState<ChapterOption | null>(null);
@@ -42,7 +42,7 @@ export default function UploadChapterProfilePage() {
         return res.json();
       })
       .then((data) => setChapters(data.affiliates ?? []))
-      .catch(() => setChaptersError("Could not load the list of chapters. Please refresh the page."));
+      .catch(() => setChaptersError("Could not load the list of credit unions. Please refresh the page."));
   }, []);
 
   function selectChapter(chapter: ChapterOption) {
@@ -119,7 +119,7 @@ export default function UploadChapterProfilePage() {
         <Card className="p-8 text-center">
           <CheckCircle2 className="h-12 w-12 text-green-500 mx-auto" />
           <p className="text-lg font-semibold text-gray-900 mt-4">
-            Profile for {successChapter.name} has been updated successfully.
+            Profile for {successChapter.name} has been updated.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
             <Link
@@ -148,15 +148,17 @@ export default function UploadChapterProfilePage() {
   return (
     <div className="max-w-2xl space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Upload Chapter Profiles</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Upload Credit Union Profiles</h1>
         <p className="text-sm text-gray-600 mt-1">
-          Upload completed chapter profile forms to update chapter information on the website.
+          Upload completed credit union profile forms to update information on the website.
+          Visitors will see this information when they click a credit union in the Affiliates
+          directory.
         </p>
       </div>
 
       <Card className="p-6 space-y-5">
         <div className="space-y-1">
-          <label className="text-sm font-medium text-gray-700">Select Chapter</label>
+          <label className="text-sm font-medium text-gray-700">Select Credit Union</label>
           <ChapterCombobox
             chapters={chapters}
             value={selectedChapter}
@@ -222,7 +224,7 @@ export default function UploadChapterProfilePage() {
             <div>
               <p className="text-sm font-semibold text-gray-900">Manual Entry</p>
               <p className="text-xs text-gray-500 mt-0.5">
-                Enter or review the chapter&rsquo;s profile details directly.
+                Enter or review the credit union&rsquo;s profile details directly.
               </p>
             </div>
             <ChevronDown

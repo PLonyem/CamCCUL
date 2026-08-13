@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Search, ChevronDown } from "lucide-react";
+import { regionLabels } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 
 export interface ChapterOption {
@@ -9,6 +10,13 @@ export interface ChapterOption {
   code: string;
   name: string;
   region: string;
+}
+
+// Admin UI stays English-only (no useLanguage() anywhere in this dashboard),
+// so this mirrors the public directory's chapter-label format without the
+// bilingual branch.
+function chapterLabelFor(region: string): string {
+  return `${regionLabels[region]?.en ?? region} Chapter`;
 }
 
 interface ChapterComboboxProps {
@@ -51,7 +59,7 @@ export function ChapterCombobox({
         <input
           type="text"
           disabled={disabled}
-          placeholder="Search by chapter name or code…"
+          placeholder="Search by credit union name or code…"
           value={isOpen ? query : value ? `${value.name} (${value.code})` : ""}
           onFocus={() => {
             setIsOpen(true);
@@ -71,7 +79,7 @@ export function ChapterCombobox({
       {isOpen && (
         <div className="absolute left-0 right-0 top-full mt-1 max-h-72 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg z-20">
           {filtered.length === 0 ? (
-            <p className="px-4 py-3 text-sm text-gray-500">No chapters match your search.</p>
+            <p className="px-4 py-3 text-sm text-gray-500">No credit unions match your search.</p>
           ) : (
             filtered.map((chapter) => (
               <button
@@ -87,7 +95,10 @@ export function ChapterCombobox({
                   value?.id === chapter.id && "bg-primary-50"
                 )}
               >
-                <span className="text-gray-900">{chapter.name}</span>
+                <span className="min-w-0">
+                  <span className="text-gray-900 block truncate">{chapter.name}</span>
+                  <span className="text-xs text-gray-500">{chapterLabelFor(chapter.region)}</span>
+                </span>
                 <span className="text-xs text-gray-500 bg-gray-100 rounded px-2 py-0.5 shrink-0">
                   {chapter.code}
                 </span>

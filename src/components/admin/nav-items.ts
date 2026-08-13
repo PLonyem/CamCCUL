@@ -26,7 +26,7 @@ export const adminNavItems: AdminNavItem[] = [
   { href: "/admin/affiliates/upload-profile", label: "Upload Chapter Profiles", icon: Upload, indent: true },
   {
     href: "/admin/affiliates/review",
-    label: "Review Chapter Profiles",
+    label: "Review Profiles",
     icon: ClipboardCheck,
     indent: true,
     showReviewBadge: true,
