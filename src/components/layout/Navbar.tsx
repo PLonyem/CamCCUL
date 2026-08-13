@@ -41,15 +41,28 @@ export function Navbar() {
   const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [isMobileServicesOpen, setIsMobileServicesOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const isHomepage = pathname === "/";
+  // Lazy-initialized to the common case (fresh homepage load starts at
+  // scrollY 0) so there's no flash of the solid header before the effect
+  // below can measure the hero on mount.
+  const [isOverHero, setIsOverHero] = useState(() => isHomepage);
 
   useEffect(() => {
     function handleScroll() {
       setIsScrolled(window.scrollY > 0);
+      if (isHomepage) {
+        const hero = document.getElementById("home-hero");
+        setIsOverHero(hero ? hero.getBoundingClientRect().bottom > 64 : false);
+      } else {
+        setIsOverHero(false);
+      }
     }
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [isHomepage]);
+
+  const transparent = isHomepage && isOverHero && !isOpen;
 
   // Close the mobile menu on navigation. Adjusted during render (rather than
   // in an effect) so the menu never flashes open on the destination page.
@@ -82,7 +95,12 @@ export function Navbar() {
       type="button"
       onClick={toggleLanguage}
       aria-label={t("nav_language_aria")}
-      className="inline-flex items-center justify-center gap-1 min-h-11 min-w-11 px-2 rounded-lg text-primary-700 hover:bg-primary-50 transition-colors"
+      className={cn(
+        "inline-flex items-center justify-center gap-1 min-h-11 min-w-11 px-2 rounded-lg transition-colors",
+        transparent
+          ? "text-white hover:bg-white/10"
+          : "text-primary-700 hover:bg-primary-50"
+      )}
     >
       <Globe className="h-5 w-5" />
       <span className="text-xs font-semibold uppercase">{language}</span>
@@ -92,8 +110,11 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        "print:hidden sticky top-0 z-40 bg-white border-b border-primary-100 transition-shadow",
-        isScrolled && "shadow-sm"
+        "print:hidden sticky top-0 z-40 transition-colors duration-300",
+        transparent
+          ? "bg-transparent border-b border-transparent"
+          : "bg-white border-b border-primary-100 transition-shadow",
+        !transparent && isScrolled && "shadow-sm"
       )}
     >
       <div className="max-w-[1200px] mx-auto px-4 h-16 flex items-center justify-between gap-4">
@@ -102,10 +123,20 @@ export function Navbar() {
             <Image src={logo} alt="CamCCUL logo" className="h-full w-full object-contain" priority />
           </div>
           <div className="min-w-0">
-            <span className="font-display font-bold text-xl text-primary-900 block leading-tight truncate">
+            <span
+              className={cn(
+                "font-display font-bold text-xl block leading-tight truncate transition-colors",
+                transparent ? "text-white" : "text-primary-900"
+              )}
+            >
               CamCCUL
             </span>
-            <span className="hidden md:block text-xs text-primary-600 truncate">
+            <span
+              className={cn(
+                "hidden md:block text-xs truncate transition-colors",
+                transparent ? "text-white/80" : "text-primary-600"
+              )}
+            >
               {t("nav_tagline")}
             </span>
           </div>
@@ -131,8 +162,11 @@ export function Navbar() {
                 >
                   <span
                     className={cn(
-                      "flex items-center gap-1 text-sm font-medium text-primary-700 hover:text-primary-600 transition-colors py-2 cursor-default",
-                      isActive && "text-primary-600 font-semibold"
+                      "flex items-center gap-1 text-sm font-medium transition-colors py-2 cursor-default",
+                      transparent
+                        ? "text-white hover:text-primary-100"
+                        : "text-primary-700 hover:text-primary-600",
+                      isActive && !transparent && "text-primary-600 font-semibold"
                     )}
                   >
                     {t(link.key)}
@@ -178,8 +212,11 @@ export function Navbar() {
                 >
                   <span
                     className={cn(
-                      "flex items-center gap-1 text-sm font-medium text-primary-700 hover:text-primary-600 transition-colors py-2 cursor-default",
-                      isActive && "text-primary-600 font-semibold"
+                      "flex items-center gap-1 text-sm font-medium transition-colors py-2 cursor-default",
+                      transparent
+                        ? "text-white hover:text-primary-100"
+                        : "text-primary-700 hover:text-primary-600",
+                      isActive && !transparent && "text-primary-600 font-semibold"
                     )}
                   >
                     {t(link.key)}
@@ -214,8 +251,11 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "text-sm font-medium text-primary-700 hover:text-primary-600 transition-colors",
-                  isActive && "text-primary-600 font-semibold"
+                  "text-sm font-medium transition-colors",
+                  transparent
+                    ? "text-white hover:text-primary-100"
+                    : "text-primary-700 hover:text-primary-600",
+                  isActive && !transparent && "text-primary-600 font-semibold"
                 )}
               >
                 {t(link.key)}
@@ -235,7 +275,12 @@ export function Navbar() {
 
           <button
             type="button"
-            className="md:hidden inline-flex items-center justify-center min-h-11 min-w-11 p-2 rounded-lg text-primary-700 hover:bg-primary-50 transition-colors"
+            className={cn(
+              "md:hidden inline-flex items-center justify-center min-h-11 min-w-11 p-2 rounded-lg transition-colors",
+              transparent
+                ? "text-white hover:bg-white/10"
+                : "text-primary-700 hover:bg-primary-50"
+            )}
             aria-label={t("nav_menu_open_aria")}
             aria-expanded={isOpen}
             onClick={() => setIsOpen((prev) => !prev)}
