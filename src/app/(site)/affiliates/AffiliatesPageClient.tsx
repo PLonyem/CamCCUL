@@ -1,10 +1,12 @@
 "use client";
 
 import { Suspense, useState } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Building2, MapPin, Phone, SearchX } from "lucide-react";
+import { Building2, ChevronRight, MapPin, Phone, SearchX } from "lucide-react";
 import { PageHero } from "@/components/layout/PageHero";
 import { Card } from "@/components/ui/Card";
+import { Badge } from "@/components/ui/Badge";
 import { regions, regionLabels } from "@/lib/mock-data";
 import { useLanguage } from "@/context/LanguageContext";
 import { localize } from "@/lib/i18n";
@@ -16,6 +18,7 @@ export interface PublicAffiliate {
   name: string;
   region: string;
   city: string | null;
+  hasProfile: boolean;
 }
 
 function RegionSelectCard({
@@ -117,12 +120,23 @@ function AffiliatesContent({ affiliates }: { affiliates: PublicAffiliate[] }) {
                   >
                     <div>
                       <Building2 className="h-5 w-5 text-primary-500 inline mr-2" />
-                      <span className="font-semibold text-lg text-primary-900">
+                      <Link
+                        href={`/affiliates/${affiliate.code}`}
+                        className="font-semibold text-lg text-primary-900 hover:text-primary-600 hover:underline transition-colors"
+                      >
                         {affiliate.name}
-                      </span>
+                      </Link>
                       <span className="text-sm text-gray-500 ml-2 bg-gray-100 rounded px-2 py-0.5">
                         {affiliate.code}
                       </span>
+                      <Badge
+                        variant={affiliate.hasProfile ? "success" : "default"}
+                        className="ml-2 align-middle"
+                      >
+                        {affiliate.hasProfile
+                          ? t("affiliates_profile_available")
+                          : t("affiliates_profile_pending")}
+                      </Badge>
                     </div>
                     {!isPlaceholder(affiliate.city) && (
                       <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-sm text-gray-600">
@@ -136,6 +150,13 @@ function AffiliatesContent({ affiliates }: { affiliates: PublicAffiliate[] }) {
                       <Phone className="h-3 w-3 inline mr-1" />
                       {t("affiliates_contact_hq_note")}
                     </p>
+                    <Link
+                      href={`/affiliates/${affiliate.code}`}
+                      className="inline-flex items-center gap-1 text-xs font-medium text-primary-600 hover:text-primary-700 mt-3"
+                    >
+                      {t("affiliates_view_profile")}
+                      <ChevronRight className="h-3.5 w-3.5" />
+                    </Link>
                   </div>
                 ))}
               </div>

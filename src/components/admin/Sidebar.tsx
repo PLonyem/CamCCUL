@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
@@ -17,6 +18,22 @@ interface SidebarProps {
 
 export function Sidebar({ user, onNavigate }: SidebarProps) {
   const pathname = usePathname();
+  const [pendingReviewCount, setPendingReviewCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    let ignore = false;
+    fetch("/api/admin/affiliates/review/count")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { pending: number } | null) => {
+        if (!ignore && data) setPendingReviewCount(data.pending);
+      })
+      .catch(() => {});
+    return () => {
+      ignore = true;
+    };
+    // Re-fetch whenever the admin navigates, so approving/rejecting on the
+    // review page updates the badge without a full page reload.
+  }, [pathname]);
 
   return (
     <aside className="bg-gray-900 text-white h-full flex flex-col">
@@ -35,7 +52,7 @@ export function Sidebar({ user, onNavigate }: SidebarProps) {
       </div>
 
       <nav className="flex-1 mt-8 space-y-1 px-3">
-        {adminNavItems.map(({ href, label, icon: Icon }) => {
+        {adminNavItems.map(({ href, label, icon: Icon, indent, showReviewBadge }) => {
           const isActive = isAdminNavItemActive(pathname, href);
 
           return (
@@ -44,14 +61,20 @@ export function Sidebar({ user, onNavigate }: SidebarProps) {
               href={href}
               onClick={onNavigate}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                "flex items-center gap-3 py-2.5 rounded-lg font-medium transition-colors",
+                indent ? "pl-8 pr-3 text-xs" : "px-3 text-sm",
                 isActive
                   ? "bg-gray-800 text-white"
                   : "text-gray-400 hover:bg-gray-800 hover:text-white"
               )}
             >
-              <Icon className="h-4 w-4 shrink-0" />
-              {label}
+              <Icon className={cn("shrink-0", indent ? "h-3.5 w-3.5" : "h-4 w-4")} />
+              <span className="flex-1">{label}</span>
+              {showReviewBadge && !!pendingReviewCount && (
+                <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1 rounded-full bg-primary-500 text-white text-[10px] font-semibold">
+                  {pendingReviewCount}
+                </span>
+              )}
             </Link>
           );
         })}

@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { FileText, FileSpreadsheet, Download, FolderOpen } from "lucide-react";
 import { PageHero } from "@/components/layout/PageHero";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
+import { Button, buttonVariants } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
 import { type TranslationKey } from "@/lib/i18n";
@@ -27,6 +28,7 @@ export interface PublicResource {
   description: string | null;
   category: string;
   fileType: string | null;
+  fileUrl?: string | null;
 }
 
 export function ResourcesPageClient({ resources }: { resources: PublicResource[] }) {
@@ -78,15 +80,26 @@ export function ResourcesPageClient({ resources }: { resources: PublicResource[]
                     </p>
                     <div className="flex items-center justify-between">
                       <Badge variant="default">{resource.fileType ?? "—"}</Badge>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="text-sm"
-                      >
-                        <Download className="h-4 w-4" />
-                        {t("resources_download")}
-                      </Button>
+                      {resource.fileUrl ? (
+                        <Link
+                          href={resource.fileUrl}
+                          className={cn(buttonVariants({ variant: "outline", size: "sm" }), "text-sm")}
+                        >
+                          <Download className="h-4 w-4" />
+                          {t("resources_download")}
+                        </Link>
+                      ) : (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="text-sm"
+                          disabled
+                        >
+                          <Download className="h-4 w-4" />
+                          {t("resources_download")}
+                        </Button>
+                      )}
                     </div>
                   </Card>
                 );

@@ -137,6 +137,41 @@ const en = {
   affiliates_empty_title: "No credit unions found in this region.",
   affiliates_empty_subtitle: "Please select a different region.",
   affiliates_contact_hq_note: "Contact CamCCUL headquarters for details",
+  affiliates_view_profile: "View Chapter Profile",
+  affiliates_profile_available: "Profile Available",
+  affiliates_profile_pending: "Profile Pending",
+
+  // ─── Chapter Profile Page ───────────────────────────────────────────────
+  chapter_not_found_title: "Chapter Not Found",
+  chapter_not_found_message:
+    "We couldn't find a chapter with this code. It may have been moved, or the code may be incorrect.",
+  chapter_not_found_back: "Back to Affiliates Directory",
+  chapter_about_prefix: "About",
+  chapter_history_fallback:
+    "History information coming soon. This chapter's full profile is being updated.",
+  chapter_year_established_label: "Year Established",
+  chapter_services_heading: "Services Offered",
+  chapter_contact_heading: "Contact Information",
+  chapter_generic_fallback:
+    "This information is being updated. Please check back soon or contact CamCCUL headquarters.",
+  chapter_under_review:
+    "This chapter's full profile is under review and will be available soon.",
+  chapter_members_label: "Total Members",
+  chapter_branches_label: "Number of Branches",
+  chapter_credit_union_count_label: "Member Credit Unions",
+  chapter_leadership_heading: "Chapter Leadership",
+  chapter_president_label: "Chapter President",
+  chapter_supervisor_label: "Chapter Supervisor",
+  chapter_board_size_label: "Board Members",
+  chapter_staff_count_label: "Chapter Staff",
+  chapter_credit_unions_heading: "Member Credit Unions",
+  chapter_credit_unions_empty: "Member credit union information is being updated.",
+  chapter_credit_union_code_prefix: "Code:",
+  chapter_visit_heading: "Visit the Chapter",
+  chapter_map_placeholder: "Map coming soon",
+  chapter_contact_cta: "Contact CamCCUL Headquarters",
+  chapter_visit_note:
+    "For security, individual contact details are not published online. Please contact the chapter directly using the details above.",
 
   // ─── Contact page ─────────────────────────────────────────────────────
   contact_page_title: "Contact Us",
@@ -356,6 +391,42 @@ const fr: Record<keyof typeof en, string> = {
   affiliates_empty_title: "Aucune coopérative de crédit trouvée dans cette région.",
   affiliates_empty_subtitle: "Veuillez sélectionner une autre région.",
   affiliates_contact_hq_note: "Contactez le siège de CamCCUL pour plus de détails",
+  affiliates_profile_available: "Profil Disponible",
+  affiliates_profile_pending: "Profil en Attente",
+  affiliates_view_profile: "Voir le Profil du Chapitre",
+
+  // ─── Chapter Profile Page ───────────────────────────────────────────────
+  chapter_not_found_title: "Chapitre Introuvable",
+  chapter_not_found_message:
+    "Nous n'avons pas trouvé de chapitre avec ce code. Il a peut-être été déplacé, ou le code est peut-être incorrect.",
+  chapter_not_found_back: "Retour à l'Annuaire des Affiliés",
+  chapter_about_prefix: "À propos de",
+  chapter_history_fallback:
+    "Les informations historiques seront bientôt disponibles. Le profil complet de ce chapitre est en cours de mise à jour.",
+  chapter_year_established_label: "Année de Création",
+  chapter_services_heading: "Services Offerts",
+  chapter_contact_heading: "Coordonnées",
+  chapter_generic_fallback:
+    "Ces informations sont en cours de mise à jour. Veuillez revenir bientôt ou contacter le siège de CamCCUL.",
+  chapter_under_review:
+    "Le profil complet de ce chapitre est en cours d'examen et sera bientôt disponible.",
+  chapter_members_label: "Total des Membres",
+  chapter_branches_label: "Nombre de Succursales",
+  chapter_credit_union_count_label: "Coopératives de Crédit Membres",
+  chapter_leadership_heading: "Direction du Chapitre",
+  chapter_president_label: "Président du Chapitre",
+  chapter_supervisor_label: "Superviseur du Chapitre",
+  chapter_board_size_label: "Membres du Conseil",
+  chapter_staff_count_label: "Personnel du Chapitre",
+  chapter_credit_unions_heading: "Coopératives de Crédit Membres",
+  chapter_credit_unions_empty:
+    "Les informations sur les coopératives de crédit membres sont en cours de mise à jour.",
+  chapter_credit_union_code_prefix: "Code :",
+  chapter_visit_heading: "Visiter le Chapitre",
+  chapter_map_placeholder: "Carte bientôt disponible",
+  chapter_contact_cta: "Contacter le Siège de CamCCUL",
+  chapter_visit_note:
+    "Pour des raisons de sécurité, les coordonnées individuelles ne sont pas publiées en ligne. Veuillez contacter le chapitre directement en utilisant les coordonnées ci-dessus.",
 
   // ─── Contact page ─────────────────────────────────────────────────────
   contact_page_title: "Contactez-nous",

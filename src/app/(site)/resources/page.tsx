@@ -3,6 +3,20 @@ import { resources as mockResources } from "@/lib/mock-data";
 import { isPlaceholder } from "@/lib/utils";
 import { ResourcesPageClient, type PublicResource } from "./ResourcesPageClient";
 
+// Ships with the codebase (the printable form at /resources/chapter-profile-
+// template) rather than being admin-managed CMS content, so it's merged in
+// here unconditionally instead of depending on a database row that would
+// need seeding into the live database.
+const CHAPTER_PROFILE_TEMPLATE_RESOURCE: PublicResource = {
+  id: "res-chapter-profile-template",
+  title: "Chapter Profile Form",
+  description:
+    "Download and complete this form to update your chapter's profile on the CamCCUL website directory. Each chapter should submit one form covering all its member credit unions.",
+  category: "Form",
+  fileType: "PDF",
+  fileUrl: "/api/resources/chapter-profile-template",
+};
+
 async function getActiveResources(): Promise<PublicResource[]> {
   try {
     const resources = await prisma.resource.findMany({
@@ -14,6 +28,7 @@ async function getActiveResources(): Promise<PublicResource[]> {
         description: true,
         category: true,
         fileType: true,
+        fileUrl: true,
       },
     });
     // The seed script copied mock-data.ts's placeholder resources straight
@@ -36,6 +51,7 @@ async function getActiveResources(): Promise<PublicResource[]> {
         description: r.description.en,
         category: r.category,
         fileType: r.fileType,
+        fileUrl: r.fileUrl ?? null,
       }))
       .sort((a, b) => a.title.localeCompare(b.title));
   }
@@ -43,5 +59,10 @@ async function getActiveResources(): Promise<PublicResource[]> {
 
 export default async function ResourcesPage() {
   const resources = await getActiveResources();
-  return <ResourcesPageClient resources={resources} />;
+  const withTemplate = resources.some(
+    (r) => r.id === CHAPTER_PROFILE_TEMPLATE_RESOURCE.id
+  )
+    ? resources
+    : [...resources, CHAPTER_PROFILE_TEMPLATE_RESOURCE];
+  return <ResourcesPageClient resources={withTemplate} />;
 }

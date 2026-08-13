@@ -60,12 +60,63 @@ model Affiliate {
   phone     String?
   email     String?
   isActive  Boolean  @default(true)
+
+  // Chapter Profile Form fields — populated via the admin "Upload Chapter
+  // Profiles" tool (manual entry or best-effort extraction from an uploaded
+  // document), and displayed on the public /affiliates/[code] profile page.
+  yearEstablished        Int?
+  briefHistory           String?    @db.Text
+  totalMembers           Int?
+  branchCount            Int?
+  memberCreditUnionCount Int?
+  services               String[]   @default([])
+  chapterPresident       String?
+  chapterSupervisor      String?
+  boardSize              Int?
+  staffCount             Int?
+  // Array of { name: string, code: string } — a chapter's self-reported
+  // member credit unions, as listed on its Chapter Profile Form. Distinct
+  // from the top-level Affiliate records, which each have their own
+  // independent code/region/etc.
+  memberCreditUnions     Json?
+  profileUpdatedAt       DateTime?
+  // "pending" | "approved" | "rejected" — gates public visibility of the
+  // profile fields above on /affiliates/[code]. Defaults to "pending" so
+  // every submitted profile requires admin sign-off before going live.
+  profileStatus          String?    @default("pending")
+  // Set by the reviewer when rejecting a submission; not part of the
+  // Chapter Profile Form fields above, and never touched by a chapter's
+  // own submission — only by the admin review action.
+  profileReviewNote      String?    @db.Text
+
+  documents AffiliateDocument[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([region])
   @@index([name])
+  @@index([profileStatus])
   @@map("affiliates")
+}
+
+// Tracks a chapter profile document uploaded for a given affiliate, so
+// staff can find and review what was submitted (and what — if anything —
+// was auto-extracted from it) after the fact.
+model AffiliateDocument {
+  id            String   @id @default(cuid())
+  affiliateId   String
+  affiliate     Affiliate @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+  fileName      String
+  fileType      String
+  fileSize      Int
+  storagePath   String
+  status        String   @default("pending_review")
+  extractedText String?  @db.Text
+  createdAt     DateTime @default(now())
+
+  @@index([affiliateId])
+  @@map("affiliate_documents")
 }
 
 model Resource {

@@ -13,7 +13,7 @@ export function UtilityBar() {
   const { language } = useLanguage();
 
   return (
-    <div className="w-full bg-primary-900 text-white h-10">
+    <div className="print:hidden w-full bg-primary-900 text-white h-10">
       <div className="max-w-[1200px] mx-auto px-4 h-full flex items-center justify-between text-xs">
         <div className="flex items-center gap-6">
           <span className="hidden md:flex items-center gap-1.5">

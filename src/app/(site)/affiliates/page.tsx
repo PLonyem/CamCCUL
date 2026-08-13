@@ -4,7 +4,7 @@ import { AffiliatesPageClient, type PublicAffiliate } from "./AffiliatesPageClie
 
 async function getActiveAffiliates(): Promise<PublicAffiliate[]> {
   try {
-    return await prisma.affiliate.findMany({
+    const affiliates = await prisma.affiliate.findMany({
       where: { isActive: true },
       orderBy: { name: "asc" },
       select: {
@@ -13,13 +13,25 @@ async function getActiveAffiliates(): Promise<PublicAffiliate[]> {
         name: true,
         region: true,
         city: true,
+        profileUpdatedAt: true,
       },
     });
+    return affiliates.map((a) => ({
+      id: a.id,
+      code: a.code,
+      name: a.name,
+      region: a.region,
+      city: a.city,
+      hasProfile: a.profileUpdatedAt != null,
+    }));
   } catch (error) {
     console.error(
       "Database unavailable, falling back to mock affiliate data:",
       error
     );
+    // Mock affiliates have no profileUpdatedAt equivalent — none of them
+    // has ever had a chapter profile submitted, so this fallback path
+    // always reports "Profile Pending".
     return mockAffiliates
       .filter((a) => a.isActive)
       .sort((a, b) => a.name.localeCompare(b.name))
@@ -29,6 +41,7 @@ async function getActiveAffiliates(): Promise<PublicAffiliate[]> {
         name: a.name,
         region: a.region,
         city: a.city,
+        hasProfile: false,
       }));
   }
 }

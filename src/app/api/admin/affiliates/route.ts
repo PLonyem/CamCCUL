@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
 
   const params = request.nextUrl.searchParams;
   const page = Math.max(1, Number(params.get("page")) || 1);
-  const limit = Math.min(100, Math.max(1, Number(params.get("limit")) || 20));
+  const limit = Math.min(1000, Math.max(1, Number(params.get("limit")) || 20));
   const search = params.get("search")?.trim();
   const region = params.get("region");
 

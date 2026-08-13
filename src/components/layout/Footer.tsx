@@ -31,7 +31,7 @@ export function Footer() {
   const { t, language } = useLanguage();
 
   return (
-    <footer className="bg-primary-900 text-white pt-16 pb-8">
+    <footer className="print:hidden bg-primary-900 text-white pt-16 pb-8">
       <div className="max-w-[1200px] mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>

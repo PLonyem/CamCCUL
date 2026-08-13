@@ -92,7 +92,7 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-40 bg-white border-b border-primary-100 transition-shadow",
+        "print:hidden sticky top-0 z-40 bg-white border-b border-primary-100 transition-shadow",
         isScrolled && "shadow-sm"
       )}
     >

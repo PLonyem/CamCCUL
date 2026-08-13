@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { updateAffiliateSchema } from "@/lib/validation/affiliate";
+import { chapterProfileFieldKeys, updateAffiliateSchema } from "@/lib/validation/affiliate";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -61,9 +61,17 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     }
   }
 
+  // Only bump profileUpdatedAt when this request actually touches
+  // chapter-profile content, not on ordinary code/name/region edits from
+  // the basic Affiliate admin form.
+  const touchesProfile = chapterProfileFieldKeys.some((key) => key in body);
+
   const affiliate = await prisma.affiliate.update({
     where: { id },
-    data,
+    data: {
+      ...data,
+      ...(touchesProfile ? { profileUpdatedAt: new Date() } : {}),
+    },
   });
 
   return NextResponse.json(affiliate);

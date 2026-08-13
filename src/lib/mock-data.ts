@@ -89,6 +89,7 @@ export interface Resource {
   fileType: string;
   fileSize: number;
   downloadCount: number;
+  fileUrl?: string;
 }
 
 export interface Service {
@@ -2593,8 +2594,8 @@ export const contactInfo: ContactInfo = {
   phone: "(237) 233 44 57 66",
   email: "camccul@camccul.cm",
   officeHours: {
-    en: "Tuesday–Saturday, 8:00am–4:00pm",
-    fr: "Mardi–Samedi, 8h00–16h00",
+    en: "Monday–Friday, 8:00am–4:00pm",
+    fr: "Lundi–Vendredi, 8h00–16h00",
   },
 };
 
@@ -3841,6 +3842,22 @@ export const resources: Resource[] = [
     fileType: "DOCX",
     fileSize: 0,
     downloadCount: 0,
+  },
+  {
+    id: "res-chapter-profile-template",
+    title: {
+      en: "Chapter Profile Form",
+      fr: "Formulaire de Profil de Chapitre",
+    },
+    description: {
+      en: "Download and complete this form to update your chapter's profile on the CamCCUL website directory. Each chapter should submit one form covering all its member credit unions.",
+      fr: "Téléchargez et complétez ce formulaire pour mettre à jour le profil de votre chapitre dans l'annuaire du site web de CamCCUL. Chaque chapitre doit soumettre un formulaire couvrant toutes ses coopératives membres.",
+    },
+    category: "Form",
+    fileType: "PDF",
+    fileSize: 0,
+    downloadCount: 0,
+    fileUrl: "/api/resources/chapter-profile-template",
   },
 ];
 

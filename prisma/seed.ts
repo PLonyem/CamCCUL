@@ -79,6 +79,7 @@ async function seedResources() {
         fileType: resource.fileType,
         fileSize: resource.fileSize,
         downloadCount: resource.downloadCount,
+        fileUrl: resource.fileUrl || null,
       },
     });
   }

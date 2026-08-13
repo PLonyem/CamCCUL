@@ -42,7 +42,7 @@ const SESSION_KEY = "camccul-chatbot-session-v2";
 // the corner, but adds env(safe-area-inset-*) on top so it clears the home
 // indicator / rounded corners on notched phones instead of hiding under them.
 const FAB_POSITION_CLASS =
-  "fixed z-[60] bottom-[calc(1.5rem_+_env(safe-area-inset-bottom))] right-[calc(1.5rem_+_env(safe-area-inset-right))]";
+  "print:hidden fixed z-[60] bottom-[calc(1.5rem_+_env(safe-area-inset-bottom))] right-[calc(1.5rem_+_env(safe-area-inset-right))]";
 
 function welcomeMessage(): ChatMessage {
   return { id: 0, role: "bot", text: WELCOME.reply, chips: WELCOME.chips };
