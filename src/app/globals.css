@@ -92,6 +92,27 @@ body {
   @apply bg-gray-50 text-gray-900;
 }
 
+/* Used by the About page's FadeUp wrapper. Base state is fully visible —
+   the hidden/animated state only exists inside the no-preference media
+   query, so prefers-reduced-motion users never see anything to reveal. */
+.fade-up {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .fade-up {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 400ms ease-out, transform 400ms ease-out;
+  }
+
+  .fade-up.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media print {
   @page {
     margin: 1.5cm;

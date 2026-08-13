@@ -124,6 +124,39 @@ const en = {
   about_milestone_present: "Present",
   about_read_more: "Read more",
 
+  // ─── About page (2026 rebuild) ─────────────────────────────────────────
+  about_v2_hero_eyebrow: "Empowering",
+  about_v2_hero_heading: "Empowering Financial Growth and Community Development",
+  about_v2_vision_eyebrow: "Our Vision",
+  about_v2_vision_heading: "Our Vision for Financial Empowerment and Community Development",
+  about_v2_vision_lead: "Driving financial growth and community prosperity through dedicated services.",
+  about_v2_vision_body1:
+    "CamCCUL has successfully enhanced economic stability through innovative financial solutions and support, fostering community development.",
+  about_v2_vision_body2: "Experience the impact of our services and goals.",
+  about_v2_legacy_eyebrow: "Our Legacy",
+  about_v2_legacy_heading: "Charting Our Journey Through Time",
+  about_v2_legacy_body:
+    "CamCCUL traces its roots back to the early days of cooperative banking in Cameroon. Established with a vision to uplift the financial well-being of the community, we have evolved into a key player in the country's financial sector. Over the years, we have consistently provided innovative solutions and support to our members, contributing to the overall economic empowerment and development of Cameroon.",
+  about_v2_purpose_eyebrow: "Our Purpose",
+  about_v2_purpose_heading: "Guiding Principles and Goals",
+  about_v2_purpose_mission_title: "Mission Focus",
+  about_v2_purpose_mission_body:
+    "CamCCUL is dedicated to fostering economic stability and social welfare in Cameroon. We are committed to providing accessible financial services, education, and support to empower individuals and businesses through our affiliates. Through innovative solutions and community development initiatives, we aim to be the catalyst for financial well-being and success.",
+  about_v2_purpose_values_title: "Core Values",
+  about_v2_purpose_values_body:
+    "Integrity, Community, Innovation, and Empowerment are the core values that drive our actions at CamCCUL. We believe in transparency, collaborative growth, forward-thinking solutions, and empowering individual Credit unions to achieve their financial goals.",
+  about_v2_value_integrity: "Integrity",
+  about_v2_value_community: "Community",
+  about_v2_value_innovation: "Innovation",
+  about_v2_value_empowerment: "Empowerment",
+  about_v2_team_eyebrow: "Meet Our",
+  about_v2_team_heading: "Dedicated Team of Professionals",
+  about_v2_team_bamenda: "Bamenda Team",
+  about_v2_team_douala: "Douala Team",
+  about_v2_team_fako: "Fako Team",
+  about_v2_team_caption: "CamCCUL",
+  about_v2_image_placeholder: "Photograph coming soon",
+
   // ─── Affiliates page ──────────────────────────────────────────────────
   affiliates_page_title: "Our Affiliate Credit Unions",
   affiliates_page_subtitle: "Select a chapter to view its affiliated credit unions",
@@ -432,6 +465,41 @@ const fr: Record<keyof typeof en, string> = {
     "CamCCUL agit comme organe faîtier des coopératives de crédit affiliées organisées dans les dix régions du Cameroun. Chaque affiliée opère de manière indépendante au sein de sa communauté tout en respectant les normes de réglementation, de reporting et de renforcement des capacités fixées par la Ligue, permettant aux membres à travers le pays d'accéder à des services financiers coopératifs cohérents, près de chez eux.",
   about_milestone_present: "Présent",
   about_read_more: "En savoir plus",
+
+  // ─── About page (2026 rebuild) ─────────────────────────────────────────
+  about_v2_hero_eyebrow: "Autonomisation",
+  about_v2_hero_heading: "Favoriser la Croissance Financière et le Développement Communautaire",
+  about_v2_vision_eyebrow: "Notre Vision",
+  about_v2_vision_heading:
+    "Notre Vision pour l'Autonomisation Financière et le Développement Communautaire",
+  about_v2_vision_lead:
+    "Favoriser la croissance financière et la prospérité communautaire grâce à des services dédiés.",
+  about_v2_vision_body1:
+    "CamCCUL a considérablement renforcé la stabilité économique grâce à des solutions financières et un accompagnement innovants, favorisant ainsi le développement communautaire.",
+  about_v2_vision_body2: "Découvrez l'impact de nos services et de nos objectifs.",
+  about_v2_legacy_eyebrow: "Notre Héritage",
+  about_v2_legacy_heading: "Retracer Notre Parcours à Travers le Temps",
+  about_v2_legacy_body:
+    "CamCCUL puise ses origines dans les premiers jours de la banque coopérative au Cameroun. Créée avec la vision d'améliorer le bien-être financier de la communauté, elle est devenue un acteur clé du secteur financier du pays. Au fil des années, nous avons constamment fourni des solutions innovantes et un accompagnement à nos membres, contribuant ainsi à l'autonomisation économique globale et au développement du Cameroun.",
+  about_v2_purpose_eyebrow: "Notre Objectif",
+  about_v2_purpose_heading: "Principes Directeurs et Objectifs",
+  about_v2_purpose_mission_title: "Axe de la Mission",
+  about_v2_purpose_mission_body:
+    "CamCCUL se consacre à promouvoir la stabilité économique et le bien-être social au Cameroun. Nous nous engageons à fournir des services financiers accessibles, une éducation et un accompagnement pour autonomiser les particuliers et les entreprises à travers nos affiliés. Grâce à des solutions innovantes et des initiatives de développement communautaire, nous visons à être le catalyseur du bien-être financier et de la réussite.",
+  about_v2_purpose_values_title: "Valeurs Fondamentales",
+  about_v2_purpose_values_body:
+    "L'Intégrité, la Communauté, l'Innovation et l'Autonomisation sont les valeurs fondamentales qui guident nos actions à CamCCUL. Nous croyons en la transparence, la croissance collaborative, les solutions avant-gardistes et l'autonomisation des coopératives de crédit individuelles pour atteindre leurs objectifs financiers.",
+  about_v2_value_integrity: "Intégrité",
+  about_v2_value_community: "Communauté",
+  about_v2_value_innovation: "Innovation",
+  about_v2_value_empowerment: "Autonomisation",
+  about_v2_team_eyebrow: "Découvrez Notre",
+  about_v2_team_heading: "Équipe de Professionnels Dévoués",
+  about_v2_team_bamenda: "Équipe de Bamenda",
+  about_v2_team_douala: "Équipe de Douala",
+  about_v2_team_fako: "Équipe de Fako",
+  about_v2_team_caption: "CamCCUL",
+  about_v2_image_placeholder: "Photo à venir",
 
   // ─── Affiliates page ──────────────────────────────────────────────────
   affiliates_page_title: "Nos Coopératives de Crédit Affiliées",
