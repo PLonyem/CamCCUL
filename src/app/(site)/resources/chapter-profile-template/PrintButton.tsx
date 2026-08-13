@@ -2,8 +2,11 @@
 
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { useLanguage } from "@/context/LanguageContext";
 
 export function PrintButton() {
+  const { t } = useLanguage();
+
   return (
     <Button
       type="button"
@@ -11,7 +14,7 @@ export function PrintButton() {
       className="print:hidden"
     >
       <Download className="h-4 w-4" />
-      Download as PDF
+      {t("cu_form_download_pdf")}
     </Button>
   );
 }
