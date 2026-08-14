@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 import { buttonVariants } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
-import { FadeUp } from "./FadeUp";
+import { FadeUp } from "@/components/ui/FadeUp";
 
 // SECTION 8 — Call to action. The only solid-blue band on the page — the
 // page's single point of emphasis. Heading/button text reuses the exact

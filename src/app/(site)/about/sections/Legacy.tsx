@@ -4,7 +4,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { milestones } from "@/lib/mock-data";
 import { localize } from "@/lib/i18n";
 import { isPlaceholder } from "@/lib/utils";
-import { FadeUp } from "./FadeUp";
+import { FadeUp } from "@/components/ui/FadeUp";
 import { ImageSlot } from "./ImageSlot";
 
 // Flip this to true once CamCCUL supplies a real founding year and

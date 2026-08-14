@@ -1,7 +1,7 @@
 "use client";
 
 import { useLanguage } from "@/context/LanguageContext";
-import { FadeUp } from "./FadeUp";
+import { FadeUp } from "@/components/ui/FadeUp";
 import { ImageSlot } from "./ImageSlot";
 
 // SECTION 3 — Vision. White, asymmetric 45/55 split, image on the left.

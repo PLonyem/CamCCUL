@@ -7,6 +7,7 @@ import { Shield, ShieldCheck, GraduationCap, Laptop, Lock, Building2, Users, Glo
 import { regions, regionLabels } from "@/lib/mock-data";
 import { useLanguage } from "@/context/LanguageContext";
 import { localize, type TranslationKey } from "@/lib/i18n";
+import { FadeUp } from "@/components/ui/FadeUp";
 
 const yearsOfService = new Date().getFullYear() - 1968;
 
@@ -133,7 +134,7 @@ export function HomeClient({ affiliateCount, regionCounts, recentArticles }: Hom
         />
 
         <div className="relative z-10 max-w-[1200px] mx-auto px-4 py-16 w-full">
-          <div className="max-w-[620px]">
+          <FadeUp className="max-w-[620px]">
             <p className="text-xs md:text-sm font-semibold uppercase tracking-[0.15em] text-primary-100">
               {t("nav_tagline")}
             </p>
@@ -162,7 +163,7 @@ export function HomeClient({ affiliateCount, regionCounts, recentArticles }: Hom
                 {t("home2_hero_cta_secondary")}
               </Link>
             </div>
-          </div>
+          </FadeUp>
         </div>
       </section>
 
@@ -170,14 +171,14 @@ export function HomeClient({ affiliateCount, regionCounts, recentArticles }: Hom
       <section className="bg-primary-500/6 py-10 md:py-14">
         <div className="max-w-[1200px] mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
-            {stats.map((stat) => (
-              <div key={stat.labelKey} className="text-center">
+            {stats.map((stat, index) => (
+              <FadeUp key={stat.labelKey} index={index} className="text-center">
                 <stat.icon className="h-5 w-5 text-primary-500 mx-auto mb-2" aria-hidden="true" />
                 <p className="text-3xl md:text-4xl font-display font-bold text-primary-500">
                   {stat.value}
                 </p>
                 <p className="text-xs md:text-sm text-primary-700 mt-1">{t(stat.labelKey)}</p>
-              </div>
+              </FadeUp>
             ))}
           </div>
         </div>
@@ -189,56 +190,62 @@ export function HomeClient({ affiliateCount, regionCounts, recentArticles }: Hom
           <h2 className="sr-only">{t("home2_values_sr_heading")}</h2>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {valueCards.map((card) => (
-              <BandCard key={card.titleKey} className="p-6">
-                <card.icon className="h-6 w-6 text-primary-500 mb-3" aria-hidden="true" />
-                <h3 className="font-display font-semibold text-lg text-primary-900">
-                  {t(card.titleKey)}
-                </h3>
-                <p className="text-sm text-primary-700 mt-2 leading-[1.6]">{t(card.bodyKey)}</p>
-              </BandCard>
+            {valueCards.map((card, index) => (
+              <FadeUp key={card.titleKey} index={index}>
+                <BandCard className="p-6 h-full">
+                  <card.icon className="h-6 w-6 text-primary-500 mb-3" aria-hidden="true" />
+                  <h3 className="font-display font-semibold text-lg text-primary-900">
+                    {t(card.titleKey)}
+                  </h3>
+                  <p className="text-sm text-primary-700 mt-2 leading-[1.6]">{t(card.bodyKey)}</p>
+                </BandCard>
+              </FadeUp>
             ))}
           </div>
 
-          <div
+          <FadeUp
             className="mt-12 pt-8 border-t border-primary-100 flex flex-wrap items-center justify-center gap-x-8 gap-y-3"
-            aria-label={t("home_trust_title")}
           >
-            {regulators.map((name) => (
-              <span
-                key={name}
-                className="flex items-center gap-1.5 text-xs font-medium text-primary-400"
-              >
-                <Shield className="h-3 w-3" aria-hidden="true" />
-                {name}
-              </span>
-            ))}
-          </div>
+            <div aria-label={t("home_trust_title")} className="contents">
+              {regulators.map((name) => (
+                <span
+                  key={name}
+                  className="flex items-center gap-1.5 text-xs font-medium text-primary-400"
+                >
+                  <Shield className="h-3 w-3" aria-hidden="true" />
+                  {name}
+                </span>
+              ))}
+            </div>
+          </FadeUp>
         </div>
       </section>
 
       {/* BAND 5: OUR REACH ACROSS CAMEROON — pale blue tint */}
       <section className="bg-primary-500/6 py-14 md:py-24">
         <div className="max-w-[1200px] mx-auto px-4">
-          <h2 className="text-[26px] md:text-4xl font-display font-bold text-primary-900">
-            {t("home_affiliates_title")}
-          </h2>
-          <p className="text-base md:text-lg leading-[1.6] text-primary-700 max-w-2xl mt-4">
-            {affiliateCount}+ {t("home_reach_subtitle_suffix")}
-          </p>
+          <FadeUp>
+            <h2 className="text-[26px] md:text-4xl font-display font-bold text-primary-900">
+              {t("home_affiliates_title")}
+            </h2>
+            <p className="text-base md:text-lg leading-[1.6] text-primary-700 max-w-2xl mt-4">
+              {affiliateCount}+ {t("home_reach_subtitle_suffix")}
+            </p>
+          </FadeUp>
 
           <div className="mt-12 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
-            {regionCounts.map(({ region, count }) => (
-              <Link
-                key={region}
-                href={`/affiliates?region=${encodeURIComponent(region)}`}
-                className="text-center bg-white border border-primary-200 rounded-xl p-4 hover:border-primary-400 transition-colors"
-              >
-                <p className="text-2xl font-bold text-primary-500">{count}</p>
-                <p className="text-xs text-primary-700 mt-1">
-                  {localize(regionLabels[region], language)}
-                </p>
-              </Link>
+            {regionCounts.map(({ region, count }, index) => (
+              <FadeUp key={region} index={index}>
+                <Link
+                  href={`/affiliates?region=${encodeURIComponent(region)}`}
+                  className="block text-center bg-white border border-primary-200 rounded-xl p-4 hover:border-primary-400 transition-colors"
+                >
+                  <p className="text-2xl font-bold text-primary-500">{count}</p>
+                  <p className="text-xs text-primary-700 mt-1">
+                    {localize(regionLabels[region], language)}
+                  </p>
+                </Link>
+              </FadeUp>
             ))}
           </div>
 
@@ -257,28 +264,32 @@ export function HomeClient({ affiliateCount, regionCounts, recentArticles }: Hom
           show date + title only rather than a placeholder image block. */}
       <section className="bg-white py-14 md:py-24">
         <div className="max-w-[1200px] mx-auto px-4">
-          <h2 className="text-[26px] md:text-4xl font-display font-bold text-primary-900">
-            {t("home_news_title")}
-          </h2>
+          <FadeUp>
+            <h2 className="text-[26px] md:text-4xl font-display font-bold text-primary-900">
+              {t("home_news_title")}
+            </h2>
+          </FadeUp>
 
           <div className="mt-12 grid md:grid-cols-3 gap-6">
             {recentArticles
               .filter((article) => article.language === language)
               .slice(0, 3)
-              .map((article) => (
-                <BandCard key={article.id} className="p-6 flex flex-col h-full">
-                  <p className="text-xs text-primary-400">
-                    {formatDate(article.publishedAt, language)}
-                  </p>
-                  <h3 className="font-display font-semibold text-lg text-primary-900 mt-2">
-                    <Link
-                      href={`/news/${article.slug}`}
-                      className="hover:text-primary-500 transition-colors"
-                    >
-                      {article.title}
-                    </Link>
-                  </h3>
-                </BandCard>
+              .map((article, index) => (
+                <FadeUp key={article.id} index={index}>
+                  <BandCard className="p-6 flex flex-col h-full">
+                    <p className="text-xs text-primary-400">
+                      {formatDate(article.publishedAt, language)}
+                    </p>
+                    <h3 className="font-display font-semibold text-lg text-primary-900 mt-2">
+                      <Link
+                        href={`/news/${article.slug}`}
+                        className="hover:text-primary-500 transition-colors"
+                      >
+                        {article.title}
+                      </Link>
+                    </h3>
+                  </BandCard>
+                </FadeUp>
               ))}
           </div>
 
@@ -296,18 +307,20 @@ export function HomeClient({ affiliateCount, regionCounts, recentArticles }: Hom
       {/* BAND 7: CALL TO ACTION — the page's one other solid-blue band */}
       <section className="bg-primary-500 py-14 md:py-24">
         <div className="max-w-[1200px] mx-auto px-4 text-center">
-          <h2 className="text-[26px] md:text-4xl font-display font-bold text-white">
-            {t("nav_find_credit_union")}
-          </h2>
-          <p className="text-base md:text-lg leading-[1.6] text-primary-100 mt-4 max-w-xl mx-auto">
-            {t("affiliates_page_subtitle")}
-          </p>
-          <Link
-            href="/affiliates"
-            className="inline-flex items-center rounded-lg bg-white hover:bg-primary-50 text-primary-700 px-6 py-3 text-sm font-medium transition-colors mt-8"
-          >
-            {t("nav_find_credit_union")}
-          </Link>
+          <FadeUp>
+            <h2 className="text-[26px] md:text-4xl font-display font-bold text-white">
+              {t("nav_find_credit_union")}
+            </h2>
+            <p className="text-base md:text-lg leading-[1.6] text-primary-100 mt-4 max-w-xl mx-auto">
+              {t("affiliates_page_subtitle")}
+            </p>
+            <Link
+              href="/affiliates"
+              className="inline-flex items-center rounded-lg bg-white hover:bg-primary-50 text-primary-700 px-6 py-3 text-sm font-medium transition-colors mt-8"
+            >
+              {t("nav_find_credit_union")}
+            </Link>
+          </FadeUp>
         </div>
       </section>
     </>

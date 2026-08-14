@@ -6,6 +6,7 @@ import { ArrowLeft, Calendar, MapPin } from "lucide-react";
 import { PageHero } from "@/components/layout/PageHero";
 import { Badge } from "@/components/ui/Badge";
 import { ShareArticle } from "@/components/news/ShareArticle";
+import { FadeUp } from "@/components/ui/FadeUp";
 import { prisma } from "@/lib/prisma";
 import { newsArticles as mockArticles, CATEGORIES, type NewsCategory } from "@/lib/mock-data";
 import { localize } from "@/lib/i18n";
@@ -159,6 +160,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
       <div className="bg-white py-16">
         <div className="max-w-3xl mx-auto px-4">
+          <FadeUp>
           <div className="flex flex-wrap items-center gap-3 mb-6">
             <Badge variant={categoryVariant[article.category as NewsCategory] ?? "default"}>
               {categoryLabel}
@@ -213,6 +215,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               {isFr ? "Retour aux actualités" : "Back to News"}
             </Link>
           </div>
+          </FadeUp>
         </div>
       </div>
     </>

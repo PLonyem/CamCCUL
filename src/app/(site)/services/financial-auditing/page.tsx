@@ -4,6 +4,7 @@ import { ClipboardCheck, FileSearch, FileText, Building2 } from "lucide-react";
 import { PageHero } from "@/components/layout/PageHero";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Card } from "@/components/ui/Card";
+import { FadeUp } from "@/components/ui/FadeUp";
 import { useLanguage } from "@/context/LanguageContext";
 import { localize, type LocalizedText } from "@/lib/i18n";
 
@@ -63,7 +64,7 @@ export default function FinancialAuditingPage() {
       {/* SECTION 1: OVERVIEW */}
       <section className="bg-white py-20">
         <div className="max-w-4xl mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <FadeUp className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="md:col-span-2">
               <h2 className="font-display text-2xl font-bold text-primary-900 mb-4">
                 {language === "fr" ? "Une Transparence Digne de Confiance" : "Transparency You Can Trust"}
@@ -96,7 +97,7 @@ export default function FinancialAuditingPage() {
                 </ul>
               </div>
             </div>
-          </div>
+          </FadeUp>
         </div>
       </section>
 
@@ -105,18 +106,20 @@ export default function FinancialAuditingPage() {
         <div className="max-w-5xl mx-auto px-4">
           <SectionHeader align="center" title={language === "fr" ? "Comment Nous Auditons" : "How We Audit"} />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
-            {methodology.map((item) => (
-              <Card key={item.title.en} className="p-6">
-                <div className="rounded-full p-3 h-12 w-12 bg-primary-100 text-primary-600 flex items-center justify-center mb-4">
-                  <item.icon className="h-6 w-6" />
-                </div>
-                <h3 className="font-display font-semibold text-lg text-primary-900 mb-2">
-                  {localize(item.title, language)}
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  {localize(item.description, language)}
-                </p>
-              </Card>
+            {methodology.map((item, index) => (
+              <FadeUp key={item.title.en} index={index}>
+                <Card className="p-6 h-full">
+                  <div className="rounded-full p-3 h-12 w-12 bg-primary-100 text-primary-600 flex items-center justify-center mb-4">
+                    <item.icon className="h-6 w-6" />
+                  </div>
+                  <h3 className="font-display font-semibold text-lg text-primary-900 mb-2">
+                    {localize(item.title, language)}
+                  </h3>
+                  <p className="text-gray-600 text-sm">
+                    {localize(item.description, language)}
+                  </p>
+                </Card>
+              </FadeUp>
             ))}
           </div>
         </div>
@@ -125,15 +128,17 @@ export default function FinancialAuditingPage() {
       {/* SECTION 3: STRENGTHENING CREDIT UNIONS */}
       <section className="bg-white py-20">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <Building2 className="h-16 w-16 text-primary-600 mx-auto mb-6" />
-          <h2 className="font-display text-2xl font-bold text-primary-900 mb-4">
-            {language === "fr" ? "Des Audits Qui Renforcent, Pas Seulement Qui Inspectent" : "Audits That Build, Not Just Inspect"}
-          </h2>
-          <p className="max-w-3xl mx-auto text-gray-600">
-            {language === "fr"
-              ? "Notre philosophie est que les audits doivent renforcer les coopératives de crédit, pas seulement les critiquer. Nous travaillons avec la direction des affiliées pour identifier les faiblesses avant qu'elles ne deviennent des crises, partager les meilleures pratiques observées dans le réseau et former sur les constats d'audit courants. Le résultat : des coopératives plus résilientes, une épargne des membres mieux protégée, et un secteur financier coopératif plus solide pour le Cameroun."
-              : "Our philosophy is that audits should strengthen credit unions, not just critique them. We partner with affiliate management to identify weaknesses before they become crises, share best practices observed across the network, and provide training on common audit findings. The result: more resilient credit unions, better protected member savings, and a stronger cooperative financial sector for Cameroon."}
-          </p>
+          <FadeUp>
+            <Building2 className="h-16 w-16 text-primary-600 mx-auto mb-6" />
+            <h2 className="font-display text-2xl font-bold text-primary-900 mb-4">
+              {language === "fr" ? "Des Audits Qui Renforcent, Pas Seulement Qui Inspectent" : "Audits That Build, Not Just Inspect"}
+            </h2>
+            <p className="max-w-3xl mx-auto text-gray-600">
+              {language === "fr"
+                ? "Notre philosophie est que les audits doivent renforcer les coopératives de crédit, pas seulement les critiquer. Nous travaillons avec la direction des affiliées pour identifier les faiblesses avant qu'elles ne deviennent des crises, partager les meilleures pratiques observées dans le réseau et former sur les constats d'audit courants. Le résultat : des coopératives plus résilientes, une épargne des membres mieux protégée, et un secteur financier coopératif plus solide pour le Cameroun."
+                : "Our philosophy is that audits should strengthen credit unions, not just critique them. We partner with affiliate management to identify weaknesses before they become crises, share best practices observed across the network, and provide training on common audit findings. The result: more resilient credit unions, better protected member savings, and a stronger cooperative financial sector for Cameroon."}
+            </p>
+          </FadeUp>
         </div>
       </section>
     </>

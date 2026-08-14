@@ -1,8 +1,9 @@
 "use client";
 
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { PageHero } from "@/components/layout/PageHero";
+import { FadeUp } from "@/components/ui/FadeUp";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
 import { localize, type LocalizedText } from "@/lib/i18n";
@@ -190,8 +191,8 @@ export default function FaqPage() {
 
       <section className="bg-gray-50 min-h-screen py-12">
         <div className="max-w-3xl mx-auto px-4">
-          {sectionsWithOffsets.map((section) => (
-            <Fragment key={section.title.en}>
+          {sectionsWithOffsets.map((section, sectionIdx) => (
+            <FadeUp key={section.title.en} index={sectionIdx}>
               <h2 className="text-lg font-display font-bold text-primary-900 mt-12 mb-4 first:mt-0">
                 {localize(section.title, language)}
               </h2>
@@ -224,7 +225,7 @@ export default function FaqPage() {
                   </div>
                 );
               })}
-            </Fragment>
+            </FadeUp>
           ))}
         </div>
       </section>

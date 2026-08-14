@@ -16,6 +16,7 @@ import {
 import { PageHero } from "@/components/layout/PageHero";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { FadeUp } from "@/components/ui/FadeUp";
 import { FacebookIcon } from "@/components/ui/SocialIcon";
 import { contactInfo } from "@/lib/mock-data";
 import { useLanguage } from "@/context/LanguageContext";
@@ -90,7 +91,7 @@ export default function ContactPage() {
       <div className="bg-gray-50">
         <div className="max-w-5xl mx-auto px-4 py-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="md:col-span-2">
+            <FadeUp className="md:col-span-2">
               <Card className="p-8">
                 {status === "success" ? (
                   <div className="bg-green-50 border border-green-200 rounded-xl p-8 text-center">
@@ -240,9 +241,9 @@ export default function ContactPage() {
                   </>
                 )}
               </Card>
-            </div>
+            </FadeUp>
 
-            <div className="md:col-span-1">
+            <FadeUp index={1} className="md:col-span-1">
               <Card className="p-6 h-fit sticky top-24">
                 <h3 className="font-semibold text-lg text-gray-900 mb-4">
                   {t("contact_info_title")}
@@ -304,7 +305,7 @@ export default function ContactPage() {
                   <ExternalLink className="h-3 w-3 text-gray-400 ml-auto shrink-0" />
                 </a>
               </Card>
-            </div>
+            </FadeUp>
           </div>
         </div>
       </div>

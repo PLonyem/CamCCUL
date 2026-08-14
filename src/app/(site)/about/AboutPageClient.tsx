@@ -6,7 +6,6 @@ import { Vision } from "./sections/Vision";
 import { Legacy } from "./sections/Legacy";
 import { Purpose } from "./sections/Purpose";
 import { CoreValues } from "./sections/CoreValues";
-import { Team } from "./sections/Team";
 import { OurLeadership } from "./sections/OurLeadership";
 import { CallToAction } from "./sections/CallToAction";
 
@@ -23,7 +22,6 @@ export function AboutPageClient({ affiliateCount }: AboutPageClientProps) {
       <Legacy />
       <Purpose />
       <CoreValues />
-      <Team />
       <OurLeadership />
       <CallToAction />
     </>

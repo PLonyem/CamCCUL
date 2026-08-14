@@ -2,7 +2,7 @@
 
 import { useLanguage } from "@/context/LanguageContext";
 import { type TranslationKey } from "@/lib/i18n";
-import { FadeUp } from "./FadeUp";
+import { FadeUp } from "@/components/ui/FadeUp";
 import { ImageSlot } from "./ImageSlot";
 
 interface LeadershipRole {

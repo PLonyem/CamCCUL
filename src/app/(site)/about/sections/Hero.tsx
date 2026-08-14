@@ -1,7 +1,7 @@
 "use client";
 
 import { useLanguage } from "@/context/LanguageContext";
-import { FadeUp } from "./FadeUp";
+import { FadeUp } from "@/components/ui/FadeUp";
 
 // SECTION 1 — Hero. White, no photograph. Confidence comes from scale and
 // empty space: a large heading, a short rule, nothing else.

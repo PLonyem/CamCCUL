@@ -5,6 +5,7 @@ import { Users, GraduationCap, Monitor, TrendingUp, ArrowRight } from "lucide-re
 import { PageHero } from "@/components/layout/PageHero";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Card } from "@/components/ui/Card";
+import { FadeUp } from "@/components/ui/FadeUp";
 import { buttonVariants } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
@@ -66,7 +67,7 @@ export default function CapacityBuildingPage() {
       {/* SECTION 1: OVERVIEW */}
       <section className="bg-white py-20">
         <div className="max-w-4xl mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <FadeUp className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="md:col-span-2">
               <h2 className="font-display text-2xl font-bold text-primary-900 mb-4">
                 {language === "fr" ? "Investir dans les Personnes, Renforcer les Institutions" : "Investing in People, Strengthening Institutions"}
@@ -99,7 +100,7 @@ export default function CapacityBuildingPage() {
                 </ul>
               </div>
             </div>
-          </div>
+          </FadeUp>
         </div>
       </section>
 
@@ -111,18 +112,20 @@ export default function CapacityBuildingPage() {
             title={language === "fr" ? "Comment Nous Renforçons les Capacités" : "How We Build Capacity"}
           />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
-            {trainingApproach.map((item) => (
-              <Card key={item.title.en} className="p-6">
-                <div className="rounded-full p-3 h-12 w-12 bg-primary-100 text-primary-600 flex items-center justify-center mb-4">
-                  <item.icon className="h-6 w-6" />
-                </div>
-                <h3 className="font-display font-semibold text-lg text-primary-900 mb-2">
-                  {localize(item.title, language)}
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  {localize(item.description, language)}
-                </p>
-              </Card>
+            {trainingApproach.map((item, index) => (
+              <FadeUp key={item.title.en} index={index}>
+                <Card className="p-6 h-full">
+                  <div className="rounded-full p-3 h-12 w-12 bg-primary-100 text-primary-600 flex items-center justify-center mb-4">
+                    <item.icon className="h-6 w-6" />
+                  </div>
+                  <h3 className="font-display font-semibold text-lg text-primary-900 mb-2">
+                    {localize(item.title, language)}
+                  </h3>
+                  <p className="text-gray-600 text-sm">
+                    {localize(item.description, language)}
+                  </p>
+                </Card>
+              </FadeUp>
             ))}
           </div>
         </div>
@@ -131,36 +134,40 @@ export default function CapacityBuildingPage() {
       {/* SECTION 3: IMPACT */}
       <section className="bg-white py-20">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <TrendingUp className="h-16 w-16 text-accent-600 mx-auto mb-6" />
-          <h2 className="font-display text-2xl font-bold text-primary-900 mb-4">
-            {language === "fr" ? "Bâtir un Mouvement Coopératif Plus Fort" : "Building a Stronger Cooperative Movement"}
-          </h2>
-          <p className="max-w-3xl mx-auto text-gray-600">
-            {language === "fr"
-              ? "L'impact de notre travail de renforcement des capacités dépasse largement les coopératives de crédit individuelles. Des gestionnaires mieux formés prennent de meilleures décisions de prêt. Des conseils mieux formés assurent une gouvernance plus solide. Un personnel mieux formé offre un meilleur service aux membres. Collectivement, cela élève le niveau de la finance coopérative à travers le Cameroun — protégeant l'épargne des membres, élargissant l'inclusion financière et renforçant la confiance du public envers le mouvement des coopératives de crédit."
-              : "The impact of our capacity building work extends far beyond individual credit unions. Better-trained managers make better lending decisions. Better-trained boards provide stronger governance. Better-trained staff deliver better member service. Collectively, this raises the standard of cooperative finance across Cameroon — protecting member savings, expanding financial inclusion, and building public trust in the credit union movement."}
-          </p>
+          <FadeUp>
+            <TrendingUp className="h-16 w-16 text-accent-600 mx-auto mb-6" />
+            <h2 className="font-display text-2xl font-bold text-primary-900 mb-4">
+              {language === "fr" ? "Bâtir un Mouvement Coopératif Plus Fort" : "Building a Stronger Cooperative Movement"}
+            </h2>
+            <p className="max-w-3xl mx-auto text-gray-600">
+              {language === "fr"
+                ? "L'impact de notre travail de renforcement des capacités dépasse largement les coopératives de crédit individuelles. Des gestionnaires mieux formés prennent de meilleures décisions de prêt. Des conseils mieux formés assurent une gouvernance plus solide. Un personnel mieux formé offre un meilleur service aux membres. Collectivement, cela élève le niveau de la finance coopérative à travers le Cameroun — protégeant l'épargne des membres, élargissant l'inclusion financière et renforçant la confiance du public envers le mouvement des coopératives de crédit."
+                : "The impact of our capacity building work extends far beyond individual credit unions. Better-trained managers make better lending decisions. Better-trained boards provide stronger governance. Better-trained staff deliver better member service. Collectively, this raises the standard of cooperative finance across Cameroon — protecting member savings, expanding financial inclusion, and building public trust in the credit union movement."}
+            </p>
+          </FadeUp>
         </div>
       </section>
 
       {/* SECTION 4: CTA */}
       <section className="bg-primary-900 text-white py-16 text-center">
         <div className="max-w-3xl mx-auto px-4 flex flex-col items-center">
-          <h2 className="font-display text-3xl md:text-4xl font-bold">
-            {language === "fr" ? "Intéressé par une Formation pour Votre Coopérative ?" : "Interested in Training for Your Credit Union?"}
-          </h2>
-          <p className="text-gray-300 mt-4">
-            {language === "fr"
-              ? "Contactez notre équipe de renforcement des capacités pour en savoir plus sur les prochains ateliers, demander un accompagnement sur site ou discuter de programmes de formation personnalisés pour votre affiliée."
-              : "Contact our capacity building team to learn about upcoming workshops, request on-site coaching, or discuss customized training programs for your affiliate."}
-          </p>
-          <Link
-            href="/contact"
-            className={cn(buttonVariants({ variant: "accent", size: "lg" }), "mt-8")}
-          >
-            {t("nav_contact")}
-            <ArrowRight className="h-5 w-5" />
-          </Link>
+          <FadeUp className="flex flex-col items-center">
+            <h2 className="font-display text-3xl md:text-4xl font-bold">
+              {language === "fr" ? "Intéressé par une Formation pour Votre Coopérative ?" : "Interested in Training for Your Credit Union?"}
+            </h2>
+            <p className="text-gray-300 mt-4">
+              {language === "fr"
+                ? "Contactez notre équipe de renforcement des capacités pour en savoir plus sur les prochains ateliers, demander un accompagnement sur site ou discuter de programmes de formation personnalisés pour votre affiliée."
+                : "Contact our capacity building team to learn about upcoming workshops, request on-site coaching, or discuss customized training programs for your affiliate."}
+            </p>
+            <Link
+              href="/contact"
+              className={cn(buttonVariants({ variant: "accent", size: "lg" }), "mt-8")}
+            >
+              {t("nav_contact")}
+              <ArrowRight className="h-5 w-5" />
+            </Link>
+          </FadeUp>
         </div>
       </section>
     </>

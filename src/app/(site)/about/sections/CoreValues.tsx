@@ -3,7 +3,7 @@
 import { ShieldCheck, Users, Lightbulb, Zap } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { Card } from "@/components/ui/Card";
-import { FadeUp } from "./FadeUp";
+import { FadeUp } from "@/components/ui/FadeUp";
 
 // SECTION 6 — Core values row. Pale blue tint. The four named values get
 // their own band — names only, no invented descriptions.

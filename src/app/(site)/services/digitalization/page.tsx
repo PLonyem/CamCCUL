@@ -6,6 +6,7 @@ import { PageHero } from "@/components/layout/PageHero";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
+import { FadeUp } from "@/components/ui/FadeUp";
 import { buttonVariants } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
@@ -116,19 +117,21 @@ export default function DigitalizationPage() {
       {/* SECTION 1: THE COMMITMENT */}
       <section className="bg-white py-20">
         <div className="max-w-4xl mx-auto px-4">
-          <blockquote className="border-l-4 border-accent-500 bg-accent-50 rounded-r-lg p-6 mb-8 italic text-lg text-gray-700">
-            {language === "fr"
-              ? "« CamCCUL pilote la digitalisation de ses coopératives de crédit affiliées, rationalisant les opérations et améliorant la prestation de services grâce à des technologies innovantes. »"
-              : "“CamCCUL is spearheading the digitalization of its affiliate credit unions, streamlining operations and enhancing delivery through innovative technology.”"}
-          </blockquote>
-          <p className="text-sm text-gray-500 mb-8">
-            {language === "fr" ? "— Charte des Services de CamCCUL" : "— CamCCUL Services Charter"}
-          </p>
-          <p className="text-gray-700 leading-relaxed">
-            {language === "fr"
-              ? "Cet engagement n'est pas qu'une simple déclaration. C'est un programme de transformation en plusieurs phases conçu pour faire entrer chaque coopérative de crédit — de Bamenda à Maroua — dans l'ère numérique. Notre objectif est simple : des rapports plus rapides, une meilleure supervision et des coopératives plus solides au service de millions de Camerounais."
-              : "This commitment is not just a statement. It is a multi-phase transformation program designed to bring every credit union — from Bamenda to Maroua — into the digital age. Our goal is simple: faster reporting, better oversight, and stronger credit unions serving millions of Cameroonians."}
-          </p>
+          <FadeUp>
+            <blockquote className="border-l-4 border-accent-500 bg-accent-50 rounded-r-lg p-6 mb-8 italic text-lg text-gray-700">
+              {language === "fr"
+                ? "« CamCCUL pilote la digitalisation de ses coopératives de crédit affiliées, rationalisant les opérations et améliorant la prestation de services grâce à des technologies innovantes. »"
+                : "“CamCCUL is spearheading the digitalization of its affiliate credit unions, streamlining operations and enhancing delivery through innovative technology.”"}
+            </blockquote>
+            <p className="text-sm text-gray-500 mb-8">
+              {language === "fr" ? "— Charte des Services de CamCCUL" : "— CamCCUL Services Charter"}
+            </p>
+            <p className="text-gray-700 leading-relaxed">
+              {language === "fr"
+                ? "Cet engagement n'est pas qu'une simple déclaration. C'est un programme de transformation en plusieurs phases conçu pour faire entrer chaque coopérative de crédit — de Bamenda à Maroua — dans l'ère numérique. Notre objectif est simple : des rapports plus rapides, une meilleure supervision et des coopératives plus solides au service de millions de Camerounais."
+                : "This commitment is not just a statement. It is a multi-phase transformation program designed to bring every credit union — from Bamenda to Maroua — into the digital age. Our goal is simple: faster reporting, better oversight, and stronger credit unions serving millions of Cameroonians."}
+            </p>
+          </FadeUp>
         </div>
       </section>
 
@@ -147,7 +150,7 @@ export default function DigitalizationPage() {
 
           <div className="mt-12 max-w-4xl mx-auto px-4">
             {/* PHASE 1 */}
-            <div className="border-l-4 border-green-500 bg-white rounded-r-xl p-6 mb-6 shadow-sm">
+            <FadeUp index={0} className="border-l-4 border-green-500 bg-white rounded-r-xl p-6 mb-6 shadow-sm">
               <Badge className="bg-green-100 text-green-700">
                 {language === "fr" ? "EN LIGNE" : "LIVE"}
               </Badge>
@@ -171,10 +174,10 @@ export default function DigitalizationPage() {
                 {language === "fr" ? "Explorer le Site" : "Explore the Website"}
                 <ArrowRight className="h-4 w-4" />
               </Link>
-            </div>
+            </FadeUp>
 
             {/* PHASE 2 */}
-            <div className="border-l-4 border-amber-500 bg-white rounded-r-xl p-6 mb-6 shadow-sm">
+            <FadeUp index={1} className="border-l-4 border-amber-500 bg-white rounded-r-xl p-6 mb-6 shadow-sm">
               <Badge className="bg-amber-100 text-amber-700">
                 {language === "fr" ? "EN DÉVELOPPEMENT" : "IN DEVELOPMENT"}
               </Badge>
@@ -191,10 +194,10 @@ export default function DigitalizationPage() {
                   <li key={feature.en}>{localize(feature, language)}</li>
                 ))}
               </ul>
-            </div>
+            </FadeUp>
 
             {/* PHASE 3 */}
-            <div className="border-l-4 border-gray-300 bg-white rounded-r-xl p-6 mb-6 shadow-sm">
+            <FadeUp index={2} className="border-l-4 border-gray-300 bg-white rounded-r-xl p-6 mb-6 shadow-sm">
               <Badge className="bg-gray-100 text-gray-600">
                 {language === "fr" ? "PLANIFIÉE" : "PLANNED"}
               </Badge>
@@ -211,7 +214,7 @@ export default function DigitalizationPage() {
                   <li key={feature.en}>{localize(feature, language)}</li>
                 ))}
               </ul>
-            </div>
+            </FadeUp>
           </div>
         </div>
       </section>
@@ -229,18 +232,20 @@ export default function DigitalizationPage() {
             }
           />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
-            {whyItMatters.map((item) => (
-              <Card key={item.title.en} className="p-8">
-                <div className="w-12 h-12 rounded-lg bg-primary-100 flex items-center justify-center mb-4">
-                  <item.icon className="h-6 w-6 text-primary-700" />
-                </div>
-                <h3 className="font-display font-semibold text-lg text-primary-900">
-                  {localize(item.title, language)}
-                </h3>
-                <p className="text-gray-600 mt-2 text-sm">
-                  {localize(item.description, language)}
-                </p>
-              </Card>
+            {whyItMatters.map((item, index) => (
+              <FadeUp key={item.title.en} index={index}>
+                <Card className="p-8 h-full">
+                  <div className="w-12 h-12 rounded-lg bg-primary-100 flex items-center justify-center mb-4">
+                    <item.icon className="h-6 w-6 text-primary-700" />
+                  </div>
+                  <h3 className="font-display font-semibold text-lg text-primary-900">
+                    {localize(item.title, language)}
+                  </h3>
+                  <p className="text-gray-600 mt-2 text-sm">
+                    {localize(item.description, language)}
+                  </p>
+                </Card>
+              </FadeUp>
             ))}
           </div>
         </div>
@@ -249,21 +254,23 @@ export default function DigitalizationPage() {
       {/* SECTION 4: CTA */}
       <section className="bg-primary-900 text-white py-16 text-center">
         <div className="max-w-3xl mx-auto px-4 flex flex-col items-center">
-          <h2 className="font-display text-3xl md:text-4xl font-bold">
-            {language === "fr" ? "Devenez Partenaire" : "Partner With Us"}
-          </h2>
-          <p className="text-gray-300 mt-4">
-            {language === "fr"
-              ? "Intéressé à soutenir la digitalisation du secteur des coopératives de crédit du Cameroun ? Nous accueillons favorablement les partenariats avec des organisations de développement, des fournisseurs de technologie et des acteurs de l'inclusion financière."
-              : "Interested in supporting the digitalization of Cameroon's cooperative credit union sector? We welcome partnerships with development organizations, technology providers, and financial inclusion advocates."}
-          </p>
-          <Link
-            href="/contact"
-            className={cn(buttonVariants({ variant: "accent", size: "lg" }), "mt-8")}
-          >
-            {t("nav_contact")}
-            <ArrowRight className="h-5 w-5" />
-          </Link>
+          <FadeUp className="flex flex-col items-center">
+            <h2 className="font-display text-3xl md:text-4xl font-bold">
+              {language === "fr" ? "Devenez Partenaire" : "Partner With Us"}
+            </h2>
+            <p className="text-gray-300 mt-4">
+              {language === "fr"
+                ? "Intéressé à soutenir la digitalisation du secteur des coopératives de crédit du Cameroun ? Nous accueillons favorablement les partenariats avec des organisations de développement, des fournisseurs de technologie et des acteurs de l'inclusion financière."
+                : "Interested in supporting the digitalization of Cameroon's cooperative credit union sector? We welcome partnerships with development organizations, technology providers, and financial inclusion advocates."}
+            </p>
+            <Link
+              href="/contact"
+              className={cn(buttonVariants({ variant: "accent", size: "lg" }), "mt-8")}
+            >
+              {t("nav_contact")}
+              <ArrowRight className="h-5 w-5" />
+            </Link>
+          </FadeUp>
         </div>
       </section>
     </>

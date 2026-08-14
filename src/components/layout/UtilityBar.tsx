@@ -1,8 +1,7 @@
 "use client";
 
-import { Phone, Mail, Globe } from "lucide-react";
+import { Phone, Mail } from "lucide-react";
 import { contactInfo } from "@/lib/mock-data";
-import { useLanguage } from "@/context/LanguageContext";
 import { SocialIcon } from "@/components/ui/SocialIcon";
 
 const CAMCCUL_FACEBOOK_URL = "https://www.facebook.com/CamCCUL/";
@@ -18,8 +17,6 @@ const UTILITY_EMAIL = "camccul@camccul.com";
 const PHONE_TEL = `tel:+${contactInfo.phone.replace(/\D/g, "")}`;
 
 export function UtilityBar() {
-  const { language, setLanguage, t } = useLanguage();
-
   return (
     <div className="print:hidden hidden md:block w-full bg-primary-900 text-white h-9">
       <div className="max-w-[1200px] mx-auto px-4 h-full flex items-center justify-between text-xs">
@@ -34,23 +31,11 @@ export function UtilityBar() {
           </a>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <SocialIcon platform="facebook" href={CAMCCUL_FACEBOOK_URL} size="sm" className="w-6 h-6" />
-            <SocialIcon platform="twitter" href="#" size="sm" className="w-6 h-6" />
-            <SocialIcon platform="linkedin" href="#" size="sm" className="w-6 h-6" />
-            <SocialIcon platform="youtube" href="#" size="sm" className="w-6 h-6" />
-          </div>
-
-          <button
-            type="button"
-            onClick={() => setLanguage(language === "en" ? "fr" : "en")}
-            aria-label={t("nav_language_aria")}
-            className="flex items-center gap-1 pl-3 border-l border-white/20 hover:opacity-80 transition-opacity"
-          >
-            <Globe className="h-3.5 w-3.5" />
-            <span className="font-semibold uppercase">{language}</span>
-          </button>
+        <div className="flex items-center gap-2">
+          <SocialIcon platform="facebook" href={CAMCCUL_FACEBOOK_URL} size="sm" className="w-6 h-6" />
+          <SocialIcon platform="twitter" href="#" size="sm" className="w-6 h-6" />
+          <SocialIcon platform="linkedin" href="#" size="sm" className="w-6 h-6" />
+          <SocialIcon platform="youtube" href="#" size="sm" className="w-6 h-6" />
         </div>
       </div>
     </div>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Calendar, Newspaper } from "lucide-react";
 import { PageHero } from "@/components/layout/PageHero";
 import { Badge } from "@/components/ui/Badge";
+import { FadeUp } from "@/components/ui/FadeUp";
 import { cn } from "@/lib/utils";
 import { CATEGORIES, type NewsCategory } from "@/lib/mock-data";
 import { useLanguage } from "@/context/LanguageContext";
@@ -109,48 +110,47 @@ export function NewsListClient({ articles }: { articles: NewsListArticle[] }) {
           {filteredArticles.length > 0 ? (
             <>
               <div>
-                {paginatedArticles.map((article) => (
-                  <div
-                    key={article.id}
-                    className="bg-white border border-gray-200 rounded-xl p-6 mb-4 hover:shadow-sm transition-shadow"
-                  >
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="flex items-center gap-1.5 text-xs text-gray-400">
-                        <Calendar className="h-3.5 w-3.5" />
-                        {formatDate(article.publishedAt, language)}
-                      </span>
-                      <Badge
-                        variant={
-                          categoryVariant[article.category as NewsCategory] ?? "default"
-                        }
-                      >
-                        {localize(
-                          CATEGORIES.find((c) => c.value === article.category)?.label ?? {
-                            en: article.category,
-                            fr: article.category,
-                          },
-                          language
-                        )}
-                      </Badge>
-                    </div>
-                    <h3 className="text-xl font-semibold text-primary-900 mb-2">
+                {paginatedArticles.map((article, index) => (
+                  <FadeUp key={article.id} index={index}>
+                    <div className="bg-white border border-gray-200 rounded-xl p-6 mb-4 hover:shadow-sm transition-shadow">
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="flex items-center gap-1.5 text-xs text-gray-400">
+                          <Calendar className="h-3.5 w-3.5" />
+                          {formatDate(article.publishedAt, language)}
+                        </span>
+                        <Badge
+                          variant={
+                            categoryVariant[article.category as NewsCategory] ?? "default"
+                          }
+                        >
+                          {localize(
+                            CATEGORIES.find((c) => c.value === article.category)?.label ?? {
+                              en: article.category,
+                              fr: article.category,
+                            },
+                            language
+                          )}
+                        </Badge>
+                      </div>
+                      <h3 className="text-xl font-semibold text-primary-900 mb-2">
+                        <Link
+                          href={`/news/${article.slug}`}
+                          className="hover:text-accent-600 transition-colors"
+                        >
+                          {article.title}
+                        </Link>
+                      </h3>
+                      <p className="text-sm text-gray-600 line-clamp-2 mb-3">
+                        {article.excerpt}
+                      </p>
                       <Link
                         href={`/news/${article.slug}`}
-                        className="hover:text-accent-600 transition-colors"
+                        className="text-sm font-medium text-accent-600 hover:text-accent-700"
                       >
-                        {article.title}
+                        {t("news_read_more")}
                       </Link>
-                    </h3>
-                    <p className="text-sm text-gray-600 line-clamp-2 mb-3">
-                      {article.excerpt}
-                    </p>
-                    <Link
-                      href={`/news/${article.slug}`}
-                      className="text-sm font-medium text-accent-600 hover:text-accent-700"
-                    >
-                      {t("news_read_more")}
-                    </Link>
-                  </div>
+                    </div>
+                  </FadeUp>
                 ))}
               </div>
 

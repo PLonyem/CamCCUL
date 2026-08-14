@@ -4,6 +4,7 @@ import { Eye, Monitor, AlertTriangle, Shield } from "lucide-react";
 import { PageHero } from "@/components/layout/PageHero";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Card } from "@/components/ui/Card";
+import { FadeUp } from "@/components/ui/FadeUp";
 import { useLanguage } from "@/context/LanguageContext";
 import { localize, type LocalizedText } from "@/lib/i18n";
 import { affiliates } from "@/lib/mock-data";
@@ -66,7 +67,7 @@ export default function RegulatorySupervisionPage() {
       {/* SECTION 1: OVERVIEW */}
       <section className="bg-white py-20">
         <div className="max-w-4xl mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <FadeUp className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="md:col-span-2">
               <h2 className="font-display text-2xl font-bold text-primary-900 mb-4">
                 {language === "fr"
@@ -101,7 +102,7 @@ export default function RegulatorySupervisionPage() {
                 </ul>
               </div>
             </div>
-          </div>
+          </FadeUp>
         </div>
       </section>
 
@@ -113,18 +114,20 @@ export default function RegulatorySupervisionPage() {
             title={language === "fr" ? "Notre Approche de Supervision" : "Our Supervisory Approach"}
           />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
-            {approach.map((item) => (
-              <Card key={item.title.en} className="p-6">
-                <div className="rounded-full p-3 h-12 w-12 bg-primary-100 text-primary-600 flex items-center justify-center mb-4">
-                  <item.icon className="h-6 w-6" />
-                </div>
-                <h3 className="font-display font-semibold text-lg text-primary-900 mb-2">
-                  {localize(item.title, language)}
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  {localize(item.description, language)}
-                </p>
-              </Card>
+            {approach.map((item, index) => (
+              <FadeUp key={item.title.en} index={index}>
+                <Card className="p-6 h-full">
+                  <div className="rounded-full p-3 h-12 w-12 bg-primary-100 text-primary-600 flex items-center justify-center mb-4">
+                    <item.icon className="h-6 w-6" />
+                  </div>
+                  <h3 className="font-display font-semibold text-lg text-primary-900 mb-2">
+                    {localize(item.title, language)}
+                  </h3>
+                  <p className="text-gray-600 text-sm">
+                    {localize(item.description, language)}
+                  </p>
+                </Card>
+              </FadeUp>
             ))}
           </div>
         </div>
@@ -133,15 +136,17 @@ export default function RegulatorySupervisionPage() {
       {/* SECTION 3: COBAC COMPLIANCE */}
       <section className="bg-white py-20">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <Shield className="h-16 w-16 text-accent-600 mx-auto mb-6" />
-          <h2 className="font-display text-2xl font-bold text-primary-900 mb-4">
-            {language === "fr" ? "Conforme aux Normes de la COBAC" : "Aligned with COBAC Standards"}
-          </h2>
-          <p className="max-w-3xl mx-auto text-gray-600">
-            {language === "fr"
-              ? "Le cadre de supervision de CamCCUL est pleinement aligné sur la réglementation de la COBAC (Commission Bancaire de l'Afrique Centrale) régissant les établissements de microfinance dans la zone CEMAC. Nos modèles de rapports, procédures d'audit et listes de contrôle de conformité sont régulièrement mis à jour pour refléter l'évolution des exigences réglementaires. Cela garantit que chaque coopérative de crédit affiliée à CamCCUL respecte les normes les plus strictes de gouvernance financière en Afrique Centrale."
-              : "CamCCUL's supervisory framework is fully aligned with COBAC (Commission Bancaire de l'Afrique Centrale) regulations governing microfinance institutions in the CEMAC region. Our reporting templates, audit procedures, and compliance checklists are regularly updated to reflect evolving regulatory requirements. This ensures that every CamCCUL-affiliated credit union meets the highest standards of financial governance in Central Africa."}
-          </p>
+          <FadeUp>
+            <Shield className="h-16 w-16 text-accent-600 mx-auto mb-6" />
+            <h2 className="font-display text-2xl font-bold text-primary-900 mb-4">
+              {language === "fr" ? "Conforme aux Normes de la COBAC" : "Aligned with COBAC Standards"}
+            </h2>
+            <p className="max-w-3xl mx-auto text-gray-600">
+              {language === "fr"
+                ? "Le cadre de supervision de CamCCUL est pleinement aligné sur la réglementation de la COBAC (Commission Bancaire de l'Afrique Centrale) régissant les établissements de microfinance dans la zone CEMAC. Nos modèles de rapports, procédures d'audit et listes de contrôle de conformité sont régulièrement mis à jour pour refléter l'évolution des exigences réglementaires. Cela garantit que chaque coopérative de crédit affiliée à CamCCUL respecte les normes les plus strictes de gouvernance financière en Afrique Centrale."
+                : "CamCCUL's supervisory framework is fully aligned with COBAC (Commission Bancaire de l'Afrique Centrale) regulations governing microfinance institutions in the CEMAC region. Our reporting templates, audit procedures, and compliance checklists are regularly updated to reflect evolving regulatory requirements. This ensures that every CamCCUL-affiliated credit union meets the highest standards of financial governance in Central Africa."}
+            </p>
+          </FadeUp>
         </div>
       </section>
     </>

@@ -3,7 +3,7 @@
 import { useLanguage } from "@/context/LanguageContext";
 import { regions } from "@/lib/mock-data";
 import { type TranslationKey } from "@/lib/i18n";
-import { FadeUp } from "./FadeUp";
+import { FadeUp } from "@/components/ui/FadeUp";
 
 const yearsOfService = new Date().getFullYear() - 1968;
 

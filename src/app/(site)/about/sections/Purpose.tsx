@@ -3,7 +3,7 @@
 import { Target, Compass } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { Card } from "@/components/ui/Card";
-import { FadeUp } from "./FadeUp";
+import { FadeUp } from "@/components/ui/FadeUp";
 
 // SECTION 5 — Purpose. White, two equal-height flat cards with a hairline
 // blue border (the shared Card component, stripped of its default grey

@@ -6,6 +6,7 @@ import { Building2, ChevronDown, Mail, MapPin, Phone, SearchX } from "lucide-rea
 import { PageHero } from "@/components/layout/PageHero";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
+import { FadeUp } from "@/components/ui/FadeUp";
 import { regions, regionLabels } from "@/lib/mock-data";
 import { useLanguage } from "@/context/LanguageContext";
 import { localize, type Language, type TranslationKey } from "@/lib/i18n";
@@ -251,6 +252,7 @@ function AffiliatesPageContent() {
     <div className="bg-gray-50 min-h-screen py-20">
       <div className="max-w-5xl mx-auto px-4">
         {selectedChapter === "" ? (
+          <FadeUp>
           <Card className="p-8 text-center mx-auto max-w-lg">
             <Building2 className="h-16 w-16 text-gray-300 mx-auto mb-4" />
             <h2 className="font-display text-2xl font-bold text-primary-900 mb-2">
@@ -272,8 +274,10 @@ function AffiliatesPageContent() {
               ))}
             </select>
           </Card>
+          </FadeUp>
         ) : (
           <>
+            <FadeUp>
             <Card className="p-6 mb-8 border-l-4 border-primary-500">
               <div className="flex justify-between items-center flex-wrap gap-4">
                 <div>
@@ -293,6 +297,7 @@ function AffiliatesPageContent() {
                 </button>
               </div>
             </Card>
+            </FadeUp>
 
             {isLoading ? (
               <div className="text-center py-12 text-gray-400 text-sm">Loading…</div>
@@ -302,33 +307,35 @@ function AffiliatesPageContent() {
               </div>
             ) : filteredAffiliates.length > 0 ? (
               <div className="space-y-3">
-                {filteredAffiliates.map((affiliate) => {
+                {filteredAffiliates.map((affiliate, index) => {
                   const isOpen = expandedAffiliate === affiliate.code;
                   return (
-                    <div key={affiliate.id}>
-                      <button
-                        type="button"
-                        onClick={() => toggleAffiliate(affiliate.code)}
-                        aria-expanded={isOpen}
-                        className="w-full flex items-center gap-3 bg-white border border-gray-200 rounded-lg p-4 hover:border-primary-300 transition-colors text-left"
-                      >
-                        <Building2 className="h-5 w-5 text-primary-500 shrink-0" />
-                        <span className="font-semibold text-primary-900 flex-1 min-w-0 truncate">
-                          {affiliate.name}
-                        </span>
-                        <Badge variant="default" className="shrink-0">
-                          {affiliate.code}
-                        </Badge>
-                        <ChevronDown
-                          className={cn(
-                            "h-4 w-4 text-gray-400 transition-transform shrink-0",
-                            isOpen && "rotate-180"
-                          )}
-                        />
-                      </button>
+                    <FadeUp key={affiliate.id} index={index % 8}>
+                      <div>
+                        <button
+                          type="button"
+                          onClick={() => toggleAffiliate(affiliate.code)}
+                          aria-expanded={isOpen}
+                          className="w-full flex items-center gap-3 bg-white border border-gray-200 rounded-lg p-4 hover:border-primary-300 transition-colors text-left"
+                        >
+                          <Building2 className="h-5 w-5 text-primary-500 shrink-0" />
+                          <span className="font-semibold text-primary-900 flex-1 min-w-0 truncate">
+                            {affiliate.name}
+                          </span>
+                          <Badge variant="default" className="shrink-0">
+                            {affiliate.code}
+                          </Badge>
+                          <ChevronDown
+                            className={cn(
+                              "h-4 w-4 text-gray-400 transition-transform shrink-0",
+                              isOpen && "rotate-180"
+                            )}
+                          />
+                        </button>
 
-                      {isOpen && <AffiliateProfileDetails affiliate={affiliate} t={t} />}
-                    </div>
+                        {isOpen && <AffiliateProfileDetails affiliate={affiliate} t={t} />}
+                      </div>
+                    </FadeUp>
                   );
                 })}
               </div>

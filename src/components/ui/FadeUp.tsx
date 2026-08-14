@@ -3,12 +3,18 @@
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
-interface AnimatedSectionProps {
+interface FadeUpProps {
   children: React.ReactNode;
   className?: string;
+  /** Stagger index within a group — multiplied by 60ms. */
+  index?: number;
 }
 
-export function AnimatedSection({ children, className }: AnimatedSectionProps) {
+// Shared scroll-reveal wrapper used site-wide — fades up 16px over 400ms,
+// once, respecting prefers-reduced-motion via the .fade-up rules in
+// globals.css. Originally built for the About page, promoted here so every
+// page can use the same effect instead of each having its own copy.
+export function FadeUp({ children, className, index = 0 }: FadeUpProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -33,11 +39,8 @@ export function AnimatedSection({ children, className }: AnimatedSectionProps) {
   return (
     <div
       ref={ref}
-      className={cn(
-        "transition-all duration-700 ease-out",
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8",
-        className
-      )}
+      className={cn("fade-up", isVisible && "is-visible", className)}
+      style={{ transitionDelay: `${index * 60}ms` }}
     >
       {children}
     </div>
