@@ -19,43 +19,42 @@ async function seedAdminUser() {
 }
 
 // Login for two affiliates already present in mock-data.ts (seeded by
-// seedAffiliates below) — dev/test credentials only, not real chapter
-// contacts. Password is the same for both, like the "admin123" pattern
-// seedAdminUser already uses.
+// seedAffiliates below, which is why this runs after it in main() despite
+// the admin user being seeded first) — dev/test credentials only, not real
+// chapter contacts. Password is the same for both, like the "admin123"
+// pattern seedAdminUser already uses. Each affiliate lookup is guarded
+// independently so one missing chapter doesn't skip the other.
 async function seedCreditUnionUsers() {
-  const passwordHash = await bcrypt.hash("credit123", 12);
+  const cuPasswordHash = await bcrypt.hash("credit123", 12);
 
-  const nwAffiliate = await prisma.affiliate.findUnique({ where: { code: "NW-001" } });
-  const ltAffiliate = await prisma.affiliate.findUnique({ where: { code: "LT-001" } });
+  const bccu = await prisma.affiliate.findUnique({ where: { code: "NW-001" } });
+  const dpcu = await prisma.affiliate.findUnique({ where: { code: "LT-001" } });
 
-  if (!nwAffiliate || !ltAffiliate) {
-    console.warn(
-      "Skipping credit union user seed: NW-001 and/or LT-001 affiliate not found (run seedAffiliates first)"
-    );
-    return;
+  if (bccu) {
+    await prisma.creditUnionUser.upsert({
+      where: { email: "bccu@camccul.cm" },
+      update: {},
+      create: {
+        email: "bccu@camccul.cm",
+        passwordHash: cuPasswordHash,
+        affiliateId: bccu.id,
+      },
+    });
+    console.log("✅ Credit union user created: bccu@camccul.cm");
   }
 
-  await prisma.creditUnionUser.upsert({
-    where: { email: "bccu@camccul.cm" },
-    update: {},
-    create: {
-      email: "bccu@camccul.cm",
-      passwordHash,
-      affiliateId: nwAffiliate.id,
-    },
-  });
-
-  await prisma.creditUnionUser.upsert({
-    where: { email: "dpcu@camccul.cm" },
-    update: {},
-    create: {
-      email: "dpcu@camccul.cm",
-      passwordHash,
-      affiliateId: ltAffiliate.id,
-    },
-  });
-
-  console.log("Credit union users seeded");
+  if (dpcu) {
+    await prisma.creditUnionUser.upsert({
+      where: { email: "dpcu@camccul.cm" },
+      update: {},
+      create: {
+        email: "dpcu@camccul.cm",
+        passwordHash: cuPasswordHash,
+        affiliateId: dpcu.id,
+      },
+    });
+    console.log("✅ Credit union user created: dpcu@camccul.cm");
+  }
 }
 
 async function seedNewsArticles() {
