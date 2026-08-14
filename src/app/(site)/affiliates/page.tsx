@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Building2, ChevronDown, Mail, MapPin, Phone, SearchX } from "lucide-react";
+import { AlertCircle, Building2, ChevronDown, Mail, MapPin, Phone, SearchX } from "lucide-react";
 import { PageHero } from "@/components/layout/PageHero";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
@@ -19,6 +19,10 @@ interface PublicAffiliateProfile {
   region: string;
   city: string | null;
   profileStatus: string | null;
+  // profileStatus defaults to "pending" in the DB for every affiliate,
+  // submitted or not — this is the real "did this chapter ever submit
+  // anything" signal (see src/app/api/affiliates/route.ts).
+  hasSubmittedProfile: boolean;
   address: string | null;
   phone: string | null;
   email: string | null;
@@ -48,10 +52,37 @@ function AffiliateProfileDetails({
   affiliate: PublicAffiliateProfile;
   t: (key: TranslationKey) => string;
 }) {
-  if (affiliate.profileStatus !== "approved") {
+  const profileStatus = affiliate.profileStatus;
+
+  if (!affiliate.hasSubmittedProfile) {
     return (
       <div className="bg-gray-50 rounded-lg p-6 mt-2 border border-gray-200">
-        <p className="text-sm text-gray-600">{t("affiliates_profile_pending_message")}</p>
+        <p className="text-sm text-gray-600">{t("affiliates_profile_unavailable_message")}</p>
+      </div>
+    );
+  }
+
+  if (profileStatus === "pending") {
+    return (
+      <div className="bg-amber-50 rounded-lg p-6 mt-2 border border-amber-200 flex gap-3">
+        <AlertCircle className="h-5 w-5 text-amber-500 shrink-0" />
+        <p className="text-sm text-amber-700">{t("affiliates_profile_pending_banner")}</p>
+      </div>
+    );
+  }
+
+  if (profileStatus === "rejected") {
+    return (
+      <div className="bg-gray-50 rounded-lg p-6 mt-2 border border-gray-200">
+        <p className="text-sm text-gray-600">{t("affiliates_profile_rejected_message")}</p>
+      </div>
+    );
+  }
+
+  if (profileStatus !== "approved") {
+    return (
+      <div className="bg-gray-50 rounded-lg p-6 mt-2 border border-gray-200">
+        <p className="text-sm text-gray-600">{t("affiliates_profile_unavailable_message")}</p>
       </div>
     );
   }
@@ -319,6 +350,20 @@ function AffiliatesPageContent() {
                           className="w-full flex items-center gap-3 bg-white border border-gray-200 rounded-lg p-4 hover:border-primary-300 transition-colors text-left"
                         >
                           <Building2 className="h-5 w-5 text-primary-500 shrink-0" />
+                          {affiliate.hasSubmittedProfile && affiliate.profileStatus === "approved" && (
+                            <span
+                              className="h-2 w-2 rounded-full bg-green-500 shrink-0"
+                              title={t("affiliates_profile_available")}
+                              aria-label={t("affiliates_profile_available")}
+                            />
+                          )}
+                          {affiliate.hasSubmittedProfile && affiliate.profileStatus === "pending" && (
+                            <span
+                              className="h-2 w-2 rounded-full bg-amber-500 shrink-0"
+                              title={t("affiliates_profile_pending")}
+                              aria-label={t("affiliates_profile_pending")}
+                            />
+                          )}
                           <span className="font-semibold text-primary-900 flex-1 min-w-0 truncate">
                             {affiliate.name}
                           </span>

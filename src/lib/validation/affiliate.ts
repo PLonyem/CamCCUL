@@ -11,6 +11,7 @@ export const affiliateSchema = z.object({
   address: z.string().nullable().optional(),
   phone: z.string().nullable().optional(),
   email: z.string().nullable().optional(),
+  website: z.string().nullable().optional(),
   isActive: z.boolean().default(true),
 });
 

@@ -31,6 +31,7 @@ export async function GET() {
         boardSize: true,
         staffCount: true,
         profileStatus: true,
+        profileUpdatedAt: true,
       },
     });
 
@@ -42,7 +43,14 @@ export async function GET() {
         name: a.name,
         region: a.region,
         city: a.city,
+        // profileStatus defaults to "pending" in the DB for every
+        // affiliate, submitted or not — profileUpdatedAt (null until a
+        // chapter actually submits) is the real "has submission" signal,
+        // same one the admin review queue and the credit union's own
+        // dashboard already use. Exposed so the client can tell "genuinely
+        // pending review" apart from "never submitted".
         profileStatus: a.profileStatus,
+        hasSubmittedProfile: a.profileUpdatedAt !== null,
         address: isApproved ? a.address : null,
         phone: isApproved ? a.phone : null,
         email: isApproved ? a.email : null,
@@ -74,6 +82,7 @@ export async function GET() {
         region: a.region,
         city: a.city,
         profileStatus: null,
+        hasSubmittedProfile: false,
         address: null,
         phone: null,
         email: null,

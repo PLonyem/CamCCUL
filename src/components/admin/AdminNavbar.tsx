@@ -58,7 +58,7 @@ export function AdminNavbar({ user, onMenuClick }: AdminNavbarProps) {
             <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-20 py-1">
               <button
                 type="button"
-                onClick={() => signOut({ callbackUrl: "/admin/login" })}
+                onClick={() => signOut({ callbackUrl: "/login" })}
                 className="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50"
               >
                 <LogOut className="h-4 w-4" />

@@ -1,0 +1,95 @@
+import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { sendProfileApprovalEmail } from "@/lib/email";
+
+interface RouteParams {
+  params: Promise<{ id: string }>;
+}
+
+// GET/PUT here are both admin-only — distinct from the general-purpose
+// PUT /api/admin/affiliates/[id], which a credit union session must never
+// be able to reach either: that route accepts a raw profileStatus field,
+// and without an admin-only gate a chapter could call it directly on its
+// own affiliateId and self-approve, skipping review entirely.
+export async function GET(_request: NextRequest, { params }: RouteParams) {
+  const session = await auth();
+  if (!session || session.user.role !== "admin") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { id } = await params;
+  const affiliate = await prisma.affiliate.findUnique({ where: { id } });
+
+  if (!affiliate) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  return NextResponse.json(affiliate);
+}
+
+export async function PUT(request: NextRequest, { params }: RouteParams) {
+  const session = await auth();
+  if (!session || session.user.role !== "admin") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { id } = await params;
+  const body = await request.json().catch(() => null);
+  const action = body?.action;
+
+  if (action !== "approve" && action !== "reject") {
+    return NextResponse.json(
+      { error: 'action must be "approve" or "reject"' },
+      { status: 400 }
+    );
+  }
+
+  const existing = await prisma.affiliate.findUnique({ where: { id } });
+  if (!existing) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  const reason =
+    action === "reject" && typeof body?.reason === "string" && body.reason.trim()
+      ? body.reason.trim()
+      : null;
+
+  const affiliate = await prisma.affiliate.update({
+    where: { id },
+    data: {
+      profileStatus: action === "approve" ? "approved" : "rejected",
+      profileReviewNote: reason,
+    },
+  });
+
+  if (action === "approve") {
+    // A chapter can have more than one CreditUnionUser login (schema is
+    // one-to-many) — notify all of them. A separate lightweight query
+    // rather than an `include` on the update above, so the response we
+    // send back below stays a plain Affiliate record and never risks
+    // leaking login emails to the client.
+    const creditUnionUsers = await prisma.creditUnionUser.findMany({
+      where: { affiliateId: id },
+      select: { email: true },
+    });
+    const recipients = creditUnionUsers.length > 0
+      ? creditUnionUsers.map((u) => u.email)
+      : affiliate.email
+        ? [affiliate.email]
+        : [];
+
+    const results = await Promise.allSettled(
+      recipients.map((email) =>
+        sendProfileApprovalEmail({ creditUnionName: affiliate.name, creditUnionEmail: email })
+      )
+    );
+    for (const result of results) {
+      if (result.status === "rejected") {
+        console.error("Profile approval email failed:", result.reason);
+      }
+    }
+  }
+
+  return NextResponse.json(affiliate);
+}

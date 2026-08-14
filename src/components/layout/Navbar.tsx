@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Menu, X, ChevronDown, Globe } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { Menu, X, ChevronDown, Globe, LayoutDashboard, FileText, LogIn } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
 import { type TranslationKey } from "@/lib/i18n";
@@ -34,6 +35,7 @@ const aboutLinks: { key: TranslationKey; href: string }[] = [
 
 export function Navbar() {
   const pathname = usePathname();
+  const { data: session } = useSession();
   const { language, setLanguage, t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
@@ -106,6 +108,49 @@ export function Navbar() {
       <span className="text-xs font-semibold uppercase">{language}</span>
     </button>
   );
+
+  // Signed-in visitors (admin or credit union) get a quick icon-link back
+  // to their own dashboard instead of a "Sign In" button — this navbar is
+  // shared by every public page, so it's the only place a returning
+  // credit union manager or admin browsing the public site can jump back
+  // in without knowing to type /login or /admin themselves.
+  const accountLink =
+    session?.user.role === "admin" ? (
+      <Link
+        href="/admin"
+        title="Admin Dashboard"
+        className={cn(
+          "inline-flex items-center justify-center min-h-11 min-w-11 rounded-lg transition-colors",
+          transparent ? "text-white hover:bg-white/10" : "text-gray-500 hover:text-primary-600"
+        )}
+      >
+        <LayoutDashboard className="h-5 w-5" />
+      </Link>
+    ) : session?.user.role === "credit_union" ? (
+      <Link
+        href="/dashboard"
+        title="Credit Union Portal"
+        className={cn(
+          "inline-flex items-center justify-center min-h-11 min-w-11 rounded-lg transition-colors",
+          transparent ? "text-white hover:bg-white/10" : "text-gray-500 hover:text-primary-600"
+        )}
+      >
+        <FileText className="h-5 w-5" />
+      </Link>
+    ) : (
+      <Link
+        href="/login"
+        className={cn(
+          "inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium border transition-colors",
+          transparent
+            ? "border-white/40 text-white hover:bg-white/10"
+            : "border-gray-300 text-gray-700 hover:bg-gray-50"
+        )}
+      >
+        <LogIn className="h-4 w-4" />
+        Sign In
+      </Link>
+    );
 
   return (
     <header
@@ -271,6 +316,7 @@ export function Navbar() {
           >
             {t("nav_find_credit_union")}
           </Link>
+          {accountLink}
           {languageToggle}
 
           <button

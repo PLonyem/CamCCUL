@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Lexend } from "next/font/google";
 import Script from "next/script";
+import { SessionProvider } from "next-auth/react";
 import { ChatbotProvider } from "@/components/chatbot/Chatbot";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { affiliates } from "@/lib/mock-data";
@@ -56,9 +57,11 @@ export default function RootLayout({
           strategy="beforeInteractive"
           dangerouslySetInnerHTML={{ __html: ADMIN_RELOAD_GUARD_SCRIPT }}
         />
-        <LanguageProvider>
-          <ChatbotProvider>{children}</ChatbotProvider>
-        </LanguageProvider>
+        <SessionProvider>
+          <LanguageProvider>
+            <ChatbotProvider>{children}</ChatbotProvider>
+          </LanguageProvider>
+        </SessionProvider>
       </body>
     </html>
   );

@@ -230,6 +230,12 @@ const en = {
   affiliates_empty_subtitle: "Please select a different chapter.",
   affiliates_profile_pending_message:
     "This credit union's full profile is being updated. Please check back soon or contact CamCCUL headquarters at +237 233 36 11 82.",
+  affiliates_profile_pending_banner:
+    "This profile is under review and will be available soon.",
+  affiliates_profile_rejected_message:
+    "This credit union is updating its information. Please check back later.",
+  affiliates_profile_unavailable_message:
+    "Profile information being updated. Please contact CamCCUL headquarters.",
   affiliate_year_founded_label: "Year Founded",
   affiliate_leadership_heading: "Leadership",
   affiliate_board_chairperson_label: "Board Chairperson",
@@ -633,6 +639,12 @@ const fr: Record<keyof typeof en, string> = {
   affiliates_empty_subtitle: "Veuillez sélectionner un autre chapitre.",
   affiliates_profile_pending_message:
     "Le profil complet de cette coopérative de crédit est en cours de mise à jour. Veuillez revenir bientôt ou contacter le siège de CamCCUL au +237 233 36 11 82.",
+  affiliates_profile_pending_banner:
+    "Ce profil est en cours d'examen et sera bientôt disponible.",
+  affiliates_profile_rejected_message:
+    "Cette coopérative de crédit met à jour ses informations. Veuillez revenir plus tard.",
+  affiliates_profile_unavailable_message:
+    "Informations de profil en cours de mise à jour. Veuillez contacter le siège de CamCCUL.",
   affiliate_year_founded_label: "Année de Fondation",
   affiliate_leadership_heading: "Direction",
   affiliate_board_chairperson_label: "Président du Conseil d'Administration",

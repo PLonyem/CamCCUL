@@ -10,8 +10,11 @@ export default async function AdminLayout({
 }) {
   const session = await auth();
 
-  if (!session) {
-    redirect("/admin/login");
+  // Any authenticated session used to be enough (only AdminUser accounts
+  // existed), but CreditUnionUser accounts now sign in through the same
+  // /login form — a chapter session must never reach the admin shell.
+  if (!session || session.user.role !== "admin") {
+    redirect("/login");
   }
 
   return (

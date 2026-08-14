@@ -84,7 +84,7 @@ export function Sidebar({ user, onNavigate }: SidebarProps) {
         <p className="text-sm font-medium text-white truncate">{user.name}</p>
         <p className="text-xs text-gray-400 truncate">{user.email}</p>
         <button
-          onClick={() => signOut({ callbackUrl: "/admin/login" })}
+          onClick={() => signOut({ callbackUrl: "/login" })}
           className="mt-3 flex items-center gap-2 text-sm font-medium text-gray-400 hover:text-white transition-colors"
         >
           <LogOut className="h-4 w-4" />

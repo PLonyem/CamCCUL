@@ -2,16 +2,19 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Image from "next/image";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
+import { Eye, EyeOff } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import logo from "../../../public/logo.jpg";
 
-export function AdminLoginForm() {
+export function LoginForm() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -27,17 +30,22 @@ export function AdminLoginForm() {
     });
 
     if (result?.error) {
-      setError("Invalid email or password.");
+      setError("Invalid email or password");
       setIsLoading(false);
       return;
     }
 
-    router.replace("/admin");
+    // The credentials provider's authorize() sets a different role per
+    // account type (AdminUser vs CreditUnionUser) — reading it back from
+    // the freshly-established session is what decides which dashboard to
+    // land on, rather than the login form guessing from the email address.
+    const session = await getSession();
+    router.push(session?.user.role === "admin" ? "/admin" : "/dashboard");
     router.refresh();
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4">
       <Card className="w-full max-w-sm p-8">
         <div className="flex flex-col items-center text-center mb-6">
           <div className="w-14 h-14 rounded-lg bg-white ring-1 ring-gray-200 flex items-center justify-center overflow-hidden p-1.5">
@@ -52,8 +60,11 @@ export function AdminLoginForm() {
             CamCCUL
           </span>
           <h1 className="text-lg font-semibold text-gray-700 mt-4">
-            Admin Login
+            Sign In
           </h1>
+          <p className="text-sm text-gray-500 mt-1">
+            Access your CamCCUL dashboard
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -84,17 +95,32 @@ export function AdminLoginForm() {
             >
               Password
             </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              disabled={isLoading}
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition disabled:opacity-50"
-            />
+            <div className="relative">
+              <input
+                id="password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                required
+                disabled={isLoading}
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                className="w-full border border-gray-300 rounded-lg pl-4 pr-11 py-2.5 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition disabled:opacity-50"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                disabled={isLoading}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-gray-600 disabled:opacity-50"
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </button>
+            </div>
           </div>
 
           {error && (
@@ -108,6 +134,13 @@ export function AdminLoginForm() {
           </Button>
         </form>
       </Card>
+
+      <Link
+        href="/"
+        className="text-sm font-medium text-gray-500 hover:text-primary-600 transition-colors mt-6"
+      >
+        ← Back to Website
+      </Link>
     </div>
   );
 }

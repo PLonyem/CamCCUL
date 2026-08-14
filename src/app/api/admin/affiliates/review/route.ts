@@ -14,15 +14,29 @@ const VALID_STATUSES = ["pending", "approved", "rejected"];
 
 export async function GET(request: NextRequest) {
   const session = await auth();
-  if (!session) {
+  if (!session || session.user.role !== "admin") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const status = request.nextUrl.searchParams.get("status");
-  const where: Prisma.AffiliateWhereInput =
-    status && VALID_STATUSES.includes(status)
-      ? { AND: [HAS_SUBMISSION_WHERE, { profileStatus: status }] }
-      : HAS_SUBMISSION_WHERE;
+  const region = request.nextUrl.searchParams.get("region");
+
+  const filters: Prisma.AffiliateWhereInput[] = [HAS_SUBMISSION_WHERE];
+  if (status && VALID_STATUSES.includes(status)) {
+    filters.push({ profileStatus: status });
+  }
+  if (region) {
+    filters.push({ region });
+  }
+  const where: Prisma.AffiliateWhereInput = { AND: filters };
+
+  // Counts (and the tab badges they drive) are scoped to the chapter
+  // filter but not the status filter, so switching status tabs doesn't
+  // change the other tabs' own counts out from under the user — only
+  // picking a different chapter does.
+  const countsWhere: Prisma.AffiliateWhereInput = region
+    ? { AND: [HAS_SUBMISSION_WHERE, { region }] }
+    : HAS_SUBMISSION_WHERE;
 
   const [chapters, statusGroups] = await Promise.all([
     prisma.affiliate.findMany({
@@ -33,6 +47,9 @@ export async function GET(request: NextRequest) {
         code: true,
         name: true,
         region: true,
+        phone: true,
+        email: true,
+        address: true,
         profileStatus: true,
         profileReviewNote: true,
         profileUpdatedAt: true,
@@ -63,7 +80,7 @@ export async function GET(request: NextRequest) {
     }),
     prisma.affiliate.groupBy({
       by: ["profileStatus"],
-      where: HAS_SUBMISSION_WHERE,
+      where: countsWhere,
       _count: { _all: true },
     }),
   ]);

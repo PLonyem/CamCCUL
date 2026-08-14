@@ -18,6 +18,46 @@ async function seedAdminUser() {
   console.log("Admin user seeded");
 }
 
+// Login for two affiliates already present in mock-data.ts (seeded by
+// seedAffiliates below) — dev/test credentials only, not real chapter
+// contacts. Password is the same for both, like the "admin123" pattern
+// seedAdminUser already uses.
+async function seedCreditUnionUsers() {
+  const passwordHash = await bcrypt.hash("credit123", 12);
+
+  const nwAffiliate = await prisma.affiliate.findUnique({ where: { code: "NW-001" } });
+  const ltAffiliate = await prisma.affiliate.findUnique({ where: { code: "LT-001" } });
+
+  if (!nwAffiliate || !ltAffiliate) {
+    console.warn(
+      "Skipping credit union user seed: NW-001 and/or LT-001 affiliate not found (run seedAffiliates first)"
+    );
+    return;
+  }
+
+  await prisma.creditUnionUser.upsert({
+    where: { email: "bccu@camccul.cm" },
+    update: {},
+    create: {
+      email: "bccu@camccul.cm",
+      passwordHash,
+      affiliateId: nwAffiliate.id,
+    },
+  });
+
+  await prisma.creditUnionUser.upsert({
+    where: { email: "dpcu@camccul.cm" },
+    update: {},
+    create: {
+      email: "dpcu@camccul.cm",
+      passwordHash,
+      affiliateId: ltAffiliate.id,
+    },
+  });
+
+  console.log("Credit union users seeded");
+}
+
 async function seedNewsArticles() {
   for (const article of newsArticles) {
     await prisma.newsArticle.upsert({
@@ -128,6 +168,7 @@ async function main() {
   await seedAdminUser();
   await seedNewsArticles();
   await seedAffiliates();
+  await seedCreditUnionUsers();
   await seedResources();
   await seedContactMessages();
 }

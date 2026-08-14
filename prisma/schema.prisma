@@ -68,6 +68,7 @@ model Affiliate {
   address   String?
   phone     String?
   email     String?
+  website   String?
   isActive  Boolean  @default(true)
 
   // Chapter Profile Form fields — populated via the admin "Upload Chapter
@@ -98,7 +99,8 @@ model Affiliate {
   // own submission — only by the admin review action.
   profileReviewNote      String?    @db.Text
 
-  documents AffiliateDocument[]
+  documents        AffiliateDocument[]
+  creditUnionUsers CreditUnionUser[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -107,6 +109,24 @@ model Affiliate {
   @@index([name])
   @@index([profileStatus])
   @@map("affiliates")
+}
+
+// Login credentials for an individual affiliate credit union, kept in a
+// separate table from AdminUser so a chapter's access is scoped to its own
+// affiliateId and can never be confused with League staff access — see
+// src/lib/auth.ts, which checks both tables by email during sign-in.
+model CreditUnionUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  affiliateId  String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  affiliate Affiliate @relation(fields: [affiliateId], references: [id])
+
+  @@index([affiliateId])
+  @@map("credit_union_users")
 }
 
 // Tracks a chapter profile document uploaded for a given affiliate, so
