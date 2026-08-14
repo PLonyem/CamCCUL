@@ -32,6 +32,13 @@ function countWords(text: string): number {
 // relying on zod's default "Expected number, received nan" message.
 export const creditUnionProfileSchema = z
   .object({
+    // Editable by design — a chapter can correct its own name, or a typo
+    // in its code/chapter label, the same way it edits every other field
+    // here. code uniqueness is enforced server-side (Affiliate.code is a
+    // unique column), not by this schema.
+    creditUnionName: z.string().trim().min(1, "Credit union name is required"),
+    code: z.string().trim().min(1, "Code is required"),
+    chapter: z.string().trim().min(1, "Chapter is required"),
     yearFounded: z
       .number({
         required_error: "Year founded is required",

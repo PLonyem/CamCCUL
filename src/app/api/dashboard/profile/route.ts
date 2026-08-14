@@ -95,6 +95,32 @@ export async function POST(request: NextRequest) {
     ? [...data.servicesOffered, `${OTHER_PREFIX}${data.servicesOfferedOther.trim()}`]
     : data.servicesOffered;
 
+  const existing = await prisma.affiliate.findUnique({
+    where: { id: session.user.affiliateId },
+    select: { code: true },
+  });
+  if (!existing) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  // code is now editable (name/chapter too — see the schema), so unlike
+  // every other field on this form it needs a uniqueness check: it's the
+  // affiliate's public identifier (used in URLs, admin lookups) and has a
+  // unique constraint in the database. Only checked when it actually
+  // changed, to avoid a wasted query on every ordinary submission.
+  if (data.code !== existing.code) {
+    const codeTaken = await prisma.affiliate.findFirst({
+      where: { code: data.code, NOT: { id: session.user.affiliateId } },
+      select: { id: true },
+    });
+    if (codeTaken) {
+      return NextResponse.json(
+        { error: `The code "${data.code}" is already in use by another credit union.` },
+        { status: 409 }
+      );
+    }
+  }
+
   // Every submission through this route is a chapter (re)submitting its
   // own profile, so it always bumps profileUpdatedAt and resets status
   // back to "pending" — unlike the admin's general-purpose PUT endpoint,
@@ -104,6 +130,9 @@ export async function POST(request: NextRequest) {
   const affiliate = await prisma.affiliate.update({
     where: { id: session.user.affiliateId },
     data: {
+      name: data.creditUnionName,
+      code: data.code,
+      chapter: data.chapter,
       city: data.city,
       address: data.address,
       phone: data.phone,

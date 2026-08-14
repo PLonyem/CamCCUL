@@ -25,13 +25,10 @@ type ProfileApiResponse = Omit<
   staffCount: number | null;
 };
 
-interface IdentityInfo {
-  name: string;
-  code: string;
-  chapter: string;
-}
-
 const emptyDefaults = {
+  creditUnionName: "",
+  code: "",
+  chapter: "",
   yearFounded: undefined as unknown as number,
   city: "",
   address: "",
@@ -56,7 +53,6 @@ const errorClass = "text-xs text-red-500 min-h-[16px]";
 
 export default function CreditUnionProfilePage() {
   const router = useRouter();
-  const [identity, setIdentity] = useState<IdentityInfo | null>(null);
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -81,16 +77,18 @@ export default function CreditUnionProfilePage() {
       try {
         const res = await fetch("/api/dashboard/profile");
         if (!res.ok) throw new Error("Failed to load profile");
-        const data: ProfileApiResponse & IdentityInfo = await res.json();
+        const data: ProfileApiResponse & { name: string; code: string; chapter: string } =
+          await res.json();
         if (ignore) return;
-
-        setIdentity({ name: data.name, code: data.code, chapter: data.chapter });
 
         // Only fields that already have a real value overwrite the empty
         // defaults above — a chapter filling this in for the first time
         // should see blank required fields, not 0 / "Invalid Date" style
         // placeholders derived from nulls.
         reset({
+          creditUnionName: data.name ?? "",
+          code: data.code ?? "",
+          chapter: data.chapter ?? "",
           yearFounded: data.yearFounded ?? emptyDefaults.yearFounded,
           city: data.city ?? "",
           address: data.address ?? "",
@@ -192,47 +190,37 @@ export default function CreditUnionProfilePage() {
 
       <form onSubmit={onSubmit} noValidate className="space-y-8 mt-8">
         <fieldset disabled={isSubmitting || isSubmitted} className="space-y-8">
-          {/* SECTION 1: CREDIT UNION INFORMATION (read-only) */}
+          {/* SECTION 1: CREDIT UNION INFORMATION */}
           <Card className="p-6">
             <h2 className="text-sm font-semibold text-primary-900 uppercase tracking-wide mb-4">
               Credit Union Information
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
               <div className="space-y-1">
-                <label htmlFor="cuName" className={labelClass}>
+                <label htmlFor="creditUnionName" className={labelClass}>
                   Credit Union Name
                 </label>
                 <input
-                  id="cuName"
+                  id="creditUnionName"
                   type="text"
-                  disabled
-                  value={identity?.name ?? ""}
                   className={inputClass}
+                  {...register("creditUnionName")}
                 />
+                <p className={errorClass}>{errors.creditUnionName?.message}</p>
               </div>
               <div className="space-y-1">
-                <label htmlFor="cuCode" className={labelClass}>
+                <label htmlFor="code" className={labelClass}>
                   Code
                 </label>
-                <input
-                  id="cuCode"
-                  type="text"
-                  disabled
-                  value={identity?.code ?? ""}
-                  className={inputClass}
-                />
+                <input id="code" type="text" className={inputClass} {...register("code")} />
+                <p className={errorClass}>{errors.code?.message}</p>
               </div>
               <div className="space-y-1">
-                <label htmlFor="cuChapter" className={labelClass}>
+                <label htmlFor="chapter" className={labelClass}>
                   Chapter
                 </label>
-                <input
-                  id="cuChapter"
-                  type="text"
-                  disabled
-                  value={identity?.chapter ?? ""}
-                  className={inputClass}
-                />
+                <input id="chapter" type="text" className={inputClass} {...register("chapter")} />
+                <p className={errorClass}>{errors.chapter?.message}</p>
               </div>
             </div>
           </Card>
