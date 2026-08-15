@@ -4,8 +4,17 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useSession } from "next-auth/react";
-import { Menu, X, ChevronDown, Globe, LayoutDashboard, FileText, LogIn } from "lucide-react";
+import { useSession, signOut } from "next-auth/react";
+import {
+  Menu,
+  X,
+  ChevronDown,
+  Globe,
+  LayoutDashboard,
+  FileText,
+  LogIn,
+  LogOut,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
 import { type TranslationKey } from "@/lib/i18n";
@@ -35,7 +44,7 @@ const aboutLinks: { key: TranslationKey; href: string }[] = [
 
 export function Navbar() {
   const pathname = usePathname();
-  const { data: session } = useSession();
+  const { data: session, status: sessionStatus } = useSession();
   const { language, setLanguage, t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
@@ -109,35 +118,36 @@ export function Navbar() {
     </button>
   );
 
-  // Signed-in visitors (admin or credit union) get a quick icon-link back
-  // to their own dashboard instead of a "Sign In" button — this navbar is
-  // shared by every public page, so it's the only place a returning
-  // credit union manager or admin browsing the public site can jump back
-  // in without knowing to type /login or /admin themselves.
+  async function handleSignOut() {
+    await signOut({ redirect: false });
+    window.location.href = "/";
+  }
+
+  const signOutButton = (
+    <button
+      type="button"
+      onClick={handleSignOut}
+      title="Sign Out"
+      aria-label="Sign Out"
+      className={cn(
+        "inline-flex items-center justify-center min-h-11 min-w-11 rounded-lg transition-colors",
+        transparent
+          ? "text-white/80 hover:text-white hover:bg-white/10"
+          : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+      )}
+    >
+      <LogOut className="h-4 w-4" />
+    </button>
+  );
+
+  // Signed-in visitors (admin or credit union) get a shortcut straight
+  // back to their own dashboard — this navbar is shared by every public
+  // page, so it's the only place a returning credit union manager or
+  // admin browsing the public site can jump back in without knowing to
+  // type /login or /admin themselves. It's a shortcut, not a login
+  // control: it only ever appears once a session already exists.
   const accountLink =
-    session?.user.role === "admin" ? (
-      <Link
-        href="/admin"
-        title="Admin Dashboard"
-        className={cn(
-          "inline-flex items-center justify-center min-h-11 min-w-11 rounded-lg transition-colors",
-          transparent ? "text-white hover:bg-white/10" : "text-gray-500 hover:text-primary-600"
-        )}
-      >
-        <LayoutDashboard className="h-5 w-5" />
-      </Link>
-    ) : session?.user.role === "credit_union" ? (
-      <Link
-        href="/dashboard"
-        title="Credit Union Portal"
-        className={cn(
-          "inline-flex items-center justify-center min-h-11 min-w-11 rounded-lg transition-colors",
-          transparent ? "text-white hover:bg-white/10" : "text-gray-500 hover:text-primary-600"
-        )}
-      >
-        <FileText className="h-5 w-5" />
-      </Link>
-    ) : (
+    sessionStatus === "loading" ? null : !session ? (
       <Link
         href="/login"
         className={cn(
@@ -150,7 +160,29 @@ export function Navbar() {
         <LogIn className="h-4 w-4" />
         Sign In
       </Link>
-    );
+    ) : session.user.role === "credit_union" ? (
+      <div className="flex items-center gap-1">
+        <Link
+          href="/dashboard"
+          className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium bg-primary-500 text-white hover:bg-primary-600 transition-colors"
+        >
+          <FileText className="h-4 w-4" />
+          <span className="hidden sm:inline">My Dashboard</span>
+        </Link>
+        {signOutButton}
+      </div>
+    ) : session.user.role === "admin" ? (
+      <div className="flex items-center gap-1">
+        <Link
+          href="/admin"
+          className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium bg-primary-900 text-white hover:bg-primary-800 transition-colors"
+        >
+          <LayoutDashboard className="h-4 w-4" />
+          <span className="hidden sm:inline">Admin Dashboard</span>
+        </Link>
+        {signOutButton}
+      </div>
+    ) : null;
 
   return (
     <header

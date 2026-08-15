@@ -133,6 +133,13 @@ export function LoginForm() {
             {isLoading ? "Signing in..." : "Sign In"}
           </Button>
         </form>
+
+        <p className="text-center text-sm text-gray-500 mt-5">
+          Don&apos;t have an account?{" "}
+          <Link href="/signup" className="font-medium text-primary-600 hover:text-primary-700">
+            Sign up
+          </Link>
+        </p>
       </Card>
 
       <Link
