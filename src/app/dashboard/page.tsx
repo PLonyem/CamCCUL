@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { auth } from "@/lib/auth";
+import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
@@ -13,13 +13,14 @@ import { cn } from "@/lib/utils";
 // fresh here — same "has this chapter actually submitted anything" signal
 // (profileUpdatedAt !== null) the admin review queue uses.
 export default async function DashboardPage() {
-  const session = await auth();
-  if (!session?.user.affiliateId) {
+  const { sessionClaims } = await auth();
+  const affiliateId = sessionClaims?.metadata?.affiliateId;
+  if (!affiliateId) {
     return null;
   }
 
   const affiliate = await prisma.affiliate.findUnique({
-    where: { id: session.user.affiliateId },
+    where: { id: affiliateId },
     select: {
       name: true,
       code: true,

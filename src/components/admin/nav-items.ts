@@ -2,7 +2,6 @@ import {
   LayoutDashboard,
   Newspaper,
   Building2,
-  Upload,
   ClipboardCheck,
   FolderOpen,
   Mail,
@@ -17,13 +16,14 @@ export interface AdminNavItem {
   indent?: boolean;
   /** Shows a live pending-review count badge next to this item. */
   showReviewBadge?: boolean;
+  /** Shows a small red dot next to this item when there's unread content needing attention. */
+  showUnreadDot?: boolean;
 }
 
 export const adminNavItems: AdminNavItem[] = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/news", label: "News", icon: Newspaper },
   { href: "/admin/affiliates", label: "Affiliates", icon: Building2 },
-  { href: "/admin/affiliates/upload-profile", label: "Upload Chapter Profiles", icon: Upload, indent: true },
   {
     href: "/admin/affiliates/review",
     label: "Review Profiles",
@@ -32,7 +32,7 @@ export const adminNavItems: AdminNavItem[] = [
     showReviewBadge: true,
   },
   { href: "/admin/resources", label: "Resources", icon: FolderOpen },
-  { href: "/admin/messages", label: "Messages", icon: Mail },
+  { href: "/admin/messages", label: "Messages", icon: Mail, showUnreadDot: true },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
@@ -42,8 +42,8 @@ export function isAdminNavItemActive(pathname: string, href: string) {
 
 // Picks the longest (most specific) matching href rather than the first
 // match in array order — "/admin/affiliates" is a prefix of
-// "/admin/affiliates/upload-profile", so a naive first-match would always
-// report "Affiliates" as the page title while on the upload page.
+// "/admin/affiliates/review", so a naive first-match would always
+// report "Affiliates" as the page title while on the review page.
 export function getAdminPageTitle(pathname: string): string {
   const bestMatch = adminNavItems
     .filter((item) => isAdminNavItemActive(pathname, item.href))

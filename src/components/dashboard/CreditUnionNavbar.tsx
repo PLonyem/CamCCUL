@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { useClerk } from "@clerk/nextjs";
 import { Building2, LogOut } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 
@@ -13,16 +12,14 @@ interface CreditUnionNavbarProps {
 }
 
 export function CreditUnionNavbar({ user }: CreditUnionNavbarProps) {
-  const router = useRouter();
+  const { signOut } = useClerk();
   const [isSigningOut, setIsSigningOut] = useState(false);
 
-  // redirect: false + a manual push to "/" (rather than signOut's own
-  // callbackUrl) since a credit union manager signing out should land back
-  // on the public site, not on /login like the admin sign-out does.
+  // A credit union manager signing out should land back on the public
+  // site, not on /login like the admin sign-out does.
   async function handleSignOut() {
     setIsSigningOut(true);
-    await signOut({ redirect: false });
-    router.push("/");
+    await signOut({ redirectUrl: "/" });
   }
 
   return (

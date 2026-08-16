@@ -1,9 +1,7 @@
 import { z } from "zod";
 
-// Same seven options the admin's own manual-entry form offers (see
-// src/app/admin/(dashboard)/affiliates/upload-profile/ManualEntryForm.tsx)
-// — kept in sync so a chapter's self-submitted services array looks the
-// same shape as one an admin enters on their behalf.
+// Seven fixed service options plus a free-text "Other" field folded into
+// the stored array as "Other: <text>" (see the dashboard profile route).
 export const SERVICE_OPTIONS = [
   "Savings Accounts",
   "Loans (Personal)",

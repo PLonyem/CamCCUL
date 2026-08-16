@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useSession, signOut } from "next-auth/react";
+import { useUser, useClerk } from "@clerk/nextjs";
 import {
   Menu,
   X,
@@ -44,7 +44,9 @@ const aboutLinks: { key: TranslationKey; href: string }[] = [
 
 export function Navbar() {
   const pathname = usePathname();
-  const { data: session, status: sessionStatus } = useSession();
+  const { user, isLoaded, isSignedIn } = useUser();
+  const { signOut } = useClerk();
+  const role = user?.publicMetadata.role;
   const { language, setLanguage, t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
@@ -119,8 +121,7 @@ export function Navbar() {
   );
 
   async function handleSignOut() {
-    await signOut({ redirect: false });
-    window.location.href = "/";
+    await signOut({ redirectUrl: "/" });
   }
 
   const signOutButton = (
@@ -147,7 +148,7 @@ export function Navbar() {
   // type /login or /admin themselves. It's a shortcut, not a login
   // control: it only ever appears once a session already exists.
   const accountLink =
-    sessionStatus === "loading" ? null : !session ? (
+    !isLoaded ? null : !isSignedIn ? (
       <Link
         href="/login"
         className={cn(
@@ -160,7 +161,7 @@ export function Navbar() {
         <LogIn className="h-4 w-4" />
         Sign In
       </Link>
-    ) : session.user.role === "credit_union" ? (
+    ) : role === "credit_union" ? (
       <div className="flex items-center gap-1">
         <Link
           href="/dashboard"
@@ -171,7 +172,7 @@ export function Navbar() {
         </Link>
         {signOutButton}
       </div>
-    ) : session.user.role === "admin" ? (
+    ) : role === "admin" ? (
       <div className="flex items-center gap-1">
         <Link
           href="/admin"

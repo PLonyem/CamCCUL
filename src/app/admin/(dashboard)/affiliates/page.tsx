@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Plus, Pencil, Trash2, Search, Upload, CheckCircle2, AlertCircle } from "lucide-react";
+import { Plus, Pencil, Trash2, Search } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
@@ -26,12 +26,6 @@ interface ListResponse {
   totalPages: number;
 }
 
-interface ImportResult {
-  created: number;
-  updated: number;
-  errors: { row: number; message: string }[];
-}
-
 const LIMIT = 50;
 
 function regionLabel(region: string): string {
@@ -52,10 +46,6 @@ export default function AdminAffiliatesPage() {
   const [deleteTarget, setDeleteTarget] = useState<AffiliateRow | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [refreshToken, setRefreshToken] = useState(0);
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isImporting, setIsImporting] = useState(false);
-  const [importResult, setImportResult] = useState<ImportResult | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(search), 400);
@@ -115,87 +105,11 @@ export default function AdminAffiliatesPage() {
     setRefreshToken((t) => t + 1);
   }
 
-  async function handleImportFile(file: File) {
-    setIsImporting(true);
-    setImportResult(null);
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    const res = await fetch("/api/admin/affiliates/import", {
-      method: "POST",
-      body: formData,
-    });
-
-    if (res.ok) {
-      const result: ImportResult = await res.json();
-      setImportResult(result);
-      setRefreshToken((t) => t + 1);
-    } else {
-      setImportResult({ created: 0, updated: 0, errors: [{ row: 0, message: "Import failed." }] });
-    }
-    setIsImporting(false);
-  }
-
   return (
     <div className="space-y-6">
-      {importResult && (
-        <div
-          className={`flex items-start gap-2 rounded-lg px-4 py-3 text-sm border ${
-            importResult.errors.length === 0
-              ? "bg-green-50 border-green-200 text-green-700"
-              : "bg-amber-50 border-amber-200 text-amber-700"
-          }`}
-        >
-          {importResult.errors.length === 0 ? (
-            <CheckCircle2 className="h-4 w-4 shrink-0 mt-0.5" />
-          ) : (
-            <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
-          )}
-          <div>
-            <p>
-              Import complete — {importResult.created} created,{" "}
-              {importResult.updated} updated
-              {importResult.errors.length > 0 &&
-                `, ${importResult.errors.length} row(s) skipped`}
-              .
-            </p>
-            {importResult.errors.length > 0 && (
-              <ul className="mt-1 list-disc list-inside">
-                {importResult.errors.slice(0, 5).map((e) => (
-                  <li key={e.row}>
-                    Row {e.row}: {e.message}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </div>
-      )}
-
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <h1 className="text-2xl font-bold text-gray-900">Affiliates</h1>
         <div className="flex gap-3">
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".csv"
-            className="hidden"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) handleImportFile(file);
-              e.target.value = "";
-            }}
-          />
-          <Button
-            type="button"
-            variant="outline"
-            disabled={isImporting}
-            onClick={() => fileInputRef.current?.click()}
-          >
-            <Upload className="h-4 w-4" />
-            {isImporting ? "Importing..." : "Import CSV"}
-          </Button>
           <Link
             href="/admin/affiliates/new"
             className={buttonVariants({ variant: "default" })}

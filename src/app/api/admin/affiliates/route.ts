@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import { affiliateSchema } from "@/lib/validation/affiliate";
 import type { Prisma } from "@/generated/prisma/client";
 
 export async function GET(request: NextRequest) {
-  const session = await auth();
-  if (!session) {
+  const { userId, sessionClaims } = await auth();
+  if (!userId || sessionClaims?.metadata?.role !== "admin") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -48,8 +48,8 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const session = await auth();
-  if (!session) {
+  const { userId, sessionClaims } = await auth();
+  if (!userId || sessionClaims?.metadata?.role !== "admin") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Lexend } from "next/font/google";
 import Script from "next/script";
-import { SessionProvider } from "next-auth/react";
+import { ClerkProvider } from "@clerk/nextjs";
 import { ChatbotProvider } from "@/components/chatbot/Chatbot";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { affiliates } from "@/lib/mock-data";
@@ -46,23 +46,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      data-scroll-behavior="smooth"
-      className={`${inter.variable} ${lexend.variable} h-full antialiased`}
-    >
-      <body className={`${inter.className} min-h-full flex flex-col`}>
-        <Script
-          id="admin-reload-guard"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{ __html: ADMIN_RELOAD_GUARD_SCRIPT }}
-        />
-        <SessionProvider>
+    <ClerkProvider>
+      <html
+        lang="en"
+        data-scroll-behavior="smooth"
+        className={`${inter.variable} ${lexend.variable} h-full antialiased`}
+      >
+        <body className={`${inter.className} min-h-full flex flex-col`}>
+          <Script
+            id="admin-reload-guard"
+            strategy="beforeInteractive"
+            dangerouslySetInnerHTML={{ __html: ADMIN_RELOAD_GUARD_SCRIPT }}
+          />
           <LanguageProvider>
             <ChatbotProvider>{children}</ChatbotProvider>
           </LanguageProvider>
-        </SessionProvider>
-      </body>
-    </html>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

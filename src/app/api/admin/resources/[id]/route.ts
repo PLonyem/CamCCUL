@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import { updateResourceSchema } from "@/lib/validation/resource";
 
@@ -8,8 +8,8 @@ interface RouteParams {
 }
 
 export async function GET(_request: NextRequest, { params }: RouteParams) {
-  const session = await auth();
-  if (!session) {
+  const { userId, sessionClaims } = await auth();
+  if (!userId || sessionClaims?.metadata?.role !== "admin") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -24,8 +24,8 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
 }
 
 export async function PUT(request: NextRequest, { params }: RouteParams) {
-  const session = await auth();
-  if (!session) {
+  const { userId, sessionClaims } = await auth();
+  if (!userId || sessionClaims?.metadata?.role !== "admin") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -55,8 +55,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 }
 
 export async function DELETE(_request: NextRequest, { params }: RouteParams) {
-  const session = await auth();
-  if (!session) {
+  const { userId, sessionClaims } = await auth();
+  if (!userId || sessionClaims?.metadata?.role !== "admin") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

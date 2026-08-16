@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import { sendProfileApprovalEmail } from "@/lib/email";
 
@@ -13,8 +13,8 @@ interface RouteParams {
 // and without an admin-only gate a chapter could call it directly on its
 // own affiliateId and self-approve, skipping review entirely.
 export async function GET(_request: NextRequest, { params }: RouteParams) {
-  const session = await auth();
-  if (!session || session.user.role !== "admin") {
+  const { userId, sessionClaims } = await auth();
+  if (!userId || sessionClaims?.metadata?.role !== "admin") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -29,8 +29,8 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
 }
 
 export async function PUT(request: NextRequest, { params }: RouteParams) {
-  const session = await auth();
-  if (!session || session.user.role !== "admin") {
+  const { userId, sessionClaims } = await auth();
+  if (!userId || sessionClaims?.metadata?.role !== "admin") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

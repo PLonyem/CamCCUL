@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import { isPlaceholder } from "@/lib/utils";
 import { creditUnionProfileSchema, SERVICE_OPTIONS } from "@/lib/validation/credit-union-profile";
@@ -13,13 +13,14 @@ const OTHER_PREFIX = "Other: ";
 // GET/POST here are both scoped to session.user.affiliateId — a chapter
 // can only ever read or write its own profile, never one it passes in.
 export async function GET() {
-  const session = await auth();
-  if (!session || session.user.role !== "credit_union" || !session.user.affiliateId) {
+  const { userId, sessionClaims } = await auth();
+  const affiliateId = sessionClaims?.metadata?.affiliateId;
+  if (!userId || sessionClaims?.metadata?.role !== "credit_union" || !affiliateId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const affiliate = await prisma.affiliate.findUnique({
-    where: { id: session.user.affiliateId },
+    where: { id: affiliateId },
     select: {
       name: true,
       code: true,
@@ -76,8 +77,9 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const session = await auth();
-  if (!session || session.user.role !== "credit_union" || !session.user.affiliateId) {
+  const { userId, sessionClaims } = await auth();
+  const affiliateId = sessionClaims?.metadata?.affiliateId;
+  if (!userId || sessionClaims?.metadata?.role !== "credit_union" || !affiliateId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -96,7 +98,7 @@ export async function POST(request: NextRequest) {
     : data.servicesOffered;
 
   const existing = await prisma.affiliate.findUnique({
-    where: { id: session.user.affiliateId },
+    where: { id: affiliateId },
     select: { code: true },
   });
   if (!existing) {
@@ -110,7 +112,7 @@ export async function POST(request: NextRequest) {
   // changed, to avoid a wasted query on every ordinary submission.
   if (data.code !== existing.code) {
     const codeTaken = await prisma.affiliate.findFirst({
-      where: { code: data.code, NOT: { id: session.user.affiliateId } },
+      where: { code: data.code, NOT: { id: affiliateId } },
       select: { id: true },
     });
     if (codeTaken) {
@@ -128,7 +130,7 @@ export async function POST(request: NextRequest) {
   // restart.
   const submittedAt = new Date();
   const affiliate = await prisma.affiliate.update({
-    where: { id: session.user.affiliateId },
+    where: { id: affiliateId },
     data: {
       name: data.creditUnionName,
       code: data.code,
@@ -170,15 +172,16 @@ export async function POST(request: NextRequest) {
   ];
   // Confirmation goes to the login account's own email, not the
   // just-submitted "public contact" email field — the account holder is
-  // who actually needs to know their submission was received. The
-  // shared NextAuth Session type allows email to be missing, though the
-  // session callback always sets it for a credit_union session — guard
-  // anyway rather than sending to an empty address.
-  if (session.user.email) {
+  // who actually needs to know their submission was received. Clerk's
+  // primaryEmailAddress isn't in the JWT (would need a custom session
+  // claim), so it's fetched here rather than read off sessionClaims.
+  const accountUser = await currentUser();
+  const accountEmail = accountUser?.primaryEmailAddress?.emailAddress;
+  if (accountEmail) {
     notifications.push(
       sendProfileConfirmationToCreditUnion({
         creditUnionName: affiliate.name,
-        creditUnionEmail: session.user.email,
+        creditUnionEmail: accountEmail,
       })
     );
   }

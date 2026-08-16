@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@/generated/prisma/client";
 
 // A chapter shows up for review once it has either submitted profile
-// content (profileUpdatedAt set) or uploaded a document — either path
-// through the "Upload Chapter Profiles" tool.
+// content (profileUpdatedAt set, via the self-service /dashboard/profile
+// form) or has a document attached (from when the now-removed admin
+// upload-profile tool was still in use — existing rows can still have
+// documents even though nothing creates new ones anymore).
 const HAS_SUBMISSION_WHERE: Prisma.AffiliateWhereInput = {
   OR: [{ profileUpdatedAt: { not: null } }, { documents: { some: {} } }],
 };
@@ -13,8 +15,8 @@ const HAS_SUBMISSION_WHERE: Prisma.AffiliateWhereInput = {
 const VALID_STATUSES = ["pending", "approved", "rejected"];
 
 export async function GET(request: NextRequest) {
-  const session = await auth();
-  if (!session || session.user.role !== "admin") {
+  const { userId, sessionClaims } = await auth();
+  if (!userId || sessionClaims?.metadata?.role !== "admin") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

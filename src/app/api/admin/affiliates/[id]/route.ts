@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import { chapterProfileFieldKeys, updateAffiliateSchema } from "@/lib/validation/affiliate";
 
@@ -8,9 +8,9 @@ interface RouteParams {
 }
 
 export async function GET(_request: NextRequest, { params }: RouteParams) {
-  const session = await auth();
+  const { userId, sessionClaims } = await auth();
   // Admin-only, not just "is there a session" — see the PUT handler below.
-  if (!session || session.user.role !== "admin") {
+  if (!userId || sessionClaims?.metadata?.role !== "admin") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -25,12 +25,12 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
 }
 
 export async function PUT(request: NextRequest, { params }: RouteParams) {
-  const session = await auth();
+  const { userId, sessionClaims } = await auth();
   // role check (not just "is there a session") matters here specifically:
   // this route accepts a raw profileStatus field, so without it a
   // credit_union session could call it directly and self-approve its own
   // profile, bypassing the admin review workflow entirely.
-  if (!session || session.user.role !== "admin") {
+  if (!userId || sessionClaims?.metadata?.role !== "admin") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -83,9 +83,9 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 }
 
 export async function DELETE(_request: NextRequest, { params }: RouteParams) {
-  const session = await auth();
+  const { userId, sessionClaims } = await auth();
   // Admin-only, not just "is there a session" — see the PUT handler below.
-  if (!session || session.user.role !== "admin") {
+  if (!userId || sessionClaims?.metadata?.role !== "admin") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
