@@ -16,8 +16,7 @@ export const affiliateSchema = z.object({
 });
 
 // Chapter Profile Form fields — submitted separately from the core
-// identity fields above, via the admin's general affiliate edit form
-// (PUT /api/admin/affiliates/[id]).
+// identity fields above via the admin "Upload Chapter Profiles" tool.
 export const chapterProfileFieldsSchema = z.object({
   yearEstablished: z.number().int().min(1900).max(2100).nullable().optional(),
   briefHistory: z.string().nullable().optional(),

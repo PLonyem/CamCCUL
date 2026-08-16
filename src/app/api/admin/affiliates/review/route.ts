@@ -4,10 +4,8 @@ import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@/generated/prisma/client";
 
 // A chapter shows up for review once it has either submitted profile
-// content (profileUpdatedAt set, via the self-service /dashboard/profile
-// form) or has a document attached (from when the now-removed admin
-// upload-profile tool was still in use — existing rows can still have
-// documents even though nothing creates new ones anymore).
+// content (profileUpdatedAt set) or uploaded a document — either path
+// through the "Upload Chapter Profiles" tool.
 const HAS_SUBMISSION_WHERE: Prisma.AffiliateWhereInput = {
   OR: [{ profileUpdatedAt: { not: null } }, { documents: { some: {} } }],
 };

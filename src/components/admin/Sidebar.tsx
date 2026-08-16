@@ -20,7 +20,6 @@ export function Sidebar({ user, onNavigate }: SidebarProps) {
   const pathname = usePathname();
   const { signOut } = useClerk();
   const [pendingReviewCount, setPendingReviewCount] = useState<number | null>(null);
-  const [unreadMessageCount, setUnreadMessageCount] = useState<number | null>(null);
 
   useEffect(() => {
     let ignore = false;
@@ -30,18 +29,11 @@ export function Sidebar({ user, onNavigate }: SidebarProps) {
         if (!ignore && data) setPendingReviewCount(data.pending);
       })
       .catch(() => {});
-    fetch("/api/admin/messages/unread-count")
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data: { unread: number } | null) => {
-        if (!ignore && data) setUnreadMessageCount(data.unread);
-      })
-      .catch(() => {});
     return () => {
       ignore = true;
     };
     // Re-fetch whenever the admin navigates, so approving/rejecting on the
-    // review page (or reading messages) updates the badges without a full
-    // page reload.
+    // review page updates the badge without a full page reload.
   }, [pathname]);
 
   return (
@@ -61,7 +53,7 @@ export function Sidebar({ user, onNavigate }: SidebarProps) {
       </div>
 
       <nav className="flex-1 mt-8 space-y-1 px-3">
-        {adminNavItems.map(({ href, label, icon: Icon, indent, showReviewBadge, showUnreadDot }) => {
+        {adminNavItems.map(({ href, label, icon: Icon, indent, showReviewBadge }) => {
           const isActive = isAdminNavItemActive(pathname, href);
 
           return (
@@ -77,15 +69,7 @@ export function Sidebar({ user, onNavigate }: SidebarProps) {
                   : "text-gray-400 hover:bg-gray-800 hover:text-white"
               )}
             >
-              <span className="relative shrink-0">
-                <Icon className={indent ? "h-3.5 w-3.5" : "h-4 w-4"} />
-                {showUnreadDot && !!unreadMessageCount && (
-                  <span
-                    aria-label={`${unreadMessageCount} unread`}
-                    className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-red-500"
-                  />
-                )}
-              </span>
+              <Icon className={cn("shrink-0", indent ? "h-3.5 w-3.5" : "h-4 w-4")} />
               <span className="flex-1">{label}</span>
               {showReviewBadge && !!pendingReviewCount && (
                 <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1 rounded-full bg-primary-500 text-white text-[10px] font-semibold">
