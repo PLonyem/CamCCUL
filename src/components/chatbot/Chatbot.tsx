@@ -264,6 +264,7 @@ export function ChatbotProvider({ children }: { children: ReactNode }) {
             {message.role === "bot" && message.action && (
               <Link
                 href={message.action.href}
+                onClick={() => setIsOpen(false)}
                 className="mt-2 inline-flex items-center gap-1 rounded-full bg-primary-50 border border-primary-200 text-primary-700 hover:bg-primary-100 px-3 py-1.5 text-xs font-semibold transition-colors"
               >
                 {message.action.label[language]}
