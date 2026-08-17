@@ -29,6 +29,7 @@ const resourceLinks: { key: TranslationKey; href: string }[] = [
 
 export function Footer() {
   const { t, language } = useLanguage();
+  const [addressLine1, addressLine2] = contactInfo.address.split(" — ");
 
   return (
     <footer className="print:hidden bg-primary-900 text-white pt-16 pb-8">
@@ -106,8 +107,8 @@ export function Footer() {
             <div className="flex items-start gap-2 text-sm text-primary-200 mb-2">
               <MapPin className="h-4 w-4 mt-0.5 shrink-0" />
               <div>
-                <p>Commercial Avenue, Bamenda</p>
-                <p>Opposite MTN Office</p>
+                <p>{addressLine1}</p>
+                {addressLine2 && <p>{addressLine2}</p>}
               </div>
             </div>
             <a

@@ -57,25 +57,48 @@ export function Navbar() {
   const isHomepage = pathname === "/";
   // Lazy-initialized to the common case (fresh homepage load starts at
   // scrollY 0) so there's no flash of the solid header before the effect
-  // below can measure the hero on mount.
-  const [isOverHero, setIsOverHero] = useState(() => isHomepage);
+  // below can measure scroll position on mount.
+  const [scrolledPastTop, setScrolledPastTop] = useState(() => !isHomepage);
+  // Guards the transparent-over-hero state: if the hero photo itself never
+  // loads, there's nothing for white nav text to sit on, so fall straight
+  // through to the solid bar instead of risking white-on-white. Set by a
+  // window event the hero's <img onError> dispatches (Navbar and the hero
+  // are siblings — the hero lives in HomeClient, not inside this component).
+  const [heroImageFailed, setHeroImageFailed] = useState(false);
 
   useEffect(() => {
     function handleScroll() {
       setIsScrolled(window.scrollY > 0);
-      if (isHomepage) {
-        const hero = document.getElementById("home-hero");
-        setIsOverHero(hero ? hero.getBoundingClientRect().bottom > 64 : false);
-      } else {
-        setIsOverHero(false);
-      }
+      if (isHomepage) setScrolledPastTop(window.scrollY > 80);
     }
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isHomepage]);
 
-  const transparent = isHomepage && isOverHero && !isOpen;
+  useEffect(() => {
+    function handleHeroImageError() {
+      setHeroImageFailed(true);
+    }
+    window.addEventListener("hero-image-error", handleHeroImageError);
+    return () => window.removeEventListener("hero-image-error", handleHeroImageError);
+  }, []);
+
+  // Two independent questions: which colour scheme reads legibly (white
+  // chrome the whole time we're on the hero-bearing homepage, regardless of
+  // scroll position — vs. the plain dark-on-white bar everywhere else), and
+  // whether the bar itself is still fully transparent over the photo or has
+  // solidified into the blurred brand-blue surface. Every other page keeps
+  // today's plain white bar untouched.
+  const lightChrome = isHomepage;
+  const atHeroTop = isHomepage && !scrolledPastTop && !isOpen && !heroImageFailed;
+
+  const focusRing = cn(
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
+    lightChrome
+      ? "focus-visible:ring-white focus-visible:ring-offset-primary-900"
+      : "focus-visible:ring-primary-500 focus-visible:ring-offset-white"
+  );
 
   // Close the mobile menu on navigation. Adjusted during render (rather than
   // in an effect) so the menu never flashes open on the destination page.
@@ -110,7 +133,8 @@ export function Navbar() {
       aria-label={t("nav_language_aria")}
       className={cn(
         "inline-flex items-center justify-center gap-1 min-h-11 min-w-11 px-2 rounded-lg transition-colors",
-        transparent
+        focusRing,
+        lightChrome
           ? "text-white hover:bg-white/10"
           : "text-primary-700 hover:bg-primary-50"
       )}
@@ -132,7 +156,8 @@ export function Navbar() {
       aria-label="Sign Out"
       className={cn(
         "inline-flex items-center justify-center min-h-11 min-w-11 rounded-lg transition-colors",
-        transparent
+        focusRing,
+        lightChrome
           ? "text-white/80 hover:text-white hover:bg-white/10"
           : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
       )}
@@ -153,7 +178,8 @@ export function Navbar() {
         href="/login"
         className={cn(
           "inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium border transition-colors",
-          transparent
+          focusRing,
+          lightChrome
             ? "border-white/40 text-white hover:bg-white/10"
             : "border-gray-300 text-gray-700 hover:bg-gray-50"
         )}
@@ -165,7 +191,7 @@ export function Navbar() {
       <div className="flex items-center gap-1">
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium bg-primary-500 text-white hover:bg-primary-600 transition-colors"
+          className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium bg-primary-500 text-white hover:bg-primary-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary-500"
         >
           <FileText className="h-4 w-4" />
           <span className="hidden sm:inline">My Dashboard</span>
@@ -176,7 +202,7 @@ export function Navbar() {
       <div className="flex items-center gap-1">
         <Link
           href="/admin"
-          className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium bg-primary-900 text-white hover:bg-primary-800 transition-colors"
+          className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium bg-primary-900 text-white hover:bg-primary-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary-900"
         >
           <LayoutDashboard className="h-4 w-4" />
           <span className="hidden sm:inline">Admin Dashboard</span>
@@ -188,15 +214,17 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        "print:hidden sticky top-0 z-40 transition-colors duration-300",
-        transparent
+        "print:hidden sticky top-0 z-40 transition-[background-color,border-color,backdrop-filter] duration-[240ms]",
+        atHeroTop
           ? "bg-transparent border-b border-transparent"
+          : lightChrome
+          ? "bg-primary-500/92 backdrop-blur-md backdrop-saturate-[1.4] border-b border-white/12"
           : "bg-white border-b border-primary-100 transition-shadow",
-        !transparent && isScrolled && "shadow-sm"
+        !atHeroTop && isScrolled && "shadow-sm"
       )}
     >
       <div className="max-w-[1200px] mx-auto px-4 h-16 flex items-center justify-between gap-4">
-        <Link href="/" className="flex items-center gap-3 min-w-0">
+        <Link href="/" className={cn("flex items-center gap-3 min-w-0 rounded-lg", focusRing)}>
           <div className="w-10 h-10 rounded-lg bg-white ring-1 ring-primary-100 flex items-center justify-center overflow-hidden p-1 shrink-0">
             <Image src={logo} alt="CamCCUL logo" className="h-full w-full object-contain" priority />
           </div>
@@ -204,7 +232,7 @@ export function Navbar() {
             <span
               className={cn(
                 "font-display font-bold text-xl block leading-tight truncate transition-colors",
-                transparent ? "text-white" : "text-primary-900"
+                lightChrome ? "text-white" : "text-primary-900"
               )}
             >
               CamCCUL
@@ -212,7 +240,7 @@ export function Navbar() {
             <span
               className={cn(
                 "hidden md:block text-xs truncate transition-colors",
-                transparent ? "text-white/80" : "text-primary-600"
+                lightChrome ? "text-white/80" : "text-primary-600"
               )}
             >
               {t("nav_tagline")}
@@ -241,10 +269,10 @@ export function Navbar() {
                   <span
                     className={cn(
                       "flex items-center gap-1 text-sm font-medium transition-colors py-2 cursor-default",
-                      transparent
+                      lightChrome
                         ? "text-white hover:text-primary-100"
                         : "text-primary-700 hover:text-primary-600",
-                      isActive && !transparent && "text-primary-600 font-semibold"
+                      isActive && !lightChrome && "text-primary-600 font-semibold"
                     )}
                   >
                     {t(link.key)}
@@ -264,7 +292,7 @@ export function Navbar() {
                         key={item.href}
                         href={item.href}
                         onClick={() => setIsAboutOpen(false)}
-                        className="block px-4 py-2.5 text-sm text-primary-700 hover:bg-primary-50 rounded-md transition-colors"
+                        className="block px-4 py-2.5 text-sm text-primary-700 hover:bg-primary-50 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
                       >
                         {t(item.key)}
                       </Link>
@@ -291,10 +319,10 @@ export function Navbar() {
                   <span
                     className={cn(
                       "flex items-center gap-1 text-sm font-medium transition-colors py-2 cursor-default",
-                      transparent
+                      lightChrome
                         ? "text-white hover:text-primary-100"
                         : "text-primary-700 hover:text-primary-600",
-                      isActive && !transparent && "text-primary-600 font-semibold"
+                      isActive && !lightChrome && "text-primary-600 font-semibold"
                     )}
                   >
                     {t(link.key)}
@@ -314,7 +342,7 @@ export function Navbar() {
                         key={service.href}
                         href={service.href}
                         onClick={() => setIsServicesOpen(false)}
-                        className="block px-4 py-2.5 text-sm text-primary-700 hover:bg-primary-50 rounded-md transition-colors"
+                        className="block px-4 py-2.5 text-sm text-primary-700 hover:bg-primary-50 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
                       >
                         {t(service.key)}
                       </Link>
@@ -329,11 +357,12 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "text-sm font-medium transition-colors",
-                  transparent
+                  "text-sm font-medium transition-colors rounded",
+                  focusRing,
+                  lightChrome
                     ? "text-white hover:text-primary-100"
                     : "text-primary-700 hover:text-primary-600",
-                  isActive && !transparent && "text-primary-600 font-semibold"
+                  isActive && !lightChrome && "text-primary-600 font-semibold"
                 )}
               >
                 {t(link.key)}
@@ -345,7 +374,7 @@ export function Navbar() {
         <div className="flex items-center gap-2 shrink-0">
           <Link
             href="/affiliates"
-            className="hidden md:inline-flex items-center bg-primary-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors"
+            className="hidden md:inline-flex items-center bg-primary-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary-500"
           >
             {t("nav_find_credit_union")}
           </Link>
@@ -356,7 +385,8 @@ export function Navbar() {
             type="button"
             className={cn(
               "md:hidden inline-flex items-center justify-center min-h-11 min-w-11 p-2 rounded-lg transition-colors",
-              transparent
+              focusRing,
+              lightChrome
                 ? "text-white hover:bg-white/10"
                 : "text-primary-700 hover:bg-primary-50"
             )}

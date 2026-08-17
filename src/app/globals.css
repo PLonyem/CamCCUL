@@ -111,6 +111,32 @@ body {
     opacity: 1;
     transform: translateY(0);
   }
+
+  /* Landing-page polish pass, additive only — layered on top of .fade-up
+     via FadeUp's `refined`/`hero` props, never replacing it, so every other
+     page's motion (which uses plain .fade-up) is untouched. Relies on
+     source order below .fade-up to win at equal specificity. */
+  .fade-up-refined {
+    transition-duration: 500ms;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .fade-up-hero {
+    transform: translateY(20px);
+    transition-duration: 600ms;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+/* Hero photo parallax (landing page only) — JS applies the translateY
+   inline via a scroll listener that itself checks prefers-reduced-motion
+   before attaching, but this belongs alongside .fade-up's own guard as a
+   second line of defense: it neutralizes any inline transform outright for
+   reduced-motion users even if the listener logic above it ever drifts. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-parallax-photo {
+    transform: none !important;
+  }
 }
 
 @media print {

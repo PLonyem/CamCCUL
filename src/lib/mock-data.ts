@@ -2590,7 +2590,7 @@ export const affiliates: Affiliate[] = [
 ];
 
 export const contactInfo: ContactInfo = {
-  address: "Commercial Avenue, Bamenda — Opposite MTN Office",
+  address: "City Chemist, Bamenda — Opposite MTN Office",
   phone: "(237) 233 44 57 66",
   email: "camccul@camccul.cm",
   officeHours: {
