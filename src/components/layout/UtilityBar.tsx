@@ -5,6 +5,7 @@ import { contactInfo } from "@/lib/mock-data";
 import { SocialIcon } from "@/components/ui/SocialIcon";
 
 const CAMCCUL_FACEBOOK_URL = "https://www.facebook.com/CamCCUL/";
+const CAMCCUL_YOUTUBE_URL = "https://www.youtube.com/@camerooncooperativecreditunion";
 
 // contactInfo.phone already matches the hero brief's number exactly, so it's
 // used directly. The brief's email ("camccul@camccul.com") differs from
@@ -35,7 +36,7 @@ export function UtilityBar() {
           <SocialIcon platform="facebook" href={CAMCCUL_FACEBOOK_URL} size="sm" className="w-6 h-6" />
           <SocialIcon platform="twitter" href="#" size="sm" className="w-6 h-6" />
           <SocialIcon platform="linkedin" href="#" size="sm" className="w-6 h-6" />
-          <SocialIcon platform="youtube" href="#" size="sm" className="w-6 h-6" />
+          <SocialIcon platform="youtube" href={CAMCCUL_YOUTUBE_URL} size="sm" className="w-6 h-6" />
         </div>
       </div>
     </div>

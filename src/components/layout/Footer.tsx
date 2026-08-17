@@ -10,6 +10,7 @@ import { SocialIcon } from "@/components/ui/SocialIcon";
 import logo from "../../../public/logo.jpg";
 
 const CAMCCUL_FACEBOOK_URL = "https://www.facebook.com/CamCCUL/";
+const CAMCCUL_YOUTUBE_URL = "https://www.youtube.com/@camerooncooperativecreditunion";
 
 const quickLinks: { key: TranslationKey; href: string }[] = [
   { key: "footer_link_home", href: "/" },
@@ -134,7 +135,7 @@ export function Footer() {
               <SocialIcon platform="facebook" href={CAMCCUL_FACEBOOK_URL} />
               <SocialIcon platform="twitter" href="#" />
               <SocialIcon platform="linkedin" href="#" />
-              <SocialIcon platform="youtube" href="#" />
+              <SocialIcon platform="youtube" href={CAMCCUL_YOUTUBE_URL} />
             </div>
           </div>
         </div>
