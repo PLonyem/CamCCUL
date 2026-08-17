@@ -7,6 +7,7 @@ import {
   buildAffiliatePayload,
   type AffiliateFormValues,
 } from "@/components/admin/AffiliateForm";
+import { CreateCreditUnionLogin } from "@/components/admin/CreateCreditUnionLogin";
 
 interface FetchedAffiliate {
   id: string;
@@ -87,10 +88,16 @@ export default function EditAffiliatePage() {
       )}
 
       {affiliate && (
-        <AffiliateForm
-          defaultValues={toFormValues(affiliate)}
-          onSubmit={handleUpdate}
-        />
+        <>
+          <AffiliateForm
+            defaultValues={toFormValues(affiliate)}
+            onSubmit={handleUpdate}
+          />
+          <CreateCreditUnionLogin
+            affiliateId={affiliate.id}
+            affiliateName={affiliate.name}
+          />
+        </>
       )}
     </div>
   );
