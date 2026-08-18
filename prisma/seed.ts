@@ -163,6 +163,38 @@ async function seedContactMessages() {
   console.log(`${sampleMessages.length} sample contact messages seeded`);
 }
 
+// HomepageContent, SiteSettings, and NotificationSettings each have no
+// natural unique business key (no email/slug/code) since they're meant to
+// exist as a single row — "default" is a fixed, well-known id so this stays
+// idempotent and the app has a predictable id to query later, same idea as
+// seedContactMessages' fixed sample ids above.
+async function seedHomepageContent() {
+  await prisma.homepageContent.upsert({
+    where: { id: "default" },
+    update: {},
+    create: { id: "default" },
+  });
+  console.log("Homepage content seeded");
+}
+
+async function seedSiteSettings() {
+  await prisma.siteSettings.upsert({
+    where: { id: "default" },
+    update: {},
+    create: { id: "default" },
+  });
+  console.log("Site settings seeded");
+}
+
+async function seedNotificationSettings() {
+  await prisma.notificationSettings.upsert({
+    where: { id: "default" },
+    update: {},
+    create: { id: "default" },
+  });
+  console.log("Notification settings seeded");
+}
+
 async function main() {
   await seedAdminUser();
   await seedNewsArticles();
@@ -170,6 +202,9 @@ async function main() {
   await seedCreditUnionUsers();
   await seedResources();
   await seedContactMessages();
+  await seedHomepageContent();
+  await seedSiteSettings();
+  await seedNotificationSettings();
 }
 
 main()

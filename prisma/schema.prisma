@@ -51,10 +51,10 @@ model NewsArticle {
 }
 
 model Affiliate {
-  id        String   @id @default(cuid())
-  code      String   @unique
-  name      String
-  region    String
+  id       String  @id @default(cuid())
+  code     String  @unique
+  name     String
+  region   String
   // Full display label for `region`, e.g. "Northwest Chapter" — kept as a
   // separate nullable field rather than replacing `region`, since `region`
   // (the bare code like "NORTHWEST") is depended on throughout the app:
@@ -63,23 +63,23 @@ model Affiliate {
   // "Northwest Chapter", "Southwest Chapter", "Littoral Chapter",
   // "Centre Chapter", "West Chapter", "Adamawa Chapter", "North Chapter",
   // "Far North Chapter", "East Chapter", "South Chapter".
-  chapter   String?
-  city      String?
-  address   String?
-  phone     String?
-  email     String?
-  website   String?
-  isActive  Boolean  @default(true)
+  chapter  String?
+  city     String?
+  address  String?
+  phone    String?
+  email    String?
+  website  String?
+  isActive Boolean @default(true)
 
   // Chapter Profile Form fields — populated via the admin "Upload Chapter
   // Profiles" tool (manual entry or best-effort extraction from an uploaded
   // document), and displayed on the public /affiliates/[code] profile page.
   yearEstablished        Int?
-  briefHistory           String?    @db.Text
+  briefHistory           String?   @db.Text
   totalMembers           Int?
   branchCount            Int?
   memberCreditUnionCount Int?
-  services               String[]   @default([])
+  services               String[]  @default([])
   chapterPresident       String?
   chapterSupervisor      String?
   boardSize              Int?
@@ -93,11 +93,11 @@ model Affiliate {
   // "pending" | "approved" | "rejected" — gates public visibility of the
   // profile fields above on /affiliates/[code]. Defaults to "pending" so
   // every submitted profile requires admin sign-off before going live.
-  profileStatus          String?    @default("pending")
+  profileStatus          String?   @default("pending")
   // Set by the reviewer when rejecting a submission; not part of the
   // Chapter Profile Form fields above, and never touched by a chapter's
   // own submission — only by the admin review action.
-  profileReviewNote      String?    @db.Text
+  profileReviewNote      String?   @db.Text
 
   documents        AffiliateDocument[]
   creditUnionUsers CreditUnionUser[]
@@ -133,16 +133,16 @@ model CreditUnionUser {
 // staff can find and review what was submitted (and what — if anything —
 // was auto-extracted from it) after the fact.
 model AffiliateDocument {
-  id            String   @id @default(cuid())
+  id            String    @id @default(cuid())
   affiliateId   String
   affiliate     Affiliate @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
   fileName      String
   fileType      String
   fileSize      Int
   storagePath   String
-  status        String   @default("pending_review")
-  extractedText String?  @db.Text
-  createdAt     DateTime @default(now())
+  status        String    @default("pending_review")
+  extractedText String?   @db.Text
+  createdAt     DateTime  @default(now())
 
   @@index([affiliateId])
   @@map("affiliate_documents")
@@ -176,4 +176,93 @@ model ContactMessage {
   createdAt DateTime @default(now())
 
   @@map("contact_messages")
+}
+
+// Editable homepage content for a future admin CMS UI (not wired to the
+// live homepage yet — src/app/(site)/HomeClient.tsx still reads its copy
+// from src/lib/i18n.ts). No enforced singleton at the schema level; the
+// app is expected to read/upsert a single known row, same as SiteSettings
+// and NotificationSettings below. Defaults intentionally match the current
+// live homepage's actual copy/figures (not the feature brief's invented
+// ones) to avoid seeding numbers nobody has confirmed — statsAssets has no
+// equivalent anywhere else in the app, so it defaults to "" rather than a
+// fabricated figure.
+model HomepageContent {
+  id String @id @default(cuid())
+
+  // HERO CONTENT
+  heroTitle           String @default("Owned by members. Built for communities.")
+  heroSubtitle        String @default("CamCCUL supervises and empowers cooperative credit unions across Cameroon, extending safe, affordable financial services to every region.")
+  heroBadge           String @default("Cameroon Cooperative Credit Union League")
+  primaryButtonText   String @default("Find a credit union near you")
+  primaryButtonLink   String @default("/affiliates")
+  secondaryButtonText String @default("Become an affiliate")
+  secondaryButtonLink String @default("/contact")
+  heroImages          Json   @default("[]")
+
+  // HERO APPEARANCE
+  overlayColor      String  @default("#000000")
+  overlayOpacity    Int     @default(40)
+  backgroundColor   String  @default("#0A2647")
+  gradientDirection String  @default("to-br")
+  textAlignment     String  @default("left")
+  buttonStyle       String  @default("solid")
+  showOverlay       Boolean @default(true)
+
+  // HERO STATISTICS
+  statsAffiliates Int    @default(216)
+  statsMembers    String @default("50,000+")
+  statsAssets     String @default("")
+
+  // SECTION VISIBILITY
+  showHero     Boolean @default(true)
+  showStats    Boolean @default(true)
+  showMission  Boolean @default(true)
+  showServices Boolean @default(true)
+  showReach    Boolean @default(true)
+  showNews     Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("homepage_content")
+}
+
+// Site-wide contact/social info for a future admin CMS UI. Defaults
+// deliberately match contactInfo in src/lib/mock-data.ts (the current
+// source of truth used by the Footer, UtilityBar, and Contact page) rather
+// than the feature brief's own values, which conflicted with it on
+// address, phone, and email — see the "Contact info inconsistency" note
+// in project memory. No enforced singleton at the schema level.
+model SiteSettings {
+  id               String   @id @default(cuid())
+  siteName         String   @default("CamCCUL")
+  fullName         String   @default("Cameroon Cooperative Credit Union League")
+  address          String   @default("City Chemist, Bamenda")
+  addressSecondary String   @default("Opposite MTN Office")
+  phone            String   @default("(237) 233 44 57 66")
+  email            String   @default("camccul@camccul.cm")
+  officeHours      String   @default("Monday–Friday, 8:00am–4:00pm")
+  facebookUrl      String   @default("https://www.facebook.com/CamCCUL/")
+  linkedinUrl      String   @default("")
+  twitterUrl       String   @default("")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@map("site_settings")
+}
+
+// Controls for the profile-submission/approval emails already sent by
+// src/lib/email.ts. adminNotificationEmail defaults to "info@camccul.cm",
+// matching that file's existing hardcoded recipient — not a new value.
+model NotificationSettings {
+  id                           String   @id @default(cuid())
+  adminNotificationEmail       String   @default("info@camccul.cm")
+  enableEmails                 Boolean  @default(true)
+  enableProfileSubmissionEmail Boolean  @default(true)
+  enableProfileApprovalEmail   Boolean  @default(true)
+  createdAt                    DateTime @default(now())
+  updatedAt                    DateTime @updatedAt
+
+  @@map("notification_settings")
 }
