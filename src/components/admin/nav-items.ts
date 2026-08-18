@@ -13,62 +13,63 @@ import {
   Bell,
   type LucideIcon,
 } from "lucide-react";
+import type { TranslationKey } from "@/lib/i18n";
 
 export interface AdminNavItem {
   href: string;
-  label: string;
+  labelKey: TranslationKey;
   icon: LucideIcon;
   /** Shows a live pending-review count badge next to this item. */
   showReviewBadge?: boolean;
 }
 
 export interface AdminNavGroup {
-  /** Section header label — omitted for standalone top-level items
+  /** Section header label key — omitted for standalone top-level items
    * (Dashboard, Messages) that don't belong under a named section. */
-  label?: string;
+  labelKey?: TranslationKey;
   items: AdminNavItem[];
 }
 
 export const adminNavGroups: AdminNavGroup[] = [
   {
-    items: [{ href: "/admin", label: "Dashboard", icon: LayoutDashboard }],
+    items: [{ href: "/admin", labelKey: "admin.dashboard", icon: LayoutDashboard }],
   },
   {
-    label: "Website Content",
+    labelKey: "admin.websiteContent",
     items: [
-      { href: "/admin/homepage", label: "Homepage Editor", icon: Home },
-      { href: "/admin/news", label: "News Manager", icon: Newspaper },
-      { href: "/admin/resources", label: "Resources Manager", icon: FolderOpen },
+      { href: "/admin/homepage", labelKey: "admin.homepageEditor", icon: Home },
+      { href: "/admin/news", labelKey: "admin.newsManager", icon: Newspaper },
+      { href: "/admin/resources", labelKey: "admin.resourcesManager", icon: FolderOpen },
     ],
   },
   {
-    label: "Affiliates",
+    labelKey: "admin.affiliates",
     items: [
-      { href: "/admin/affiliates", label: "All Affiliates", icon: Building2 },
-      { href: "/admin/affiliates/upload-profile", label: "Upload Profiles", icon: Upload },
+      { href: "/admin/affiliates", labelKey: "admin.allAffiliates", icon: Building2 },
+      { href: "/admin/affiliates/upload-profile", labelKey: "admin.uploadProfiles", icon: Upload },
       {
         href: "/admin/affiliates/review",
-        label: "Review Profiles",
+        labelKey: "admin.reviewProfiles",
         icon: ClipboardCheck,
         showReviewBadge: true,
       },
     ],
   },
   {
-    label: "Users",
+    labelKey: "admin.users",
     items: [
-      { href: "/admin/users", label: "All Users", icon: Users },
-      { href: "/admin/users/create", label: "Create Account", icon: UserPlus },
+      { href: "/admin/users", labelKey: "admin.allUsers", icon: Users },
+      { href: "/admin/users/create", labelKey: "admin.createAccount", icon: UserPlus },
     ],
   },
   {
-    items: [{ href: "/admin/messages", label: "Messages", icon: Mail }],
+    items: [{ href: "/admin/messages", labelKey: "admin.messages", icon: Mail }],
   },
   {
-    label: "Settings",
+    labelKey: "admin.settings",
     items: [
-      { href: "/admin/settings", label: "General Settings", icon: Settings },
-      { href: "/admin/settings/notifications", label: "Notification Settings", icon: Bell },
+      { href: "/admin/settings", labelKey: "admin.generalSettings", icon: Settings },
+      { href: "/admin/settings/notifications", labelKey: "admin.notificationSettings", icon: Bell },
     ],
   },
 ];
@@ -84,12 +85,12 @@ export function isAdminNavItemActive(pathname: string, href: string) {
 // match in array order — "/admin/affiliates" is a prefix of
 // "/admin/affiliates/review", so a naive first-match would always report
 // "All Affiliates" as the page title while on the review page.
-export function getAdminPageTitle(pathname: string): string {
+export function getAdminPageTitleKey(pathname: string): TranslationKey {
   const bestMatch = adminNavItems
     .filter((item) => isAdminNavItemActive(pathname, item.href))
     .reduce<AdminNavItem | undefined>((best, item) => {
       if (!best || item.href.length > best.href.length) return item;
       return best;
     }, undefined);
-  return bestMatch?.label ?? "Dashboard";
+  return bestMatch?.labelKey ?? "admin.dashboard";
 }

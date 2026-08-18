@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useClerk } from "@clerk/nextjs";
-import { Building2, LogOut } from "lucide-react";
+import { Building2, LogOut, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { adminNavGroups, isAdminNavItemActive } from "./nav-items";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface SidebarProps {
   user: {
@@ -19,6 +20,7 @@ interface SidebarProps {
 export function Sidebar({ user, onNavigate }: SidebarProps) {
   const pathname = usePathname();
   const { signOut } = useClerk();
+  const { t } = useLanguage();
   const [pendingReviewCount, setPendingReviewCount] = useState<number | null>(null);
 
   useEffect(() => {
@@ -54,14 +56,14 @@ export function Sidebar({ user, onNavigate }: SidebarProps) {
 
       <nav className="flex-1 mt-8 px-3">
         {adminNavGroups.map((group, groupIndex) => (
-          <div key={group.label ?? `group-${groupIndex}`}>
-            {group.label && (
+          <div key={group.labelKey ?? `group-${groupIndex}`}>
+            {group.labelKey && (
               <p className="text-xs uppercase tracking-wider text-gray-500 font-semibold px-3 mt-6 mb-2">
-                {group.label}
+                {t(group.labelKey)}
               </p>
             )}
             <div className="space-y-1">
-              {group.items.map(({ href, label, icon: Icon, showReviewBadge }) => {
+              {group.items.map(({ href, labelKey, icon: Icon, showReviewBadge }) => {
                 const isActive = isAdminNavItemActive(pathname, href);
 
                 return (
@@ -77,7 +79,7 @@ export function Sidebar({ user, onNavigate }: SidebarProps) {
                     )}
                   >
                     <Icon className="h-4 w-4 shrink-0" />
-                    <span className="flex-1">{label}</span>
+                    <span className="flex-1">{t(labelKey)}</span>
                     {showReviewBadge && !!pendingReviewCount && (
                       <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1 rounded-full bg-primary-500 text-white text-[10px] font-semibold">
                         {pendingReviewCount}
@@ -94,6 +96,13 @@ export function Sidebar({ user, onNavigate }: SidebarProps) {
       <div className="border-t border-gray-800 px-4 py-4">
         <p className="text-sm font-medium text-white truncate">{user.name}</p>
         <p className="text-xs text-gray-400 truncate">{user.email}</p>
+        <Link
+          href="/"
+          className="mt-3 flex items-center gap-2 text-sm font-medium text-gray-400 hover:text-white transition-colors"
+        >
+          <ExternalLink className="h-4 w-4" />
+          {t("admin.backToWebsite")}
+        </Link>
         <button
           onClick={() => signOut({ redirectUrl: "/login" })}
           className="mt-3 flex items-center gap-2 text-sm font-medium text-gray-400 hover:text-white transition-colors"
