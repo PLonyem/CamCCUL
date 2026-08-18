@@ -7,7 +7,7 @@ import { z } from "zod";
 import { AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { regionLabels } from "@/lib/mock-data";
-import type { ChapterOption } from "./ChapterCombobox";
+import type { ChapterOption } from "@/components/admin/ChapterCombobox";
 import type { ExtractedChapterFields } from "@/lib/chapter-profile-extraction";
 
 // Admin UI stays English-only — mirrors the format used on the public

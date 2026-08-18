@@ -12,7 +12,7 @@ import {
 import { Button, buttonVariants } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
-import { ChapterCombobox, type ChapterOption } from "./ChapterCombobox";
+import { ChapterCombobox, type ChapterOption } from "@/components/admin/ChapterCombobox";
 import { ManualEntryForm } from "./ManualEntryForm";
 import type { ExtractedChapterFields } from "@/lib/chapter-profile-extraction";
 

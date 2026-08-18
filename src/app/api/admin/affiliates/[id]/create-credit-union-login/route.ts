@@ -1,26 +1,8 @@
-import { randomBytes } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
-
-// `@clerk/backend`'s ClerkAPIResponseError.errors is the documented shape
-// for validation failures (e.g. "That email address is taken"), but the
-// package itself is only a transitive dependency here (pulled in by
-// @clerk/nextjs), not one we can import types from directly — so this
-// checks the same shape structurally instead of importing the class.
-function extractClerkErrorMessage(error: unknown): string | null {
-  if (
-    typeof error === "object" &&
-    error !== null &&
-    "errors" in error &&
-    Array.isArray((error as { errors: unknown }).errors)
-  ) {
-    const first = (error as { errors: { message?: string }[] }).errors[0];
-    return first?.message ?? null;
-  }
-  return null;
-}
+import { extractClerkErrorMessage, generateClerkPassword } from "@/lib/clerk-admin-utils";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -29,14 +11,6 @@ interface RouteParams {
 const bodySchema = z.object({
   email: z.string().trim().email(),
 });
-
-// Base64url avoids +, /, and = so the password is safe to paste anywhere
-// without escaping, and is long enough to clear Clerk's default strength
-// checks without needing a "memorable" shape — it's meant to be copied
-// once and handed to the credit union, not typed by hand.
-function generatePassword() {
-  return randomBytes(18).toString("base64url");
-}
 
 export async function POST(request: NextRequest, { params }: RouteParams) {
   const { userId, sessionClaims } = await auth();
@@ -62,7 +36,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     );
   }
 
-  const password = generatePassword();
+  const password = generateClerkPassword();
   const clerk = await clerkClient();
 
   try {
