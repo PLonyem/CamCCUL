@@ -492,6 +492,19 @@ const en = {
   "admin.phone": "Phone",
   "admin.email": "Email",
   "admin.active": "Active",
+  "admin.inactive": "Inactive",
+  "admin.actions": "Actions",
+  "admin.totalArticles": "Total Articles",
+  "admin.totalAffiliates": "Total Affiliates",
+  "admin.unreadMessages": "Unread Messages",
+  "admin.quickActions": "Quick Actions",
+  "admin.addAffiliate": "Add Affiliate",
+  "admin.viewMessages": "View Messages",
+  "admin.appearance": "Appearance",
+  "admin.sections": "Sections",
+  "admin.uploading": "Uploading...",
+  "admin.notificationSettingsDescription":
+    "Controls for the admin notification email and which profile-submission/approval emails are sent are coming soon. The underlying NotificationSettings data already exists — this page will read and write it.",
 } as const;
 
 const fr: Record<keyof typeof en, string> = {
@@ -979,6 +992,19 @@ const fr: Record<keyof typeof en, string> = {
   "admin.phone": "Téléphone",
   "admin.email": "Email",
   "admin.active": "Actif",
+  "admin.inactive": "Inactif",
+  "admin.actions": "Actions",
+  "admin.totalArticles": "Total des Articles",
+  "admin.totalAffiliates": "Total des Affiliés",
+  "admin.unreadMessages": "Messages Non Lus",
+  "admin.quickActions": "Actions Rapides",
+  "admin.addAffiliate": "Ajouter un Affilié",
+  "admin.viewMessages": "Voir les Messages",
+  "admin.appearance": "Apparence",
+  "admin.sections": "Sections",
+  "admin.uploading": "Téléversement...",
+  "admin.notificationSettingsDescription":
+    "Les contrôles pour l'e-mail de notification administrateur et les e-mails de soumission/approbation de profil envoyés seront bientôt disponibles. Les données NotificationSettings sous-jacentes existent déjà — cette page les lira et les écrira.",
 };
 
 export const translations = { en, fr };

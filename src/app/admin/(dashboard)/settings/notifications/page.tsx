@@ -1,12 +1,16 @@
+"use client";
+
 import { Bell } from "lucide-react";
 import { AdminComingSoon } from "@/components/admin/AdminComingSoon";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function AdminNotificationSettingsPage() {
+  const { t } = useLanguage();
   return (
     <AdminComingSoon
-      title="Notification Settings"
+      title={t("admin.notificationSettings")}
       icon={Bell}
-      description="Controls for the admin notification email and which profile-submission/approval emails are sent are coming soon. The underlying NotificationSettings data already exists — this page will read and write it."
+      description={t("admin.notificationSettingsDescription")}
     />
   );
 }

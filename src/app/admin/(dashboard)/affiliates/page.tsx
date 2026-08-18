@@ -7,6 +7,7 @@ import { Button, buttonVariants } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { regions, regionLabels } from "@/lib/mock-data";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface AffiliateRow {
   id: string;
@@ -39,6 +40,7 @@ function regionLabel(region: string): string {
 }
 
 export default function AdminAffiliatesPage() {
+  const { t } = useLanguage();
   const [affiliates, setAffiliates] = useState<AffiliateRow[]>([]);
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
@@ -174,7 +176,7 @@ export default function AdminAffiliatesPage() {
       )}
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <h1 className="text-2xl font-bold text-gray-900">Affiliates</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t("admin.affiliates")}</h1>
         <div className="flex gap-3">
           <input
             ref={fileInputRef}
@@ -201,7 +203,7 @@ export default function AdminAffiliatesPage() {
             className={buttonVariants({ variant: "default" })}
           >
             <Plus className="h-4 w-4" />
-            Add Affiliate
+            {t("admin.addAffiliate")}
           </Link>
         </div>
       </div>
@@ -234,7 +236,7 @@ export default function AdminAffiliatesPage() {
 
       {isLoading ? (
         <div className="bg-white border border-gray-200 rounded-xl p-8 text-center text-gray-400 text-sm">
-          Loading...
+          {t("loading_text")}
         </div>
       ) : affiliates.length === 0 ? (
         <div className="bg-white border border-gray-200 rounded-xl p-8 text-center text-gray-400 text-sm">
@@ -249,25 +251,25 @@ export default function AdminAffiliatesPage() {
                 <thead className="bg-gray-50 border-b border-gray-200">
                   <tr>
                     <th className="text-left font-medium text-gray-500 px-4 py-3">
-                      Code
+                      {t("admin.code")}
                     </th>
                     <th className="text-left font-medium text-gray-500 px-4 py-3">
-                      Name
+                      {t("admin.affiliateName")}
                     </th>
                     <th className="text-left font-medium text-gray-500 px-4 py-3">
-                      Region
+                      {t("admin.region")}
                     </th>
                     <th className="text-left font-medium text-gray-500 px-4 py-3">
-                      City
+                      {t("admin.city")}
                     </th>
                     <th className="text-left font-medium text-gray-500 px-4 py-3">
-                      Phone
+                      {t("admin.phone")}
                     </th>
                     <th className="text-left font-medium text-gray-500 px-4 py-3">
-                      Status
+                      {t("admin.status")}
                     </th>
                     <th className="text-right font-medium text-gray-500 px-4 py-3">
-                      Actions
+                      {t("admin.actions")}
                     </th>
                   </tr>
                 </thead>
@@ -291,7 +293,7 @@ export default function AdminAffiliatesPage() {
                       </td>
                       <td className="px-4 py-3">
                         <Badge variant={affiliate.isActive ? "success" : "default"}>
-                          {affiliate.isActive ? "Active" : "Inactive"}
+                          {affiliate.isActive ? t("admin.active") : t("admin.inactive")}
                         </Badge>
                       </td>
                       <td className="px-4 py-3">
@@ -299,7 +301,7 @@ export default function AdminAffiliatesPage() {
                           <Link
                             href={`/admin/affiliates/${affiliate.id}/edit`}
                             className="text-gray-400 hover:text-primary-600 transition-colors"
-                            aria-label="Edit"
+                            aria-label={t("admin.edit")}
                           >
                             <Pencil className="h-4 w-4" />
                           </Link>
@@ -307,7 +309,7 @@ export default function AdminAffiliatesPage() {
                             type="button"
                             onClick={() => setDeleteTarget(affiliate)}
                             className="text-gray-400 hover:text-red-600 transition-colors"
-                            aria-label="Delete"
+                            aria-label={t("admin.delete")}
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>
@@ -338,7 +340,7 @@ export default function AdminAffiliatesPage() {
                     <Link
                       href={`/admin/affiliates/${affiliate.id}/edit`}
                       className="text-gray-400 hover:text-primary-600 transition-colors"
-                      aria-label="Edit"
+                      aria-label={t("admin.edit")}
                     >
                       <Pencil className="h-4 w-4" />
                     </Link>
@@ -346,7 +348,7 @@ export default function AdminAffiliatesPage() {
                       type="button"
                       onClick={() => setDeleteTarget(affiliate)}
                       className="text-gray-400 hover:text-red-600 transition-colors"
-                      aria-label="Delete"
+                      aria-label={t("admin.delete")}
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -381,7 +383,7 @@ export default function AdminAffiliatesPage() {
               disabled={page <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
             >
-              Previous
+              {t("news_previous")}
             </Button>
             <Button
               variant="outline"
@@ -389,7 +391,7 @@ export default function AdminAffiliatesPage() {
               disabled={page >= totalPages}
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             >
-              Next
+              {t("news_next")}
             </Button>
           </div>
         </div>

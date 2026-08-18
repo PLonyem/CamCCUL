@@ -17,6 +17,8 @@ import {
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/context/LanguageContext";
+import type { TranslationKey } from "@/lib/i18n";
 
 type Tab = "content" | "appearance" | "sections";
 type GradientDirection = "to-r" | "to-b" | "to-br" | "to-bl";
@@ -55,23 +57,23 @@ interface HomepageContentData {
 
 const SECTION_VISIBILITY_FIELDS: {
   key: "showHero" | "showStats" | "showMission" | "showServices" | "showReach" | "showNews";
-  label: string;
+  labelKey: TranslationKey;
   description: string;
 }[] = [
-  { key: "showHero", label: "Hero", description: "The main banner at the top of the homepage." },
-  { key: "showStats", label: "Statistics", description: "Affiliate/member/region/year figures below the hero." },
-  { key: "showMission", label: "What CamCCUL Does", description: "The four value cards (regulatory, capacity building, digitalization, protection)." },
-  { key: "showReach", label: "Our Reach Across Cameroon", description: "The region-by-region affiliate counts." },
-  { key: "showNews", label: "Latest News & Circulars", description: "The three most recent published articles." },
-  { key: "showServices", label: "Call to Action", description: "The closing \"Find a Credit Union\" banner." },
+  { key: "showHero", labelKey: "admin.showHero", description: "The main banner at the top of the homepage." },
+  { key: "showStats", labelKey: "admin.showStats", description: "Affiliate/member/region/year figures below the hero." },
+  { key: "showMission", labelKey: "admin.showMission", description: "The four value cards (regulatory, capacity building, digitalization, protection)." },
+  { key: "showReach", labelKey: "admin.showReach", description: "The region-by-region affiliate counts." },
+  { key: "showNews", labelKey: "admin.showNews", description: "The three most recent published articles." },
+  { key: "showServices", labelKey: "admin.showServices", description: "The closing \"Find a Credit Union\" banner." },
 ];
 
 const MAX_IMAGES = 5;
 
-const tabs: { key: Tab; label: string }[] = [
-  { key: "content", label: "Content" },
-  { key: "appearance", label: "Appearance" },
-  { key: "sections", label: "Sections" },
+const tabs: { key: Tab; labelKey: TranslationKey }[] = [
+  { key: "content", labelKey: "admin.content" },
+  { key: "appearance", labelKey: "admin.appearance" },
+  { key: "sections", labelKey: "admin.sections" },
 ];
 
 const OVERLAY_COLOR_PRESETS = ["#000000", "#0A2647", "#1E3A5F", "#1A1A1A"];
@@ -196,6 +198,7 @@ function heroPreviewButtonClass(style: ButtonStyle) {
 }
 
 function HeroPreview({ data }: { data: HomepageContentData }) {
+  const { t } = useLanguage();
   const bgImage = data.heroImages[0];
   const gradientCss = GRADIENT_DIRECTION_OPTIONS.find(
     (o) => o.value === data.gradientDirection
@@ -216,7 +219,7 @@ function HeroPreview({ data }: { data: HomepageContentData }) {
 
   return (
     <div className="lg:sticky lg:top-6">
-      <p className={labelClass}>Live Preview</p>
+      <p className={labelClass}>{t("admin.livePreview")}</p>
       <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-gray-200 bg-gray-900">
         <div
           className="absolute inset-0"
@@ -261,6 +264,7 @@ function HeroPreview({ data }: { data: HomepageContentData }) {
 }
 
 export default function AdminHomepageEditorPage() {
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<Tab>("content");
   const [data, setData] = useState<HomepageContentData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -380,7 +384,7 @@ export default function AdminHomepageEditorPage() {
 
   return (
     <div className={cn(activeTab === "appearance" ? "max-w-5xl" : "max-w-3xl", "pb-24")}>
-      <h1 className="text-2xl font-bold text-gray-900">Homepage Editor</h1>
+      <h1 className="text-2xl font-bold text-gray-900">{t("admin.homepageEditor")}</h1>
       <p className="text-sm text-gray-500 mt-1">
         Manage the content and appearance of the public homepage.
       </p>
@@ -398,27 +402,30 @@ export default function AdminHomepageEditorPage() {
                 : "border-transparent text-gray-500 hover:text-gray-700"
             )}
           >
-            {tab.label}
+            {t(tab.labelKey)}
           </button>
         ))}
       </div>
 
       {isLoading ? (
-        <div className="mt-8 text-sm text-gray-400">Loading...</div>
+        <div className="mt-8 text-sm text-gray-400">{t("loading_text")}</div>
       ) : !data ? (
         <div className="mt-8 text-sm text-red-600">Could not load homepage content.</div>
       ) : activeTab === "sections" ? (
         <Card className="mt-8 divide-y divide-gray-100">
-          {SECTION_VISIBILITY_FIELDS.map(({ key, label, description }) => (
+          <div className="px-6 py-4 border-b border-gray-100">
+            <p className="text-sm font-semibold text-gray-900">{t("admin.sectionVisibility")}</p>
+          </div>
+          {SECTION_VISIBILITY_FIELDS.map(({ key, labelKey, description }) => (
             <div key={key} className="flex items-center justify-between gap-4 px-6 py-4">
               <div className="min-w-0">
-                <p className="text-sm font-medium text-gray-900">{label}</p>
+                <p className="text-sm font-medium text-gray-900">{t(labelKey)}</p>
                 <p className="text-xs text-gray-500 mt-0.5">{description}</p>
               </div>
               <Toggle
                 checked={data[key]}
                 onChange={(checked) => updateField(key, checked)}
-                label={`Show ${label}`}
+                label={t(labelKey)}
               />
             </div>
           ))}
@@ -429,19 +436,19 @@ export default function AdminHomepageEditorPage() {
             {/* SECTION 1: OVERLAY CONTROLS */}
             <Card className="p-6 space-y-5">
               <div className="flex items-center justify-between">
-                <h2 className="font-semibold text-gray-900">Overlay Controls</h2>
+                <h2 className="font-semibold text-gray-900">{t("admin.overlayControls")}</h2>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-500">Show Overlay</span>
+                  <span className="text-sm text-gray-500">{t("admin.showOverlay")}</span>
                   <Toggle
                     checked={data.showOverlay}
                     onChange={(checked) => updateField("showOverlay", checked)}
-                    label="Show Overlay"
+                    label={t("admin.showOverlay")}
                   />
                 </div>
               </div>
 
               <ColorField
-                label="Overlay Color"
+                label={t("admin.overlayColor")}
                 value={data.overlayColor}
                 presets={OVERLAY_COLOR_PRESETS}
                 onChange={(v) => updateField("overlayColor", v)}
@@ -451,7 +458,7 @@ export default function AdminHomepageEditorPage() {
 
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className={cn(labelClass, "mb-0")}>Overlay Opacity</label>
+                  <label className={cn(labelClass, "mb-0")}>{t("admin.overlayOpacity")}</label>
                   <span className="text-sm text-gray-500 tabular-nums">{data.overlayOpacity}%</span>
                 </div>
                 <input
@@ -473,10 +480,10 @@ export default function AdminHomepageEditorPage() {
 
             {/* SECTION 2: BACKGROUND CONTROLS */}
             <Card className="p-6 space-y-5">
-              <h2 className="font-semibold text-gray-900">Background Controls</h2>
+              <h2 className="font-semibold text-gray-900">{t("admin.backgroundControls")}</h2>
 
               <ColorField
-                label="Background Color"
+                label={t("admin.backgroundColor")}
                 value={data.backgroundColor}
                 presets={BACKGROUND_COLOR_PRESETS}
                 onChange={(v) => updateField("backgroundColor", v)}
@@ -485,7 +492,7 @@ export default function AdminHomepageEditorPage() {
 
               <div>
                 <label htmlFor="gradientDirection" className={labelClass}>
-                  Gradient Direction
+                  {t("admin.gradientDirection")}
                 </label>
                 <select
                   id="gradientDirection"
@@ -507,10 +514,10 @@ export default function AdminHomepageEditorPage() {
 
             {/* SECTION 3: TEXT CONTROLS */}
             <Card className="p-6 space-y-5">
-              <h2 className="font-semibold text-gray-900">Text Controls</h2>
+              <h2 className="font-semibold text-gray-900">{t("admin.textControls")}</h2>
 
               <div>
-                <label className={labelClass}>Text Alignment</label>
+                <label className={labelClass}>{t("admin.textAlignment")}</label>
                 <div className="flex gap-2">
                   {TEXT_ALIGNMENT_OPTIONS.map(({ value, icon: Icon }) => (
                     <button
@@ -536,11 +543,11 @@ export default function AdminHomepageEditorPage() {
 
             {/* SECTION 4: BUTTON CONTROLS */}
             <Card className="p-6 space-y-5">
-              <h2 className="font-semibold text-gray-900">Button Controls</h2>
+              <h2 className="font-semibold text-gray-900">{t("admin.buttonControls")}</h2>
 
               <div>
                 <label htmlFor="buttonStyle" className={labelClass}>
-                  Button Style
+                  {t("admin.buttonStyle")}
                 </label>
                 <select
                   id="buttonStyle"
@@ -563,7 +570,7 @@ export default function AdminHomepageEditorPage() {
         <div className="mt-8 space-y-8">
           {/* SECTION 1: HERO IMAGES */}
           <Card className="p-6">
-            <h2 className="font-semibold text-gray-900">Hero Images</h2>
+            <h2 className="font-semibold text-gray-900">{t("admin.heroImages")}</h2>
             <p className="text-sm text-gray-500 mt-1">
               Upload 1-5 images. Multiple images create an automatic slideshow
               every 5 seconds.
@@ -637,14 +644,14 @@ export default function AdminHomepageEditorPage() {
               ) : (
                 <Upload className="h-4 w-4" />
               )}
-              {isUploading ? "Uploading..." : "Add Image"}
+              {isUploading ? t("admin.uploading") : t("admin.addImage")}
             </button>
             <p className="text-xs text-gray-400 mt-2">Recommended size: 1920×1080px</p>
           </Card>
 
           {/* SECTION 2: HERO TEXT */}
           <Card className="p-6 space-y-5">
-            <h2 className="font-semibold text-gray-900">Hero Text</h2>
+            <h2 className="font-semibold text-gray-900">{t("admin.heroText")}</h2>
 
             <div>
               <label htmlFor="heroBadge" className={labelClass}>
@@ -695,7 +702,7 @@ export default function AdminHomepageEditorPage() {
 
           {/* SECTION 3: BUTTONS */}
           <Card className="p-6 space-y-5">
-            <h2 className="font-semibold text-gray-900">Buttons</h2>
+            <h2 className="font-semibold text-gray-900">{t("admin.buttons")}</h2>
 
             <div className="grid sm:grid-cols-2 gap-5">
               <div>
@@ -769,7 +776,7 @@ export default function AdminHomepageEditorPage() {
 
           {/* SECTION 4: STATISTICS */}
           <Card className="p-6 space-y-5">
-            <h2 className="font-semibold text-gray-900">Statistics</h2>
+            <h2 className="font-semibold text-gray-900">{t("admin.statistics")}</h2>
 
             <div className="grid sm:grid-cols-3 gap-5">
               <div>
@@ -849,10 +856,10 @@ export default function AdminHomepageEditorPage() {
             {isSaving ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Saving...
+                {t("admin.saving")}
               </>
             ) : (
-              "Save Changes"
+              t("admin.save")
             )}
           </Button>
         </div>

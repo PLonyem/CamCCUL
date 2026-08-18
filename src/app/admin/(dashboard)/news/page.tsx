@@ -8,6 +8,7 @@ import { Button, buttonVariants } from "@/components/ui/Button";
 import { Badge, type BadgeProps } from "@/components/ui/Badge";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { CATEGORIES } from "@/lib/mock-data";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface NewsArticleRow {
   id: string;
@@ -61,6 +62,7 @@ function formatDate(value: string): string {
 }
 
 export default function AdminNewsPage() {
+  const { t } = useLanguage();
   const router = useRouter();
   const searchParams = useSearchParams();
   const showCreatedToast = searchParams.get("created") === "1";
@@ -157,13 +159,13 @@ export default function AdminNewsPage() {
       )}
 
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">News Articles</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t("admin.newsManager")}</h1>
         <Link
           href="/admin/news/new"
           className={buttonVariants({ variant: "default" })}
         >
           <Plus className="h-4 w-4" />
-          New Article
+          {t("admin.newArticle")}
         </Link>
       </div>
 
@@ -198,8 +200,8 @@ export default function AdminNewsPage() {
           className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition"
         >
           <option value="">All Status</option>
-          <option value="published">Published</option>
-          <option value="draft">Draft</option>
+          <option value="published">{t("admin.published")}</option>
+          <option value="draft">{t("admin.draft")}</option>
         </select>
 
         <select
@@ -215,7 +217,7 @@ export default function AdminNewsPage() {
 
       {isLoading ? (
         <div className="bg-white border border-gray-200 rounded-xl p-8 text-center text-gray-400 text-sm">
-          Loading...
+          {t("loading_text")}
         </div>
       ) : articles.length === 0 ? (
         <div className="bg-white border border-gray-200 rounded-xl p-8 text-center text-gray-400 text-sm">
@@ -230,25 +232,25 @@ export default function AdminNewsPage() {
                 <thead className="bg-gray-50 border-b border-gray-200">
                   <tr>
                     <th className="text-left font-medium text-gray-500 px-4 py-3">
-                      Title
+                      {t("admin.articleTitle")}
                     </th>
                     <th className="text-left font-medium text-gray-500 px-4 py-3">
-                      Category
+                      {t("admin.category")}
                     </th>
                     <th className="text-left font-medium text-gray-500 px-4 py-3">
-                      Language
+                      {t("admin.language")}
                     </th>
                     <th className="text-left font-medium text-gray-500 px-4 py-3">
-                      Status
+                      {t("admin.status")}
                     </th>
                     <th className="text-left font-medium text-gray-500 px-4 py-3">
-                      Author
+                      {t("admin.author")}
                     </th>
                     <th className="text-left font-medium text-gray-500 px-4 py-3">
-                      Date
+                      {t("admin.date")}
                     </th>
                     <th className="text-right font-medium text-gray-500 px-4 py-3">
-                      Actions
+                      {t("admin.actions")}
                     </th>
                   </tr>
                 </thead>
@@ -272,7 +274,7 @@ export default function AdminNewsPage() {
                       </td>
                       <td className="px-4 py-3">
                         <Badge variant={article.published ? "success" : "default"}>
-                          {article.published ? "Published" : "Draft"}
+                          {article.published ? t("admin.published") : t("admin.draft")}
                         </Badge>
                       </td>
                       <td className="px-4 py-3 text-gray-600">
@@ -286,7 +288,7 @@ export default function AdminNewsPage() {
                           <Link
                             href={`/admin/news/${article.id}/edit`}
                             className="text-gray-400 hover:text-primary-600 transition-colors"
-                            aria-label="Edit"
+                            aria-label={t("admin.edit")}
                           >
                             <Pencil className="h-4 w-4" />
                           </Link>
@@ -294,7 +296,7 @@ export default function AdminNewsPage() {
                             type="button"
                             onClick={() => setDeleteTarget(article)}
                             className="text-gray-400 hover:text-red-600 transition-colors"
-                            aria-label="Delete"
+                            aria-label={t("admin.delete")}
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>
@@ -320,7 +322,7 @@ export default function AdminNewsPage() {
                     <Link
                       href={`/admin/news/${article.id}/edit`}
                       className="text-gray-400 hover:text-primary-600 transition-colors"
-                      aria-label="Edit"
+                      aria-label={t("admin.edit")}
                     >
                       <Pencil className="h-4 w-4" />
                     </Link>
@@ -328,7 +330,7 @@ export default function AdminNewsPage() {
                       type="button"
                       onClick={() => setDeleteTarget(article)}
                       className="text-gray-400 hover:text-red-600 transition-colors"
-                      aria-label="Delete"
+                      aria-label={t("admin.delete")}
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -366,7 +368,7 @@ export default function AdminNewsPage() {
               disabled={page <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
             >
-              Previous
+              {t("news_previous")}
             </Button>
             <Button
               variant="outline"
@@ -374,7 +376,7 @@ export default function AdminNewsPage() {
               disabled={page >= totalPages}
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             >
-              Next
+              {t("news_next")}
             </Button>
           </div>
         </div>

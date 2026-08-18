@@ -1,10 +1,12 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import { Newspaper, CheckCircle2, Building2, Mail } from "lucide-react";
 import { currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import { Card } from "@/components/ui/Card";
 import { buttonVariants } from "@/components/ui/Button";
+import { T } from "@/components/admin/T";
 
 const statCardColors = {
   blue: "bg-blue-50 text-blue-600",
@@ -20,7 +22,7 @@ function StatCard({
   color,
   href,
 }: {
-  label: string;
+  label: ReactNode;
   value: number;
   icon: LucideIcon;
   color: keyof typeof statCardColors;
@@ -63,32 +65,32 @@ export default async function AdminDashboardPage() {
   return (
     <div className="space-y-8">
       <h1 className="text-2xl font-bold text-gray-900">
-        Welcome back, {user?.fullName ?? "Admin"}
+        <T k="admin.dashboard" />, {user?.fullName ?? "Admin"}
       </h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          label="Total Articles"
+          label={<T k="admin.totalArticles" />}
           value={totalArticles}
           icon={Newspaper}
           color="blue"
           href="/admin/news"
         />
         <StatCard
-          label="Published"
+          label={<T k="admin.published" />}
           value={publishedArticles}
           icon={CheckCircle2}
           color="green"
         />
         <StatCard
-          label="Total Affiliates"
+          label={<T k="admin.totalAffiliates" />}
           value={totalAffiliates}
           icon={Building2}
           color="teal"
           href="/admin/affiliates"
         />
         <StatCard
-          label="Unread Messages"
+          label={<T k="admin.unreadMessages" />}
           value={unreadMessages}
           icon={Mail}
           color="amber"
@@ -98,26 +100,26 @@ export default async function AdminDashboardPage() {
 
       <div>
         <h2 className="text-lg font-semibold text-gray-900 mb-3">
-          Quick Actions
+          <T k="admin.quickActions" />
         </h2>
         <div className="flex flex-wrap gap-3">
           <Link
             href="/admin/news/new"
             className={buttonVariants({ variant: "default" })}
           >
-            New Article
+            <T k="admin.newArticle" />
           </Link>
           <Link
             href="/admin/affiliates/new"
             className={buttonVariants({ variant: "outline" })}
           >
-            Add Affiliate
+            <T k="admin.addAffiliate" />
           </Link>
           <Link
             href="/admin/messages"
             className={buttonVariants({ variant: "outline" })}
           >
-            View Messages
+            <T k="admin.viewMessages" />
           </Link>
         </div>
       </div>
