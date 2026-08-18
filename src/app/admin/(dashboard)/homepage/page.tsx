@@ -44,7 +44,27 @@ interface HomepageContentData {
   gradientDirection: GradientDirection;
   textAlignment: TextAlignment;
   buttonStyle: ButtonStyle;
+  // Sections
+  showHero: boolean;
+  showStats: boolean;
+  showMission: boolean;
+  showServices: boolean;
+  showReach: boolean;
+  showNews: boolean;
 }
+
+const SECTION_VISIBILITY_FIELDS: {
+  key: "showHero" | "showStats" | "showMission" | "showServices" | "showReach" | "showNews";
+  label: string;
+  description: string;
+}[] = [
+  { key: "showHero", label: "Hero", description: "The main banner at the top of the homepage." },
+  { key: "showStats", label: "Statistics", description: "Affiliate/member/region/year figures below the hero." },
+  { key: "showMission", label: "What CamCCUL Does", description: "The four value cards (regulatory, capacity building, digitalization, protection)." },
+  { key: "showReach", label: "Our Reach Across Cameroon", description: "The region-by-region affiliate counts." },
+  { key: "showNews", label: "Latest News & Circulars", description: "The three most recent published articles." },
+  { key: "showServices", label: "Call to Action", description: "The closing \"Find a Credit Union\" banner." },
+];
 
 const MAX_IMAGES = 5;
 
@@ -388,8 +408,20 @@ export default function AdminHomepageEditorPage() {
       ) : !data ? (
         <div className="mt-8 text-sm text-red-600">Could not load homepage content.</div>
       ) : activeTab === "sections" ? (
-        <Card className="mt-8 p-8 text-center">
-          <p className="text-sm text-gray-500">Section visibility settings are coming soon.</p>
+        <Card className="mt-8 divide-y divide-gray-100">
+          {SECTION_VISIBILITY_FIELDS.map(({ key, label, description }) => (
+            <div key={key} className="flex items-center justify-between gap-4 px-6 py-4">
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-gray-900">{label}</p>
+                <p className="text-xs text-gray-500 mt-0.5">{description}</p>
+              </div>
+              <Toggle
+                checked={data[key]}
+                onChange={(checked) => updateField(key, checked)}
+                label={`Show ${label}`}
+              />
+            </div>
+          ))}
         </Card>
       ) : activeTab === "appearance" ? (
         <div className="mt-8 grid lg:grid-cols-[1fr_320px] gap-8 items-start">
@@ -789,7 +821,7 @@ export default function AdminHomepageEditorPage() {
         </div>
       )}
 
-      {data && (activeTab === "content" || activeTab === "appearance") && (
+      {data && (
         <div className="sticky bottom-0 -mx-4 sm:-mx-6 -mb-4 sm:-mb-6 bg-white border-t border-gray-200 px-4 sm:px-6 py-3 flex items-center justify-between gap-4 z-10">
           <div className="flex-1">
             {toast && (

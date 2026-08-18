@@ -6,15 +6,34 @@ import {
 } from "@/lib/mock-data";
 import { HomeClient, type HomeRecentArticle } from "./HomeClient";
 
+export interface SectionVisibility {
+  showHero: boolean;
+  showStats: boolean;
+  showMission: boolean;
+  showServices: boolean;
+  showReach: boolean;
+  showNews: boolean;
+}
+
+const DEFAULT_SECTION_VISIBILITY: SectionVisibility = {
+  showHero: true,
+  showStats: true,
+  showMission: true,
+  showServices: true,
+  showReach: true,
+  showNews: true,
+};
+
 interface HomeData {
   affiliateCount: number;
   regionCounts: { region: string; count: number }[];
   recentArticles: HomeRecentArticle[];
+  sectionVisibility: SectionVisibility;
 }
 
 async function getHomeData(): Promise<HomeData> {
   try {
-    const [affiliateCount, groupedRegions, articlesEn, articlesFr] =
+    const [affiliateCount, groupedRegions, articlesEn, articlesFr, homepageContent] =
       await Promise.all([
         prisma.affiliate.count(),
         prisma.affiliate.groupBy({ by: ["region"], _count: { _all: true } }),
@@ -48,6 +67,17 @@ async function getHomeData(): Promise<HomeData> {
             createdAt: true,
           },
         }),
+        prisma.homepageContent.findUnique({
+          where: { id: "default" },
+          select: {
+            showHero: true,
+            showStats: true,
+            showMission: true,
+            showServices: true,
+            showReach: true,
+            showNews: true,
+          },
+        }),
       ]);
 
     const countByRegion = new Map(
@@ -71,7 +101,12 @@ async function getHomeData(): Promise<HomeData> {
       publishedAt: (article.publishedAt ?? article.createdAt).toISOString(),
     }));
 
-    return { affiliateCount, regionCounts, recentArticles };
+    return {
+      affiliateCount,
+      regionCounts,
+      recentArticles,
+      sectionVisibility: homepageContent ?? DEFAULT_SECTION_VISIBILITY,
+    };
   } catch (error) {
     console.error(
       "Database unavailable, falling back to mock home data:",
@@ -109,12 +144,13 @@ async function getHomeData(): Promise<HomeData> {
       affiliateCount: activeAffiliates.length,
       regionCounts,
       recentArticles,
+      sectionVisibility: DEFAULT_SECTION_VISIBILITY,
     };
   }
 }
 
 export default async function Home() {
-  const { affiliateCount, regionCounts, recentArticles } =
+  const { affiliateCount, regionCounts, recentArticles, sectionVisibility } =
     await getHomeData();
 
   return (
@@ -122,6 +158,7 @@ export default async function Home() {
       affiliateCount={affiliateCount}
       regionCounts={regionCounts}
       recentArticles={recentArticles}
+      sectionVisibility={sectionVisibility}
     />
   );
 }

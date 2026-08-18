@@ -39,10 +39,20 @@ export interface HomeRecentArticle {
   publishedAt: string;
 }
 
+interface SectionVisibility {
+  showHero: boolean;
+  showStats: boolean;
+  showMission: boolean;
+  showServices: boolean;
+  showReach: boolean;
+  showNews: boolean;
+}
+
 interface HomeClientProps {
   affiliateCount: number;
   regionCounts: { region: string; count: number }[];
   recentArticles: HomeRecentArticle[];
+  sectionVisibility: SectionVisibility;
 }
 
 // One radius, used everywhere on this page without exception (cards,
@@ -114,11 +124,48 @@ function useHeroParallax(ref: React.RefObject<HTMLDivElement | null>) {
   }, [ref]);
 }
 
-export function HomeClient({ affiliateCount, regionCounts, recentArticles }: HomeClientProps) {
+export function HomeClient({
+  affiliateCount,
+  regionCounts,
+  recentArticles,
+  sectionVisibility,
+}: HomeClientProps) {
   const { t, language } = useLanguage();
   const regulators = ["COBAC", t("home_trust_mof"), "ANEMCAM", "ACCOSCA"];
   const photoRef = useRef<HTMLDivElement>(null);
   useHeroParallax(photoRef);
+
+  // Every band below the hero, in actual page order, with the flat tone it
+  // renders on. Sections can be hidden independently via sectionVisibility,
+  // so a section's own SectionBridge can't hard-code "the tone of whatever
+  // sits immediately above it in the JSX" — that section might itself be
+  // hidden. Walking backward through this list to the nearest *visible*
+  // entry (see toneBefore below) is what keeps every bridge seamless no
+  // matter which sections are toggled off.
+  const sectionOrder = [
+    { key: "showStats" as const, tone: TINT_BG },
+    { key: "showMission" as const, tone: WHITE_BG },
+    { key: "showReach" as const, tone: TINT_BG },
+    { key: "showNews" as const, tone: WHITE_BG },
+    { key: "showServices" as const, tone: BRAND_BLUE },
+  ];
+
+  // The tone of the nearest *visible* section before `index` in sectionOrder
+  // — falls back to TINT_BG (what the hero's own bottom bleed always ends
+  // on) if the hero is showing, or WHITE_BG (the page's own background) if
+  // even the hero is hidden and nothing has rendered yet.
+  function toneBefore(index: number): string {
+    for (let i = index - 1; i >= 0; i--) {
+      if (sectionVisibility[sectionOrder[i].key]) return sectionOrder[i].tone;
+    }
+    return sectionVisibility.showHero ? TINT_BG : WHITE_BG;
+  }
+
+  // Mirror of toneBefore, walking forward — what the hero's own Layer 5
+  // bottom bleed should resolve into, i.e. the tone of the first visible
+  // section after it (or TINT_BG if literally everything else is hidden).
+  const heroBleedTarget =
+    sectionOrder.find((s) => sectionVisibility[s.key])?.tone ?? TINT_BG;
 
   // affiliateCount and regions.length are real, live-computed values used
   // elsewhere on this page too; "members served" has no data source
@@ -141,7 +188,8 @@ export function HomeClient({ affiliateCount, regionCounts, recentArticles }: Hom
 
   return (
     <>
-      {/*
+      {sectionVisibility.showHero && (
+      /*
         BAND 3: HERO — six stacked layers, bottom to top. Re-tune here:
 
         1. PHOTOGRAPH        next/image, object-cover, focal point on faces.
@@ -168,7 +216,7 @@ export function HomeClient({ affiliateCount, regionCounts, recentArticles }: Hom
         box: Navbar and Hero are siblings in normal flow, not overlapping, so
         without this the "transparent" Navbar would only reveal the page
         background instead of this photo.
-      */}
+      */
       <section
         id="home-hero"
         className="relative isolate flex items-end sm:items-center overflow-hidden -mt-16"
@@ -217,10 +265,12 @@ export function HomeClient({ affiliateCount, regionCounts, recentArticles }: Hom
           aria-hidden="true"
         />
 
-        {/* LAYER 5 — bottom bleed: resolves into the stats band below */}
+        {/* LAYER 5 — bottom bleed: resolves into whichever section is
+            actually next (heroBleedTarget), not always the stats band —
+            stats can be hidden via sectionVisibility */}
         <div
           className="absolute inset-x-0 bottom-0 h-[22vh] sm:h-[24vh]"
-          style={{ background: `linear-gradient(to bottom, rgba(0,0,0,0) 0%, ${TINT_BG} 100%)` }}
+          style={{ background: `linear-gradient(to bottom, rgba(0,0,0,0) 0%, ${heroBleedTarget} 100%)` }}
           aria-hidden="true"
         />
 
@@ -286,10 +336,13 @@ export function HomeClient({ affiliateCount, regionCounts, recentArticles }: Hom
           </div>
         </div>
       </section>
+      )}
 
-      {/* BAND 4: STAT STRIP — tinted band the hero's bottom bleed resolves
-          into; no SectionBridge needed here since Layer 5 above already
-          fulfils that role for this specific boundary. */}
+      {sectionVisibility.showStats && (
+      /* BAND 4: STAT STRIP — tinted band the hero's bottom bleed resolves
+         into when the hero is showing; no SectionBridge needed here for
+         that case since Layer 5 above already fulfils that role. If the
+         hero is hidden, this is simply the first thing on the page. */
       <section className="py-10 md:py-14" style={{ backgroundColor: TINT_BG }}>
         <div className="max-w-[1200px] mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-y-8">
@@ -319,10 +372,12 @@ export function HomeClient({ affiliateCount, regionCounts, recentArticles }: Hom
           </div>
         </div>
       </section>
+      )}
 
-      {/* BAND 4B: VALUE CARDS */}
+      {sectionVisibility.showMission && (
+      /* BAND 4B: VALUE CARDS */
       <section className="relative bg-white py-16 md:py-28">
-        <SectionBridge from={TINT_BG} to={WHITE_BG} />
+        <SectionBridge from={toneBefore(1)} to={WHITE_BG} />
         <div className="max-w-[1200px] mx-auto px-4">
           <h2 className="sr-only">{t("home2_values_sr_heading")}</h2>
 
@@ -358,10 +413,12 @@ export function HomeClient({ affiliateCount, regionCounts, recentArticles }: Hom
           </FadeUp>
         </div>
       </section>
+      )}
 
-      {/* BAND 5: OUR REACH ACROSS CAMEROON — pale blue tint */}
+      {sectionVisibility.showReach && (
+      /* BAND 5: OUR REACH ACROSS CAMEROON — pale blue tint */
       <section className="relative py-16 md:py-28" style={{ backgroundColor: TINT_BG }}>
-        <SectionBridge from={WHITE_BG} to={TINT_BG} />
+        <SectionBridge from={toneBefore(2)} to={TINT_BG} />
         <div className="max-w-[1200px] mx-auto px-4">
           <FadeUp refined>
             <h2 className="text-[26px] md:text-4xl font-display font-bold text-primary-900">
@@ -398,11 +455,13 @@ export function HomeClient({ affiliateCount, regionCounts, recentArticles }: Hom
           </div>
         </div>
       </section>
+      )}
 
-      {/* BAND 6: LATEST NEWS — white. No article images exist yet, so cards
-          show date + title only rather than a placeholder image block. */}
+      {sectionVisibility.showNews && (
+      /* BAND 6: LATEST NEWS — white. No article images exist yet, so cards
+         show date + title only rather than a placeholder image block. */
       <section className="relative bg-white py-16 md:py-28">
-        <SectionBridge from={TINT_BG} to={WHITE_BG} />
+        <SectionBridge from={toneBefore(3)} to={WHITE_BG} />
         <div className="max-w-[1200px] mx-auto px-4">
           <FadeUp refined>
             <h2 className="text-[26px] md:text-4xl font-display font-bold text-primary-900">
@@ -443,10 +502,12 @@ export function HomeClient({ affiliateCount, regionCounts, recentArticles }: Hom
           </div>
         </div>
       </section>
+      )}
 
-      {/* BAND 7: CALL TO ACTION — the page's one other solid-blue band */}
+      {sectionVisibility.showServices && (
+      /* BAND 7: CALL TO ACTION — the page's one other solid-blue band */
       <section className="relative bg-primary-500 py-16 md:py-28">
-        <SectionBridge from={WHITE_BG} to={BRAND_BLUE} />
+        <SectionBridge from={toneBefore(4)} to={BRAND_BLUE} />
         <div className="max-w-[1200px] mx-auto px-4 text-center">
           <FadeUp refined>
             <h2 className="text-[26px] md:text-4xl font-display font-bold text-white">
@@ -464,6 +525,7 @@ export function HomeClient({ affiliateCount, regionCounts, recentArticles }: Hom
           </FadeUp>
         </div>
       </section>
+      )}
     </>
   );
 }

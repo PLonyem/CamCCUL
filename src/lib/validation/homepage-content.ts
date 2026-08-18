@@ -38,6 +38,19 @@ export const homepageContentSchema = z.object({
   gradientDirection: z.enum(["to-r", "to-b", "to-br", "to-bl"]),
   textAlignment: z.enum(["left", "center", "right"]),
   buttonStyle: z.enum(["solid", "outline", "ghost"]),
+
+  // Sections — one flag per live homepage band. showServices is a
+  // schema-column holdover from the original brief (which described a
+  // "Services" section that doesn't exist on the actual page); repurposed
+  // here to control the closing CTA band instead of leaving it unwired, so
+  // every flag maps to something real rather than 5 working toggles and
+  // one dead one.
+  showHero: z.boolean(),
+  showStats: z.boolean(),
+  showMission: z.boolean(),
+  showServices: z.boolean(),
+  showReach: z.boolean(),
+  showNews: z.boolean(),
 });
 
 export type HomepageContentInput = z.infer<typeof homepageContentSchema>;

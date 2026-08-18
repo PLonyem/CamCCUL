@@ -65,6 +65,13 @@ export function Navbar() {
   // window event the hero's <img onError> dispatches (Navbar and the hero
   // are siblings — the hero lives in HomeClient, not inside this component).
   const [heroImageFailed, setHeroImageFailed] = useState(false);
+  // The homepage's hero section can be hidden entirely via the Homepage
+  // Editor's Sections tab (showHero=false) — in that case the page's first
+  // section is something with a light background (stats/value cards/etc),
+  // and white nav text would be illegible over it. Checked once per
+  // pathname since it reflects whatever the server actually rendered, not
+  // something that changes without a navigation.
+  const [heroPresent, setHeroPresent] = useState(true);
 
   useEffect(() => {
     function handleScroll() {
@@ -84,14 +91,18 @@ export function Navbar() {
     return () => window.removeEventListener("hero-image-error", handleHeroImageError);
   }, []);
 
+  useEffect(() => {
+    setHeroPresent(isHomepage && !!document.getElementById("home-hero"));
+  }, [isHomepage]);
+
   // Two independent questions: which colour scheme reads legibly (white
   // chrome the whole time we're on the hero-bearing homepage, regardless of
   // scroll position — vs. the plain dark-on-white bar everywhere else), and
   // whether the bar itself is still fully transparent over the photo or has
-  // solidified into the blurred brand-blue surface. Every other page keeps
-  // today's plain white bar untouched.
-  const lightChrome = isHomepage;
-  const atHeroTop = isHomepage && !scrolledPastTop && !isOpen && !heroImageFailed;
+  // solidified into the blurred brand-blue surface. Every other page (and a
+  // homepage with its hero toggled off) keeps the plain white bar.
+  const lightChrome = isHomepage && heroPresent;
+  const atHeroTop = lightChrome && !scrolledPastTop && !isOpen && !heroImageFailed;
 
   const focusRing = cn(
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
