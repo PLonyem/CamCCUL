@@ -10,14 +10,21 @@ import {
   AlertCircle,
   ChevronLeft,
   ChevronRight,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
 
 type Tab = "content" | "appearance" | "sections";
+type GradientDirection = "to-r" | "to-b" | "to-br" | "to-bl";
+type TextAlignment = "left" | "center" | "right";
+type ButtonStyle = "solid" | "outline" | "ghost";
 
 interface HomepageContentData {
+  // Content
   heroBadge: string;
   heroTitle: string;
   heroSubtitle: string;
@@ -29,6 +36,14 @@ interface HomepageContentData {
   statsAffiliates: number;
   statsMembers: string;
   statsAssets: string;
+  // Appearance
+  showOverlay: boolean;
+  overlayColor: string;
+  overlayOpacity: number;
+  backgroundColor: string;
+  gradientDirection: GradientDirection;
+  textAlignment: TextAlignment;
+  buttonStyle: ButtonStyle;
 }
 
 const MAX_IMAGES = 5;
@@ -39,11 +54,191 @@ const tabs: { key: Tab; label: string }[] = [
   { key: "sections", label: "Sections" },
 ];
 
+const OVERLAY_COLOR_PRESETS = ["#000000", "#0A2647", "#1E3A5F", "#1A1A1A"];
+const BACKGROUND_COLOR_PRESETS = ["#0A2647", "#144272", "#205295"];
+
+const GRADIENT_DIRECTION_OPTIONS: { value: GradientDirection; label: string; css: string }[] = [
+  { value: "to-r", label: "Left to Right", css: "to right" },
+  { value: "to-b", label: "Top to Bottom", css: "to bottom" },
+  { value: "to-br", label: "Top-Left to Bottom-Right", css: "to bottom right" },
+  { value: "to-bl", label: "Top-Right to Bottom-Left", css: "to bottom left" },
+];
+
+const TEXT_ALIGNMENT_OPTIONS: { value: TextAlignment; icon: typeof AlignLeft }[] = [
+  { value: "left", icon: AlignLeft },
+  { value: "center", icon: AlignCenter },
+  { value: "right", icon: AlignRight },
+];
+
 const labelClass = "block text-sm font-medium text-gray-700 mb-1.5";
 const inputClass =
   "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition disabled:opacity-50";
 const errorClass = "text-xs text-red-600 mt-1";
 const countClass = "text-xs text-gray-400 mt-1 text-right";
+
+function hexToCss(hex: string): string {
+  return /^#[0-9A-Fa-f]{6}$/.test(hex) ? hex : "#000000";
+}
+
+// Shared by both Overlay Color and Background Color — a native color input
+// paired with a synced hex text field and preset swatches.
+function ColorField({
+  label,
+  value,
+  presets,
+  onChange,
+  disabled,
+}: {
+  label: string;
+  value: string;
+  presets: string[];
+  onChange: (value: string) => void;
+  disabled?: boolean;
+}) {
+  return (
+    <div>
+      <label className={labelClass}>{label}</label>
+      <div className="flex items-center gap-2">
+        <input
+          type="color"
+          value={hexToCss(value)}
+          onChange={(e) => onChange(e.target.value)}
+          disabled={disabled}
+          className="h-9 w-11 shrink-0 rounded border border-gray-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+        />
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          disabled={disabled}
+          placeholder="#000000"
+          className={cn(inputClass, "font-mono uppercase")}
+        />
+      </div>
+      <div className="flex gap-2 mt-2">
+        {presets.map((preset) => (
+          <button
+            key={preset}
+            type="button"
+            onClick={() => onChange(preset)}
+            disabled={disabled}
+            aria-label={preset}
+            title={preset}
+            className={cn(
+              "h-6 w-6 rounded-full border-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
+              value.toLowerCase() === preset.toLowerCase()
+                ? "border-primary-500"
+                : "border-gray-200 hover:border-gray-300"
+            )}
+            style={{ backgroundColor: preset }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Toggle({
+  checked,
+  onChange,
+  label,
+}: {
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
+      onClick={() => onChange(!checked)}
+      className={cn(
+        "relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors",
+        checked ? "bg-primary-500" : "bg-gray-300"
+      )}
+    >
+      <span
+        className={cn(
+          "inline-block h-4 w-4 transform rounded-full bg-white transition-transform",
+          checked ? "translate-x-6" : "translate-x-1"
+        )}
+      />
+    </button>
+  );
+}
+
+function heroPreviewButtonClass(style: ButtonStyle) {
+  if (style === "solid") return "bg-white text-primary-700";
+  if (style === "outline") return "border border-white text-white";
+  return "text-white underline underline-offset-2"; // ghost
+}
+
+function HeroPreview({ data }: { data: HomepageContentData }) {
+  const bgImage = data.heroImages[0];
+  const gradientCss = GRADIENT_DIRECTION_OPTIONS.find(
+    (o) => o.value === data.gradientDirection
+  )?.css;
+
+  const alignItems =
+    data.textAlignment === "center"
+      ? "items-center text-center"
+      : data.textAlignment === "right"
+      ? "items-end text-right"
+      : "items-start text-left";
+  const justifyButtons =
+    data.textAlignment === "center"
+      ? "justify-center"
+      : data.textAlignment === "right"
+      ? "justify-end"
+      : "justify-start";
+
+  return (
+    <div className="lg:sticky lg:top-6">
+      <p className={labelClass}>Live Preview</p>
+      <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-gray-200 bg-gray-900">
+        <div
+          className="absolute inset-0"
+          style={
+            bgImage
+              ? { backgroundImage: `url(${bgImage})`, backgroundSize: "cover", backgroundPosition: "center" }
+              : {
+                  backgroundImage: `linear-gradient(${gradientCss}, ${hexToCss(data.backgroundColor)}, transparent)`,
+                }
+          }
+        />
+        {data.showOverlay && (
+          <div
+            className="absolute inset-0"
+            style={{ backgroundColor: hexToCss(data.overlayColor), opacity: data.overlayOpacity / 100 }}
+          />
+        )}
+        <div className={cn("absolute inset-0 flex flex-col justify-center gap-1.5 p-4", alignItems)}>
+          <p className="text-white/70 text-[9px] font-semibold uppercase tracking-wide">
+            {data.heroBadge || "Badge text"}
+          </p>
+          <p className="text-white font-bold text-sm leading-tight">
+            {data.heroTitle || "Headline"}
+          </p>
+          <p className="text-white/80 text-[10px] leading-snug line-clamp-2 max-w-[85%]">
+            {data.heroSubtitle || "Subtitle"}
+          </p>
+          <div className={cn("flex gap-1.5 mt-1.5", justifyButtons)}>
+            <span
+              className={cn(
+                "px-2.5 py-1 rounded text-[9px] font-semibold",
+                heroPreviewButtonClass(data.buttonStyle)
+              )}
+            >
+              {data.primaryButtonText || "Primary"}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function AdminHomepageEditorPage() {
   const [activeTab, setActiveTab] = useState<Tab>("content");
@@ -164,7 +359,7 @@ export default function AdminHomepageEditorPage() {
   }
 
   return (
-    <div className="max-w-3xl pb-24">
+    <div className={cn(activeTab === "appearance" ? "max-w-5xl" : "max-w-3xl", "pb-24")}>
       <h1 className="text-2xl font-bold text-gray-900">Homepage Editor</h1>
       <p className="text-sm text-gray-500 mt-1">
         Manage the content and appearance of the public homepage.
@@ -192,12 +387,146 @@ export default function AdminHomepageEditorPage() {
         <div className="mt-8 text-sm text-gray-400">Loading...</div>
       ) : !data ? (
         <div className="mt-8 text-sm text-red-600">Could not load homepage content.</div>
-      ) : activeTab !== "content" ? (
+      ) : activeTab === "sections" ? (
         <Card className="mt-8 p-8 text-center">
-          <p className="text-sm text-gray-500">
-            {tabs.find((t) => t.key === activeTab)?.label} settings are coming soon.
-          </p>
+          <p className="text-sm text-gray-500">Section visibility settings are coming soon.</p>
         </Card>
+      ) : activeTab === "appearance" ? (
+        <div className="mt-8 grid lg:grid-cols-[1fr_320px] gap-8 items-start">
+          <div className="space-y-8 min-w-0">
+            {/* SECTION 1: OVERLAY CONTROLS */}
+            <Card className="p-6 space-y-5">
+              <div className="flex items-center justify-between">
+                <h2 className="font-semibold text-gray-900">Overlay Controls</h2>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-500">Show Overlay</span>
+                  <Toggle
+                    checked={data.showOverlay}
+                    onChange={(checked) => updateField("showOverlay", checked)}
+                    label="Show Overlay"
+                  />
+                </div>
+              </div>
+
+              <ColorField
+                label="Overlay Color"
+                value={data.overlayColor}
+                presets={OVERLAY_COLOR_PRESETS}
+                onChange={(v) => updateField("overlayColor", v)}
+                disabled={!data.showOverlay}
+              />
+              {fieldErrors.overlayColor && <p className={errorClass}>{fieldErrors.overlayColor}</p>}
+
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className={cn(labelClass, "mb-0")}>Overlay Opacity</label>
+                  <span className="text-sm text-gray-500 tabular-nums">{data.overlayOpacity}%</span>
+                </div>
+                <input
+                  type="range"
+                  min={0}
+                  max={90}
+                  value={data.overlayOpacity}
+                  onChange={(e) => updateField("overlayOpacity", Number(e.target.value))}
+                  disabled={!data.showOverlay}
+                  className="w-full accent-primary-500 disabled:opacity-50"
+                />
+                <div className="flex justify-between text-[10px] text-gray-400 mt-0.5">
+                  <span>0 = transparent</span>
+                  <span>90 = very dark</span>
+                </div>
+                {fieldErrors.overlayOpacity && <p className={errorClass}>{fieldErrors.overlayOpacity}</p>}
+              </div>
+            </Card>
+
+            {/* SECTION 2: BACKGROUND CONTROLS */}
+            <Card className="p-6 space-y-5">
+              <h2 className="font-semibold text-gray-900">Background Controls</h2>
+
+              <ColorField
+                label="Background Color"
+                value={data.backgroundColor}
+                presets={BACKGROUND_COLOR_PRESETS}
+                onChange={(v) => updateField("backgroundColor", v)}
+              />
+              {fieldErrors.backgroundColor && <p className={errorClass}>{fieldErrors.backgroundColor}</p>}
+
+              <div>
+                <label htmlFor="gradientDirection" className={labelClass}>
+                  Gradient Direction
+                </label>
+                <select
+                  id="gradientDirection"
+                  value={data.gradientDirection}
+                  onChange={(e) => updateField("gradientDirection", e.target.value as GradientDirection)}
+                  className={inputClass}
+                >
+                  {GRADIENT_DIRECTION_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                {fieldErrors.gradientDirection && (
+                  <p className={errorClass}>{fieldErrors.gradientDirection}</p>
+                )}
+              </div>
+            </Card>
+
+            {/* SECTION 3: TEXT CONTROLS */}
+            <Card className="p-6 space-y-5">
+              <h2 className="font-semibold text-gray-900">Text Controls</h2>
+
+              <div>
+                <label className={labelClass}>Text Alignment</label>
+                <div className="flex gap-2">
+                  {TEXT_ALIGNMENT_OPTIONS.map(({ value, icon: Icon }) => (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => updateField("textAlignment", value)}
+                      aria-label={`Align ${value}`}
+                      aria-pressed={data.textAlignment === value}
+                      className={cn(
+                        "flex-1 flex items-center justify-center py-2.5 rounded-lg border transition-colors",
+                        data.textAlignment === value
+                          ? "border-primary-500 bg-primary-50 text-primary-700"
+                          : "border-gray-300 text-gray-500 hover:bg-gray-50"
+                      )}
+                    >
+                      <Icon className="h-4 w-4" />
+                    </button>
+                  ))}
+                </div>
+                {fieldErrors.textAlignment && <p className={errorClass}>{fieldErrors.textAlignment}</p>}
+              </div>
+            </Card>
+
+            {/* SECTION 4: BUTTON CONTROLS */}
+            <Card className="p-6 space-y-5">
+              <h2 className="font-semibold text-gray-900">Button Controls</h2>
+
+              <div>
+                <label htmlFor="buttonStyle" className={labelClass}>
+                  Button Style
+                </label>
+                <select
+                  id="buttonStyle"
+                  value={data.buttonStyle}
+                  onChange={(e) => updateField("buttonStyle", e.target.value as ButtonStyle)}
+                  className={inputClass}
+                >
+                  <option value="solid">Solid</option>
+                  <option value="outline">Outline</option>
+                  <option value="ghost">Ghost</option>
+                </select>
+                {fieldErrors.buttonStyle && <p className={errorClass}>{fieldErrors.buttonStyle}</p>}
+              </div>
+            </Card>
+          </div>
+
+          <HeroPreview data={data} />
+        </div>
       ) : (
         <div className="mt-8 space-y-8">
           {/* SECTION 1: HERO IMAGES */}
@@ -460,7 +789,7 @@ export default function AdminHomepageEditorPage() {
         </div>
       )}
 
-      {data && activeTab === "content" && (
+      {data && (activeTab === "content" || activeTab === "appearance") && (
         <div className="sticky bottom-0 -mx-4 sm:-mx-6 -mb-4 sm:-mb-6 bg-white border-t border-gray-200 px-4 sm:px-6 py-3 flex items-center justify-between gap-4 z-10">
           <div className="flex-1">
             {toast && (

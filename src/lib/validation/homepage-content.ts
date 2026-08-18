@@ -1,9 +1,15 @@
 import { z } from "zod";
 
-// Content tab only — the Appearance and Sections tabs aren't built yet, so
-// their fields (overlayColor, showHero, etc.) are deliberately left out of
-// this schema rather than accepted-but-ignored.
+const hexColor = z
+  .string()
+  .trim()
+  .regex(/^#[0-9A-Fa-f]{6}$/, "Must be a hex color like #0A2647");
+
+// Content + Appearance tabs — Sections isn't built yet, so showHero/
+// showStats/etc. are deliberately left out of this schema rather than
+// accepted-but-ignored.
 export const homepageContentSchema = z.object({
+  // Content
   heroBadge: z.string().trim().min(1, "Badge text is required"),
   heroTitle: z.string().trim().min(1, "Headline is required"),
   heroSubtitle: z.string().trim().min(1, "Subtitle is required"),
@@ -23,6 +29,15 @@ export const homepageContentSchema = z.object({
   statsAffiliates: z.number().int().min(0),
   statsMembers: z.string().trim().min(1, "Members figure is required"),
   statsAssets: z.string().trim(),
+
+  // Appearance
+  showOverlay: z.boolean(),
+  overlayColor: hexColor,
+  overlayOpacity: z.number().int().min(0).max(90),
+  backgroundColor: hexColor,
+  gradientDirection: z.enum(["to-r", "to-b", "to-br", "to-bl"]),
+  textAlignment: z.enum(["left", "center", "right"]),
+  buttonStyle: z.enum(["solid", "outline", "ghost"]),
 });
 
 export type HomepageContentInput = z.infer<typeof homepageContentSchema>;
