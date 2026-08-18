@@ -1,12 +1,16 @@
 import {
   LayoutDashboard,
+  Home,
   Newspaper,
+  FolderOpen,
   Building2,
   Upload,
   ClipboardCheck,
-  FolderOpen,
+  Users,
+  UserPlus,
   Mail,
   Settings,
+  Bell,
   type LucideIcon,
 } from "lucide-react";
 
@@ -14,27 +18,63 @@ export interface AdminNavItem {
   href: string;
   label: string;
   icon: LucideIcon;
-  indent?: boolean;
   /** Shows a live pending-review count badge next to this item. */
   showReviewBadge?: boolean;
 }
 
-export const adminNavItems: AdminNavItem[] = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/news", label: "News", icon: Newspaper },
-  { href: "/admin/affiliates", label: "Affiliates", icon: Building2 },
-  { href: "/admin/affiliates/upload-profile", label: "Upload Chapter Profiles", icon: Upload, indent: true },
+export interface AdminNavGroup {
+  /** Section header label — omitted for standalone top-level items
+   * (Dashboard, Messages) that don't belong under a named section. */
+  label?: string;
+  items: AdminNavItem[];
+}
+
+export const adminNavGroups: AdminNavGroup[] = [
   {
-    href: "/admin/affiliates/review",
-    label: "Review Profiles",
-    icon: ClipboardCheck,
-    indent: true,
-    showReviewBadge: true,
+    items: [{ href: "/admin", label: "Dashboard", icon: LayoutDashboard }],
   },
-  { href: "/admin/resources", label: "Resources", icon: FolderOpen },
-  { href: "/admin/messages", label: "Messages", icon: Mail },
-  { href: "/admin/settings", label: "Settings", icon: Settings },
+  {
+    label: "Website Content",
+    items: [
+      { href: "/admin/homepage", label: "Homepage Editor", icon: Home },
+      { href: "/admin/news", label: "News Manager", icon: Newspaper },
+      { href: "/admin/resources", label: "Resources Manager", icon: FolderOpen },
+    ],
+  },
+  {
+    label: "Affiliates",
+    items: [
+      { href: "/admin/affiliates", label: "All Affiliates", icon: Building2 },
+      { href: "/admin/affiliates/upload-profile", label: "Upload Profiles", icon: Upload },
+      {
+        href: "/admin/affiliates/review",
+        label: "Review Profiles",
+        icon: ClipboardCheck,
+        showReviewBadge: true,
+      },
+    ],
+  },
+  {
+    label: "Users",
+    items: [
+      { href: "/admin/users", label: "All Users", icon: Users },
+      { href: "/admin/users/create", label: "Create Account", icon: UserPlus },
+    ],
+  },
+  {
+    items: [{ href: "/admin/messages", label: "Messages", icon: Mail }],
+  },
+  {
+    label: "Settings",
+    items: [
+      { href: "/admin/settings", label: "General Settings", icon: Settings },
+      { href: "/admin/settings/notifications", label: "Notification Settings", icon: Bell },
+    ],
+  },
 ];
+
+// Flattened view for callers that don't care about section grouping.
+export const adminNavItems: AdminNavItem[] = adminNavGroups.flatMap((group) => group.items);
 
 export function isAdminNavItemActive(pathname: string, href: string) {
   return href === "/admin" ? pathname === href : pathname.startsWith(href);
@@ -42,8 +82,8 @@ export function isAdminNavItemActive(pathname: string, href: string) {
 
 // Picks the longest (most specific) matching href rather than the first
 // match in array order — "/admin/affiliates" is a prefix of
-// "/admin/affiliates/upload-profile", so a naive first-match would always
-// report "Affiliates" as the page title while on the upload page.
+// "/admin/affiliates/review", so a naive first-match would always report
+// "All Affiliates" as the page title while on the review page.
 export function getAdminPageTitle(pathname: string): string {
   const bestMatch = adminNavItems
     .filter((item) => isAdminNavItemActive(pathname, item.href))
