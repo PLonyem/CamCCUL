@@ -13,6 +13,7 @@ const isPublicRoute = createRouteMatcher([
   "/api/chatbot(.*)",
   "/api/contact(.*)",
   "/api/affiliates(.*)",
+  "/api/homepage(.*)",
 ]);
 
 const isAuthPage = createRouteMatcher(["/login(.*)", "/signup(.*)"]);
