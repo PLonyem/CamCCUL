@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { MessageCircle, X, Send, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
@@ -66,6 +66,11 @@ function MsgText({ text }: { text: string }) {
 export function ChatbotProvider({ children }: { children: ReactNode }) {
   const { language, t } = useLanguage();
   const router = useRouter();
+  const pathname = usePathname();
+  // Cami is a public-site assistant — hide the floating widget on
+  // admin/dashboard pages, but keep rendering `children` and the context
+  // itself, since this provider wraps the entire app from the root layout.
+  const hideWidget = pathname.startsWith("/admin") || pathname.startsWith("/dashboard");
   const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>(() => [welcomeMessage()]);
@@ -326,7 +331,7 @@ export function ChatbotProvider({ children }: { children: ReactNode }) {
   return (
     <ChatbotContext.Provider value={contextValue}>
       {children}
-      {mounted && createPortal(isOpen ? panel : fab, document.body)}
+      {!hideWidget && mounted && createPortal(isOpen ? panel : fab, document.body)}
     </ChatbotContext.Provider>
   );
 }
