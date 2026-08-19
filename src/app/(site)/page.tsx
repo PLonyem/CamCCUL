@@ -24,11 +24,24 @@ const DEFAULT_SECTION_VISIBILITY: SectionVisibility = {
   showNews: true,
 };
 
+export interface HeroOverlay {
+  show: boolean;
+  color: string;
+  opacity: number;
+}
+
+const DEFAULT_HERO_OVERLAY: HeroOverlay = {
+  show: true,
+  color: "#000000",
+  opacity: 0,
+};
+
 interface HomeData {
   affiliateCount: number;
   regionCounts: { region: string; count: number }[];
   recentArticles: HomeRecentArticle[];
   sectionVisibility: SectionVisibility;
+  heroOverlay: HeroOverlay;
 }
 
 async function getHomeData(): Promise<HomeData> {
@@ -76,6 +89,9 @@ async function getHomeData(): Promise<HomeData> {
             showServices: true,
             showReach: true,
             showNews: true,
+            showOverlay: true,
+            overlayColor: true,
+            overlayOpacity: true,
           },
         }),
       ]);
@@ -106,6 +122,13 @@ async function getHomeData(): Promise<HomeData> {
       regionCounts,
       recentArticles,
       sectionVisibility: homepageContent ?? DEFAULT_SECTION_VISIBILITY,
+      heroOverlay: homepageContent
+        ? {
+            show: homepageContent.showOverlay,
+            color: homepageContent.overlayColor,
+            opacity: homepageContent.overlayOpacity,
+          }
+        : DEFAULT_HERO_OVERLAY,
     };
   } catch (error) {
     console.error(
@@ -145,12 +168,13 @@ async function getHomeData(): Promise<HomeData> {
       regionCounts,
       recentArticles,
       sectionVisibility: DEFAULT_SECTION_VISIBILITY,
+      heroOverlay: DEFAULT_HERO_OVERLAY,
     };
   }
 }
 
 export default async function Home() {
-  const { affiliateCount, regionCounts, recentArticles, sectionVisibility } =
+  const { affiliateCount, regionCounts, recentArticles, sectionVisibility, heroOverlay } =
     await getHomeData();
 
   return (
@@ -159,6 +183,7 @@ export default async function Home() {
       regionCounts={regionCounts}
       recentArticles={recentArticles}
       sectionVisibility={sectionVisibility}
+      heroOverlay={heroOverlay}
     />
   );
 }

@@ -48,11 +48,18 @@ interface SectionVisibility {
   showNews: boolean;
 }
 
+interface HeroOverlay {
+  show: boolean;
+  color: string;
+  opacity: number;
+}
+
 interface HomeClientProps {
   affiliateCount: number;
   regionCounts: { region: string; count: number }[];
   recentArticles: HomeRecentArticle[];
   sectionVisibility: SectionVisibility;
+  heroOverlay: HeroOverlay;
 }
 
 // One radius, used everywhere on this page without exception (cards,
@@ -129,6 +136,7 @@ export function HomeClient({
   regionCounts,
   recentArticles,
   sectionVisibility,
+  heroOverlay,
 }: HomeClientProps) {
   const { t, language } = useLanguage();
   const regulators = ["COBAC", t("home_trust_mof"), "ANEMCAM", "ACCOSCA"];
@@ -244,6 +252,20 @@ export function HomeClient({
           style={{ backgroundColor: BRAND_BLUE, opacity: 0.35, mixBlendMode: "color" }}
           aria-hidden="true"
         />
+
+        {/* LAYER 2.5 — admin overlay: the Homepage Editor's Overlay Color/
+            Opacity controls. Flat opacity (no blend mode), matching the
+            editor's own live preview pixel-for-pixel, so what an admin sees
+            while dragging the slider is what ships. Skipped entirely at
+            opacity 0 (the shipped default) so it costs nothing until an
+            admin actually turns it on. */}
+        {heroOverlay.show && heroOverlay.opacity > 0 && (
+          <div
+            className="absolute inset-0"
+            style={{ backgroundColor: heroOverlay.color, opacity: heroOverlay.opacity / 100 }}
+            aria-hidden="true"
+          />
+        )}
 
         {/* LAYER 3 — depth: directional weight, top-left */}
         <div
