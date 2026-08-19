@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useClerk } from "@clerk/nextjs";
-import { Menu, LogOut, ChevronDown, ExternalLink } from "lucide-react";
+import { Menu, LogOut, ChevronDown, ArrowLeft } from "lucide-react";
 import { getAdminPageTitleKey } from "./nav-items";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -41,11 +41,9 @@ export function AdminNavbar({ user, onMenuClick }: AdminNavbarProps) {
       <div className="flex items-center gap-4">
         <Link
           href="/"
-          target="_blank"
-          rel="noopener noreferrer"
           className="hidden sm:flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-700"
         >
-          <ExternalLink className="h-4 w-4" />
+          <ArrowLeft className="h-4 w-4" />
           {t("admin.viewSite")}
         </Link>
         <div className="relative">

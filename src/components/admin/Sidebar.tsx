@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useClerk } from "@clerk/nextjs";
-import { Building2, LogOut, ExternalLink } from "lucide-react";
+import { Building2, LogOut, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { adminNavGroups, isAdminNavItemActive } from "./nav-items";
 import { useLanguage } from "@/context/LanguageContext";
@@ -100,7 +100,7 @@ export function Sidebar({ user, onNavigate }: SidebarProps) {
           href="/"
           className="mt-3 flex items-center gap-2 text-sm font-medium text-gray-400 hover:text-white transition-colors"
         >
-          <ExternalLink className="h-4 w-4" />
+          <ArrowLeft className="h-4 w-4" />
           {t("admin.backToWebsite")}
         </Link>
         <button
