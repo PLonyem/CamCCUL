@@ -14,6 +14,7 @@ const isPublicRoute = createRouteMatcher([
   "/api/contact(.*)",
   "/api/affiliates(.*)",
   "/api/homepage(.*)",
+  "/api/signup/credit-union/check",
 ]);
 
 const isAuthPage = createRouteMatcher(["/login(.*)", "/signup(.*)"]);

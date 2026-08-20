@@ -112,37 +112,46 @@ model Affiliate {
 }
 
 // A self-service "I want a login for my credit union" request, reviewed by
-// an admin before any account exists. No password lives here — this table
-// is a review queue, not a credentials store. Approval creates the real
-// account through Clerk (the same clerk.users.createUser path the admin
-// "Create Account" tool already uses), consistent with every other account
-// on this site since the 2026-08-15 NextAuth-to-Clerk migration. Replaces
-// the old CreditUnionUser model, which stored a passwordHash and was
-// checked during sign-in by the pre-Clerk src/lib/auth.ts — dead since the
-// migration (nothing has written to it since; Clerk owns all credentials).
+// an admin before the account gets real access. No password lives here —
+// this table is a review queue, not a credentials store. The Clerk account
+// itself is created up front at signup time (src/app/signup/page.tsx, via
+// Clerk's client-side signUp.create() with the password the applicant
+// chose there — Clerk owns it, this table never sees it), but that account
+// has no role in its publicMetadata yet, so proxy.ts's dashboard gate
+// blocks it until an admin approves this request and sets
+// role: "credit_union" (mirroring how the admin "Create Account" tool sets
+// that metadata directly). Replaces the old CreditUnionUser model, which
+// stored a passwordHash and was checked during sign-in by the pre-Clerk
+// src/lib/auth.ts — dead since the 2026-08-15 migration (nothing has
+// written to it since; Clerk owns all credentials).
 model CreditUnionSignupRequest {
-  id              String  @id @default(cuid())
-  email           String
+  id String @id @default(cuid())
+  // Globally unique because it's the email of a real Clerk account by the
+  // time this row exists — Clerk itself never allows two accounts to share
+  // an email, so this can't conflict the way a bare business-data field
+  // might.
+  email String @unique
+  // Uniqueness on this field is enforced in application code (a
+  // case-insensitive lookup — see /api/signup/credit-union), not here:
+  // "Bamenda Credit Union" and "bamenda credit union" must collide, which a
+  // plain @unique index (case-sensitive) wouldn't catch.
   creditUnionName String
   // Selected from the same chapter dropdown as the profile-upload form —
   // free text here (not a relation) because the applicant is naming their
   // own chapter before any admin has matched them to a specific Affiliate.
-  chapter         String
+  chapter String
   // Set by the admin at approval time once they've matched this request to
   // an actual affiliate record — null until then.
-  affiliateId     String?
-  affiliate       Affiliate? @relation(fields: [affiliateId], references: [id])
+  affiliateId String?
+  affiliate   Affiliate? @relation(fields: [affiliateId], references: [id])
   status          String  @default("pending") // pending | approved | rejected
   rejectionReason String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Blocks a duplicate submission for the same email + credit union name,
-  // while still letting one person submit on behalf of more than one
-  // credit union — a plain `email @unique` would forbid that too.
-  @@unique([email, creditUnionName])
   @@index([status])
+  @@index([creditUnionName])
   @@map("credit_union_signup_requests")
 }
 
