@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
-import { UserPlus, Download, Search, ShieldCheck, Building2 } from "lucide-react";
-import { Button, buttonVariants } from "@/components/ui/Button";
+import { Download, Search, ShieldCheck, Building2 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import type { AdminUserListItem } from "@/app/api/admin/users/route";
 
@@ -142,10 +141,6 @@ export default function AdminUsersPage() {
             <Download className="h-4 w-4" />
             Export CSV
           </Button>
-          <Link href="/admin/users/create" className={buttonVariants({ variant: "default" })}>
-            <UserPlus className="h-4 w-4" />
-            Create Account
-          </Link>
         </div>
       </div>
 
