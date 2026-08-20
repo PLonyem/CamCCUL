@@ -4,10 +4,8 @@ import {
   Newspaper,
   FolderOpen,
   Building2,
-  Upload,
   ClipboardCheck,
   Users,
-  UserPlus,
   UserCheck,
   Mail,
   Settings,
@@ -49,7 +47,6 @@ export const adminNavGroups: AdminNavGroup[] = [
     labelKey: "admin.affiliates",
     items: [
       { href: "/admin/affiliates", labelKey: "admin.allAffiliates", icon: Building2 },
-      { href: "/admin/affiliates/upload-profile", labelKey: "admin.uploadProfiles", icon: Upload },
       {
         href: "/admin/affiliates/review",
         labelKey: "admin.reviewProfiles",
@@ -62,7 +59,6 @@ export const adminNavGroups: AdminNavGroup[] = [
     labelKey: "admin.users",
     items: [
       { href: "/admin/users", labelKey: "admin.allUsers", icon: Users },
-      { href: "/admin/users/create", labelKey: "admin.createAccount", icon: UserPlus },
       {
         href: "/admin/users/pending",
         labelKey: "admin.pendingApprovals",
@@ -91,15 +87,27 @@ export function isAdminNavItemActive(pathname: string, href: string) {
 }
 
 // Picks the longest (most specific) matching href rather than the first
-// match in array order — "/admin/affiliates" is a prefix of
-// "/admin/affiliates/review", so a naive first-match would always report
-// "All Affiliates" as the page title while on the review page.
-export function getAdminPageTitleKey(pathname: string): TranslationKey {
-  const bestMatch = adminNavItems
+// match in array order — "/admin/users" is a prefix of "/admin/users/create"
+// and "/admin/users/pending", which are siblings, not children, of "All
+// Users". Without picking a single winner here, every nav item sharing a
+// URL prefix with the current page would independently test "active" and
+// all of them would highlight at once instead of just the one you're on.
+function bestMatchingNavItem(pathname: string): AdminNavItem | undefined {
+  return adminNavItems
     .filter((item) => isAdminNavItemActive(pathname, item.href))
     .reduce<AdminNavItem | undefined>((best, item) => {
       if (!best || item.href.length > best.href.length) return item;
       return best;
     }, undefined);
-  return bestMatch?.labelKey ?? "admin.dashboard";
+}
+
+export function getAdminPageTitleKey(pathname: string): TranslationKey {
+  return bestMatchingNavItem(pathname)?.labelKey ?? "admin.dashboard";
+}
+
+// The single nav item Sidebar.tsx should render as highlighted for the
+// current pathname — see bestMatchingNavItem above for why this can't just
+// be "every item whose href is a prefix of pathname".
+export function getActiveAdminNavHref(pathname: string): string | undefined {
+  return bestMatchingNavItem(pathname)?.href;
 }

@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useClerk } from "@clerk/nextjs";
 import { Building2, LogOut, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { adminNavGroups, isAdminNavItemActive, type AdminNavItem } from "./nav-items";
+import { adminNavGroups, getActiveAdminNavHref, type AdminNavItem } from "./nav-items";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface SidebarProps {
@@ -54,6 +54,7 @@ export function Sidebar({ user, onNavigate }: SidebarProps) {
   }, [pathname]);
 
   const badgeCounts = { affiliateReview: affiliateReviewCount, pendingAccounts: pendingAccountsCount };
+  const activeHref = getActiveAdminNavHref(pathname);
 
   return (
     <aside className="bg-gray-900 text-white h-full flex flex-col">
@@ -81,7 +82,7 @@ export function Sidebar({ user, onNavigate }: SidebarProps) {
             )}
             <div className="space-y-1">
               {group.items.map(({ href, labelKey, icon: Icon, badge }) => {
-                const isActive = isAdminNavItemActive(pathname, href);
+                const isActive = href === activeHref;
                 const count = badge ? badgeCounts[badge] : null;
 
                 return (
