@@ -20,8 +20,10 @@ export interface AdminNavItem {
   href: string;
   labelKey: TranslationKey;
   icon: LucideIcon;
-  /** Shows a live pending-review count badge next to this item. */
-  showReviewBadge?: boolean;
+  /** Shows a live count badge next to this item, sourced from the
+   * matching endpoint in Sidebar.tsx. Each badge kind has its own count
+   * and color — "affiliateReview" (blue) vs. "pendingAccounts" (red). */
+  badge?: "affiliateReview" | "pendingAccounts";
 }
 
 export interface AdminNavGroup {
@@ -52,7 +54,7 @@ export const adminNavGroups: AdminNavGroup[] = [
         href: "/admin/affiliates/review",
         labelKey: "admin.reviewProfiles",
         icon: ClipboardCheck,
-        showReviewBadge: true,
+        badge: "affiliateReview",
       },
     ],
   },
@@ -61,7 +63,12 @@ export const adminNavGroups: AdminNavGroup[] = [
     items: [
       { href: "/admin/users", labelKey: "admin.allUsers", icon: Users },
       { href: "/admin/users/create", labelKey: "admin.createAccount", icon: UserPlus },
-      { href: "/admin/users/pending", labelKey: "admin.pendingAccountRequests", icon: UserCheck },
+      {
+        href: "/admin/users/pending",
+        labelKey: "admin.pendingApprovals",
+        icon: UserCheck,
+        badge: "pendingAccounts",
+      },
     ],
   },
   {

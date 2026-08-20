@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useClerk } from "@clerk/nextjs";
 import { Building2, LogOut, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { adminNavGroups, isAdminNavItemActive } from "./nav-items";
+import { adminNavGroups, isAdminNavItemActive, type AdminNavItem } from "./nav-items";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface SidebarProps {
@@ -17,26 +17,43 @@ interface SidebarProps {
   onNavigate?: () => void;
 }
 
+const BADGE_COLOR: Record<NonNullable<AdminNavItem["badge"]>, string> = {
+  affiliateReview: "bg-primary-500",
+  pendingAccounts: "bg-red-600",
+};
+
 export function Sidebar({ user, onNavigate }: SidebarProps) {
   const pathname = usePathname();
   const { signOut } = useClerk();
   const { t } = useLanguage();
-  const [pendingReviewCount, setPendingReviewCount] = useState<number | null>(null);
+  const [affiliateReviewCount, setAffiliateReviewCount] = useState<number | null>(null);
+  const [pendingAccountsCount, setPendingAccountsCount] = useState<number | null>(null);
 
   useEffect(() => {
     let ignore = false;
+
     fetch("/api/admin/affiliates/review/count")
       .then((res) => (res.ok ? res.json() : null))
       .then((data: { pending: number } | null) => {
-        if (!ignore && data) setPendingReviewCount(data.pending);
+        if (!ignore && data) setAffiliateReviewCount(data.pending);
       })
       .catch(() => {});
+
+    fetch("/api/admin/users/pending/count")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { pending: number } | null) => {
+        if (!ignore && data) setPendingAccountsCount(data.pending);
+      })
+      .catch(() => {});
+
     return () => {
       ignore = true;
     };
-    // Re-fetch whenever the admin navigates, so approving/rejecting on the
-    // review page updates the badge without a full page reload.
+    // Re-fetch whenever the admin navigates, so approving/rejecting on
+    // either review page updates its badge without a full page reload.
   }, [pathname]);
+
+  const badgeCounts = { affiliateReview: affiliateReviewCount, pendingAccounts: pendingAccountsCount };
 
   return (
     <aside className="bg-gray-900 text-white h-full flex flex-col">
@@ -63,8 +80,9 @@ export function Sidebar({ user, onNavigate }: SidebarProps) {
               </p>
             )}
             <div className="space-y-1">
-              {group.items.map(({ href, labelKey, icon: Icon, showReviewBadge }) => {
+              {group.items.map(({ href, labelKey, icon: Icon, badge }) => {
                 const isActive = isAdminNavItemActive(pathname, href);
+                const count = badge ? badgeCounts[badge] : null;
 
                 return (
                   <Link
@@ -80,9 +98,14 @@ export function Sidebar({ user, onNavigate }: SidebarProps) {
                   >
                     <Icon className="h-4 w-4 shrink-0" />
                     <span className="flex-1">{t(labelKey)}</span>
-                    {showReviewBadge && !!pendingReviewCount && (
-                      <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1 rounded-full bg-primary-500 text-white text-[10px] font-semibold">
-                        {pendingReviewCount}
+                    {badge && !!count && (
+                      <span
+                        className={cn(
+                          "inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1 rounded-full text-white text-[10px] font-semibold",
+                          BADGE_COLOR[badge]
+                        )}
+                      >
+                        {count}
                       </span>
                     )}
                   </Link>
