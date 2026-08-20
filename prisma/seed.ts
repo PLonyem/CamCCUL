@@ -18,45 +18,6 @@ async function seedAdminUser() {
   console.log("Admin user seeded");
 }
 
-// Login for two affiliates already present in mock-data.ts (seeded by
-// seedAffiliates below, which is why this runs after it in main() despite
-// the admin user being seeded first) — dev/test credentials only, not real
-// chapter contacts. Password is the same for both, like the "admin123"
-// pattern seedAdminUser already uses. Each affiliate lookup is guarded
-// independently so one missing chapter doesn't skip the other.
-async function seedCreditUnionUsers() {
-  const cuPasswordHash = await bcrypt.hash("credit123", 12);
-
-  const bccu = await prisma.affiliate.findUnique({ where: { code: "NW-001" } });
-  const dpcu = await prisma.affiliate.findUnique({ where: { code: "LT-001" } });
-
-  if (bccu) {
-    await prisma.creditUnionUser.upsert({
-      where: { email: "bccu@camccul.cm" },
-      update: {},
-      create: {
-        email: "bccu@camccul.cm",
-        passwordHash: cuPasswordHash,
-        affiliateId: bccu.id,
-      },
-    });
-    console.log("✅ Credit union user created: bccu@camccul.cm");
-  }
-
-  if (dpcu) {
-    await prisma.creditUnionUser.upsert({
-      where: { email: "dpcu@camccul.cm" },
-      update: {},
-      create: {
-        email: "dpcu@camccul.cm",
-        passwordHash: cuPasswordHash,
-        affiliateId: dpcu.id,
-      },
-    });
-    console.log("✅ Credit union user created: dpcu@camccul.cm");
-  }
-}
-
 async function seedNewsArticles() {
   for (const article of newsArticles) {
     await prisma.newsArticle.upsert({
@@ -199,7 +160,6 @@ async function main() {
   await seedAdminUser();
   await seedNewsArticles();
   await seedAffiliates();
-  await seedCreditUnionUsers();
   await seedResources();
   await seedContactMessages();
   await seedHomepageContent();

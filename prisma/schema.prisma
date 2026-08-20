@@ -99,8 +99,8 @@ model Affiliate {
   // own submission — only by the admin review action.
   profileReviewNote      String?   @db.Text
 
-  documents        AffiliateDocument[]
-  creditUnionUsers CreditUnionUser[]
+  documents      AffiliateDocument[]
+  signupRequests CreditUnionSignupRequest[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -111,22 +111,39 @@ model Affiliate {
   @@map("affiliates")
 }
 
-// Login credentials for an individual affiliate credit union, kept in a
-// separate table from AdminUser so a chapter's access is scoped to its own
-// affiliateId and can never be confused with League staff access — see
-// src/lib/auth.ts, which checks both tables by email during sign-in.
-model CreditUnionUser {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  passwordHash String
-  affiliateId  String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+// A self-service "I want a login for my credit union" request, reviewed by
+// an admin before any account exists. No password lives here — this table
+// is a review queue, not a credentials store. Approval creates the real
+// account through Clerk (the same clerk.users.createUser path the admin
+// "Create Account" tool already uses), consistent with every other account
+// on this site since the 2026-08-15 NextAuth-to-Clerk migration. Replaces
+// the old CreditUnionUser model, which stored a passwordHash and was
+// checked during sign-in by the pre-Clerk src/lib/auth.ts — dead since the
+// migration (nothing has written to it since; Clerk owns all credentials).
+model CreditUnionSignupRequest {
+  id              String  @id @default(cuid())
+  email           String
+  creditUnionName String
+  // Selected from the same chapter dropdown as the profile-upload form —
+  // free text here (not a relation) because the applicant is naming their
+  // own chapter before any admin has matched them to a specific Affiliate.
+  chapter         String
+  // Set by the admin at approval time once they've matched this request to
+  // an actual affiliate record — null until then.
+  affiliateId     String?
+  affiliate       Affiliate? @relation(fields: [affiliateId], references: [id])
+  status          String  @default("pending") // pending | approved | rejected
+  rejectionReason String?
 
-  affiliate Affiliate @relation(fields: [affiliateId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  @@index([affiliateId])
-  @@map("credit_union_users")
+  // Blocks a duplicate submission for the same email + credit union name,
+  // while still letting one person submit on behalf of more than one
+  // credit union — a plain `email @unique` would forbid that too.
+  @@unique([email, creditUnionName])
+  @@index([status])
+  @@map("credit_union_signup_requests")
 }
 
 // Tracks a chapter profile document uploaded for a given affiliate, so

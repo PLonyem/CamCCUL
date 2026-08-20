@@ -64,20 +64,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   });
 
   if (action === "approve") {
-    // A chapter can have more than one CreditUnionUser login (schema is
-    // one-to-many) — notify all of them. A separate lightweight query
-    // rather than an `include` on the update above, so the response we
-    // send back below stays a plain Affiliate record and never risks
-    // leaking login emails to the client.
-    const creditUnionUsers = await prisma.creditUnionUser.findMany({
-      where: { affiliateId: id },
-      select: { email: true },
-    });
-    const recipients = creditUnionUsers.length > 0
-      ? creditUnionUsers.map((u) => u.email)
-      : affiliate.email
-        ? [affiliate.email]
-        : [];
+    const recipients = affiliate.email ? [affiliate.email] : [];
 
     const results = await Promise.allSettled(
       recipients.map((email) =>
