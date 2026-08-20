@@ -3,17 +3,13 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useClerk } from "@clerk/nextjs";
+import { useClerk, useUser } from "@clerk/nextjs";
 import { Building2, LogOut, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { adminNavGroups, getActiveAdminNavHref, type AdminNavItem } from "./nav-items";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface SidebarProps {
-  user: {
-    name?: string | null;
-    email?: string | null;
-  };
   onNavigate?: () => void;
 }
 
@@ -22,9 +18,10 @@ const BADGE_COLOR: Record<NonNullable<AdminNavItem["badge"]>, string> = {
   pendingAccounts: "bg-red-600",
 };
 
-export function Sidebar({ user, onNavigate }: SidebarProps) {
+export function Sidebar({ onNavigate }: SidebarProps) {
   const pathname = usePathname();
   const { signOut } = useClerk();
+  const { user } = useUser();
   const { t } = useLanguage();
   const [affiliateReviewCount, setAffiliateReviewCount] = useState<number | null>(null);
   const [pendingAccountsCount, setPendingAccountsCount] = useState<number | null>(null);
@@ -118,8 +115,10 @@ export function Sidebar({ user, onNavigate }: SidebarProps) {
       </nav>
 
       <div className="border-t border-gray-800 px-4 py-4">
-        <p className="text-sm font-medium text-white truncate">{user.name}</p>
-        <p className="text-xs text-gray-400 truncate">{user.email}</p>
+        <p className="text-sm font-medium text-white truncate">{user?.fullName}</p>
+        <p className="text-xs text-gray-400 truncate">
+          {user?.primaryEmailAddress?.emailAddress}
+        </p>
         <Link
           href="/"
           className="mt-3 flex items-center gap-2 text-sm font-medium text-gray-400 hover:text-white transition-colors"

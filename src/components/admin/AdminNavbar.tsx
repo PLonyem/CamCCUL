@@ -3,26 +3,24 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useClerk } from "@clerk/nextjs";
+import { useClerk, useUser } from "@clerk/nextjs";
 import { Menu, LogOut, ChevronDown, ArrowLeft } from "lucide-react";
 import { getAdminPageTitleKey } from "./nav-items";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface AdminNavbarProps {
-  user: {
-    name?: string | null;
-    email?: string | null;
-  };
   onMenuClick: () => void;
 }
 
-export function AdminNavbar({ user, onMenuClick }: AdminNavbarProps) {
+export function AdminNavbar({ onMenuClick }: AdminNavbarProps) {
   const pathname = usePathname();
   const { signOut } = useClerk();
+  const { user } = useUser();
   const { t } = useLanguage();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const title = t(getAdminPageTitleKey(pathname));
-  const initial = (user.name ?? user.email ?? "?").charAt(0).toUpperCase();
+  const displayName = user?.fullName ?? user?.primaryEmailAddress?.emailAddress ?? "";
+  const initial = (displayName || "?").charAt(0).toUpperCase();
 
   return (
     <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6">
@@ -56,7 +54,7 @@ export function AdminNavbar({ user, onMenuClick }: AdminNavbarProps) {
               {initial}
             </div>
             <span className="text-sm font-medium text-gray-700 hidden sm:block">
-              {user.name}
+              {displayName}
             </span>
             <ChevronDown className="h-4 w-4 text-gray-400" />
           </button>

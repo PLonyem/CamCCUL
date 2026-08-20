@@ -6,14 +6,10 @@ import { AdminNavbar } from "./AdminNavbar";
 import { cn } from "@/lib/utils";
 
 interface AdminShellProps {
-  user: {
-    name?: string | null;
-    email?: string | null;
-  };
   children: React.ReactNode;
 }
 
-export function AdminShell({ user, children }: AdminShellProps) {
+export function AdminShell({ children }: AdminShellProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
@@ -31,11 +27,11 @@ export function AdminShell({ user, children }: AdminShellProps) {
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        <Sidebar user={user} onNavigate={() => setIsSidebarOpen(false)} />
+        <Sidebar onNavigate={() => setIsSidebarOpen(false)} />
       </div>
 
       <div className="flex-1 flex flex-col overflow-hidden">
-        <AdminNavbar user={user} onMenuClick={() => setIsSidebarOpen(true)} />
+        <AdminNavbar onMenuClick={() => setIsSidebarOpen(true)} />
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 bg-gray-50">
           {children}
         </main>
