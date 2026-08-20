@@ -79,6 +79,34 @@ export default function CreditUnionSignupPage() {
 
   function updateField<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
+    // Clear a stale error as soon as the field changes, rather than leaving
+    // a blur-time duplicate message on screen after the user starts fixing it.
+    setFieldErrors((prev) => (prev[key] ? { ...prev, [key]: undefined } : prev));
+  }
+
+  // Real-time duplicate check on blur — same endpoint the submit-time
+  // pre-flight check below uses, just called earlier so the applicant sees
+  // "this email already requested access" before filling out the rest of
+  // the form instead of only at submission.
+  async function checkDuplicate(field: "email" | "creditUnionName", value: string) {
+    if (field === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return;
+    if (field === "creditUnionName" && value.trim().length < 3) return;
+
+    try {
+      const res = await fetch("/api/signup/credit-union/check", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ [field]: value }),
+      });
+      const body = await res.json().catch(() => null);
+      if (field === "email" && body?.emailInUse) {
+        setFieldErrors((prev) => ({ ...prev, email: body.emailMessage }));
+      } else if (field === "creditUnionName" && body?.nameInUse) {
+        setFieldErrors((prev) => ({ ...prev, creditUnionName: body.nameMessage }));
+      }
+    } catch {
+      // Best-effort — the submit-time check below is the real gate.
+    }
   }
 
   // Files the review-queue row now that the Clerk account is confirmed —
@@ -116,17 +144,24 @@ export default function CreditUnionSignupPage() {
 
     setIsSubmitting(true);
     try {
-      // Pre-flight name check first — avoids the dead end of a Clerk
-      // account existing but the review request permanently blocked by a
-      // name someone else already claimed.
+      // Pre-flight check (both fields together) first — avoids the dead
+      // end of a Clerk account existing but the review request permanently
+      // blocked by an email or name someone else already claimed.
       const checkRes = await fetch("/api/signup/credit-union/check", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ creditUnionName: parsed.data.creditUnionName }),
+        body: JSON.stringify({ email: parsed.data.email, creditUnionName: parsed.data.creditUnionName }),
       });
+      const checkBody = await checkRes.json().catch(() => null);
       if (!checkRes.ok) {
-        const body = await checkRes.json().catch(() => null);
-        setFormError(body?.error ?? "Something went wrong. Please try again.");
+        const nextErrors: Partial<Record<keyof FormState, string>> = {};
+        if (checkBody?.emailInUse) nextErrors.email = checkBody.emailMessage;
+        if (checkBody?.nameInUse) nextErrors.creditUnionName = checkBody.nameMessage;
+        if (Object.keys(nextErrors).length > 0) {
+          setFieldErrors(nextErrors);
+        } else {
+          setFormError(checkBody?.error ?? "Something went wrong. Please try again.");
+        }
         return;
       }
 
@@ -247,6 +282,7 @@ export default function CreditUnionSignupPage() {
                   placeholder="Type your full credit union name"
                   value={form.creditUnionName}
                   onChange={(e) => updateField("creditUnionName", e.target.value)}
+                  onBlur={(e) => checkDuplicate("creditUnionName", e.target.value)}
                   disabled={isSubmitting}
                   className={inputClass}
                 />
@@ -287,6 +323,7 @@ export default function CreditUnionSignupPage() {
                   placeholder="manager@yourcreditunion.cm"
                   value={form.email}
                   onChange={(e) => updateField("email", e.target.value)}
+                  onBlur={(e) => checkDuplicate("email", e.target.value)}
                   disabled={isSubmitting}
                   className={inputClass}
                 />
