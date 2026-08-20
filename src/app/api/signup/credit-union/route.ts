@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import { creditUnionSignupRequestSchema } from "@/lib/validation/credit-union-signup";
+import { sendNewSignupRequestToCamCCUL, sendSignupConfirmationToCreditUnion } from "@/lib/email";
 
 // Requires an authenticated (but role-less) Clerk session — proxy.ts's
 // default auth.protect() already enforces this since this route isn't in
@@ -51,6 +52,15 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Checked before the upsert so the notification/confirmation emails below
+  // only fire once per actual request, not on every retry after a dropped
+  // connection — "a new account has been requested" would be wrong to say
+  // twice about the same request.
+  const alreadyExisted = await prisma.creditUnionSignupRequest.findUnique({
+    where: { email },
+    select: { id: true },
+  });
+
   // Upsert on email (not create) so retrying after a dropped connection —
   // the Clerk account already exists at this point either way — updates
   // the same pending request instead of failing on the unique constraint.
@@ -59,6 +69,18 @@ export async function POST(request: NextRequest) {
     update: { creditUnionName, chapter, status: "pending", rejectionReason: null },
     create: { email, creditUnionName, chapter },
   });
+
+  if (!alreadyExisted) {
+    const results = await Promise.allSettled([
+      sendNewSignupRequestToCamCCUL({ creditUnionName, chapter, email }),
+      sendSignupConfirmationToCreditUnion({ creditUnionName, email }),
+    ]);
+    for (const result of results) {
+      if (result.status === "rejected") {
+        console.error("Signup notification email failed:", result.reason);
+      }
+    }
+  }
 
   return NextResponse.json({ success: true, id: signupRequest.id });
 }
