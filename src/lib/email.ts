@@ -2,6 +2,29 @@ import { Resend } from "resend";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
+// Overridable for testing before camccul.cm is verified as a sending domain
+// in Resend — sends from an unverified domain are rejected outright, and
+// Resend's sandbox mode only ever delivers to the account owner's own
+// verified email. Both fall back to the real CamCCUL addresses when unset,
+// so removing these two env vars once the domain is verified is the whole
+// migration back to production — no code change needed.
+const FROM_NOTIFICATIONS = process.env.RESEND_FROM || "CamCCUL Portal <notifications@camccul.cm>";
+const FROM_HEADQUARTERS = process.env.RESEND_FROM || "CamCCUL Headquarters <info@camccul.cm>";
+const ADMIN_EMAIL = process.env.RESEND_ADMIN_EMAIL || "info@camccul.cm";
+
+// The Resend SDK returns { data, error } rather than throwing on a
+// rejected send (bad domain, rate limit, invalid recipient, etc.) — every
+// call site below already wraps its email sends in Promise.allSettled and
+// logs anything that lands in the "rejected" bucket, but that only ever
+// sees actual JS exceptions. Without this, a rejected send would silently
+// look identical to a successful one everywhere in the app.
+async function sendOrThrow(params: Parameters<NonNullable<typeof resend>["emails"]["send"]>[0]) {
+  const { error } = await resend!.emails.send(params);
+  if (error) {
+    throw new Error(`Resend rejected the send: ${error.message}`);
+  }
+}
+
 interface ProfileSubmissionToCamCCULParams {
   creditUnionName: string;
   creditUnionCode: string;
@@ -30,9 +53,9 @@ export async function sendProfileSubmissionToCamCCUL({
     return;
   }
 
-  await resend.emails.send({
-    from: "CamCCUL Portal <notifications@camccul.cm>",
-    to: "info@camccul.cm",
+  await sendOrThrow({
+    from: FROM_NOTIFICATIONS,
+    to: ADMIN_EMAIL,
     subject: `New Profile Submission — ${creditUnionName}`,
     html: `
       <h2>New Credit Union Profile Submission</h2>
@@ -61,8 +84,8 @@ export async function sendProfileConfirmationToCreditUnion({
     return;
   }
 
-  await resend.emails.send({
-    from: "CamCCUL Headquarters <info@camccul.cm>",
+  await sendOrThrow({
+    from: FROM_HEADQUARTERS,
     to: creditUnionEmail,
     subject: "Profile Submission Received — CamCCUL",
     html: `
@@ -93,8 +116,8 @@ export async function sendProfileApprovalEmail({
     return;
   }
 
-  await resend.emails.send({
-    from: "CamCCUL Headquarters <info@camccul.cm>",
+  await sendOrThrow({
+    from: FROM_HEADQUARTERS,
     to: creditUnionEmail,
     subject: "Profile Approved — CamCCUL",
     html: `
@@ -128,9 +151,9 @@ export async function sendNewSignupRequestToCamCCUL({
     return;
   }
 
-  await resend.emails.send({
-    from: "CamCCUL Portal <notifications@camccul.cm>",
-    to: "info@camccul.cm",
+  await sendOrThrow({
+    from: FROM_NOTIFICATIONS,
+    to: ADMIN_EMAIL,
     subject: `New Account Request — ${creditUnionName}`,
     html: `
       <h2>New Account Request</h2>
@@ -158,8 +181,8 @@ export async function sendSignupConfirmationToCreditUnion({
     return;
   }
 
-  await resend.emails.send({
-    from: "CamCCUL Headquarters <info@camccul.cm>",
+  await sendOrThrow({
+    from: FROM_HEADQUARTERS,
     to: email,
     subject: "Account Request Received — CamCCUL Portal",
     html: `
@@ -189,8 +212,8 @@ export async function sendAccountApprovedEmail({
     return;
   }
 
-  await resend.emails.send({
-    from: "CamCCUL Headquarters <info@camccul.cm>",
+  await sendOrThrow({
+    from: FROM_HEADQUARTERS,
     to: email,
     subject: "Account Approved — CamCCUL Portal",
     html: `
@@ -221,8 +244,8 @@ export async function sendAccountRejectedEmail({
     return;
   }
 
-  await resend.emails.send({
-    from: "CamCCUL Headquarters <info@camccul.cm>",
+  await sendOrThrow({
+    from: FROM_HEADQUARTERS,
     to: email,
     subject: "Account Request Update — CamCCUL Portal",
     html: `
