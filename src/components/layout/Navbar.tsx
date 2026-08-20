@@ -220,7 +220,21 @@ export function Navbar() {
         </Link>
         {signOutButton}
       </div>
-    ) : null;
+    ) : (
+      // Signed in with no role yet — a credit union account awaiting
+      // admin review (see /signup). /dashboard shows the review-status
+      // screen for this case rather than the chapter dashboard.
+      <div className="flex items-center gap-1">
+        <Link
+          href="/dashboard"
+          className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium bg-primary-500 text-white hover:bg-primary-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary-500"
+        >
+          <FileText className="h-4 w-4" />
+          <span className="hidden sm:inline">My Dashboard</span>
+        </Link>
+        {signOutButton}
+      </div>
+    );
 
   return (
     <header

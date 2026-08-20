@@ -17,12 +17,12 @@ export default async function DashboardLayout({
   if (role === "admin") {
     redirect("/admin");
   }
-  // Covers both a genuine role mismatch and a brand-new Clerk signup that
-  // hasn't been assigned a role + affiliateId yet (see /signup) — either
-  // way there's no chapter dashboard to show them.
-  if (role !== "credit_union") {
-    redirect("/");
-  }
+  // A signed-in account with no role yet is always a credit union signup
+  // awaiting admin review (see /signup) — there's no other way to end up
+  // authenticated without one. DashboardPage below shows that status
+  // screen instead of the real chapter dashboard; it used to redirect
+  // straight to "/" here with zero explanation, which is exactly what read
+  // as "nothing happened" after completing signup.
 
   return (
     <div className="min-h-screen bg-gray-50">

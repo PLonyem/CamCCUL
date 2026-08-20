@@ -2,19 +2,21 @@
 
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 // @clerk/nextjs's plain export now points to a newer signals-based
 // useSignUp ({ signUp, errors, fetchStatus }) — this custom flow needs the
 // classic resource hook ({ isLoaded, signUp, setActive }), which lives at
 // this legacy subpath instead.
 import { useSignUp } from "@clerk/nextjs/legacy";
-import { Loader2, CheckCircle2 } from "lucide-react";
+import { Loader2, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { cn } from "@/lib/utils";
 import {
   creditUnionSignupFormSchema,
   SIGNUP_CHAPTERS,
 } from "@/lib/validation/credit-union-signup";
 
-type Step = "form" | "verify" | "success";
+type Step = "form" | "verify";
 
 // Wider than the validated CreditUnionSignupFormInput (whose `chapter` is
 // narrowed to the enum literals) — this is the raw, possibly-incomplete
@@ -65,6 +67,7 @@ function extractSignUpErrorMessage(error: unknown): string {
 }
 
 export default function CreditUnionSignupPage() {
+  const router = useRouter();
   const { isLoaded, signUp, setActive } = useSignUp();
 
   const [step, setStep] = useState<Step>("form");
@@ -76,6 +79,9 @@ export default function CreditUnionSignupPage() {
   const [code, setCode] = useState("");
   const [verifyError, setVerifyError] = useState<string | null>(null);
   const [isVerifying, setIsVerifying] = useState(false);
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   function updateField<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -173,7 +179,12 @@ export default function CreditUnionSignupPage() {
       if (result.status === "complete") {
         await setActive({ session: result.createdSessionId });
         await finalizeSignupRequest();
-        setStep("success");
+        // Straight to the homepage, where the Navbar now shows a "My
+        // Dashboard" button for this exact state (signed in, no role yet).
+        // Clicking it lands on /dashboard's review-status screen — that's
+        // the actual confirmation now, not a message on this page that a
+        // stray Clerk-triggered navigation could blow past unseen.
+        router.push("/");
       } else {
         await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
         setStep("verify");
@@ -197,7 +208,12 @@ export default function CreditUnionSignupPage() {
       if (result.status === "complete") {
         await setActive({ session: result.createdSessionId });
         await finalizeSignupRequest();
-        setStep("success");
+        // Straight to the homepage, where the Navbar now shows a "My
+        // Dashboard" button for this exact state (signed in, no role yet).
+        // Clicking it lands on /dashboard's review-status screen — that's
+        // the actual confirmation now, not a message on this page that a
+        // stray Clerk-triggered navigation could blow past unseen.
+        router.push("/");
       } else {
         setVerifyError("Invalid or expired code. Please try again.");
       }
@@ -220,22 +236,7 @@ export default function CreditUnionSignupPage() {
         </div>
 
         <div className="bg-white shadow-lg rounded-xl border border-gray-200 p-6">
-          {step === "success" ? (
-            <div className="text-center py-4">
-              <CheckCircle2 className="h-10 w-10 text-green-500 mx-auto" />
-              <p className="mt-3 font-semibold text-gray-900">Account created</p>
-              <p className="mt-2 text-sm text-gray-500">
-                Your account will be reviewed by CamCCUL before you can access the portal. You&apos;ll
-                receive an email when your account is approved.
-              </p>
-              <Link
-                href="/"
-                className="mt-5 inline-flex items-center justify-center text-sm font-medium text-primary-600 hover:text-primary-700"
-              >
-                Back to Website
-              </Link>
-            </div>
-          ) : step === "verify" ? (
+          {step === "verify" ? (
             <form onSubmit={handleVerify} className="space-y-5">
               <div>
                 <p className="text-sm text-gray-600">
@@ -334,14 +335,25 @@ export default function CreditUnionSignupPage() {
                 <label htmlFor="password" className={labelClass}>
                   Password
                 </label>
-                <input
-                  id="password"
-                  type="password"
-                  value={form.password}
-                  onChange={(e) => updateField("password", e.target.value)}
-                  disabled={isSubmitting}
-                  className={inputClass}
-                />
+                <div className="relative">
+                  <input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={form.password}
+                    onChange={(e) => updateField("password", e.target.value)}
+                    disabled={isSubmitting}
+                    className={cn(inputClass, "pr-10")}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    disabled={isSubmitting}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 disabled:opacity-50"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
                 <p className={helperClass}>At least 8 characters, including one number.</p>
                 {fieldErrors.password && <p className={errorClass}>{fieldErrors.password}</p>}
               </div>
@@ -350,14 +362,25 @@ export default function CreditUnionSignupPage() {
                 <label htmlFor="confirmPassword" className={labelClass}>
                   Confirm Password
                 </label>
-                <input
-                  id="confirmPassword"
-                  type="password"
-                  value={form.confirmPassword}
-                  onChange={(e) => updateField("confirmPassword", e.target.value)}
-                  disabled={isSubmitting}
-                  className={inputClass}
-                />
+                <div className="relative">
+                  <input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={form.confirmPassword}
+                    onChange={(e) => updateField("confirmPassword", e.target.value)}
+                    disabled={isSubmitting}
+                    className={cn(inputClass, "pr-10")}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword((v) => !v)}
+                    disabled={isSubmitting}
+                    aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 disabled:opacity-50"
+                  >
+                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
                 {fieldErrors.confirmPassword && <p className={errorClass}>{fieldErrors.confirmPassword}</p>}
               </div>
 
