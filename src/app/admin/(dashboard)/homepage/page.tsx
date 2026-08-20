@@ -217,6 +217,19 @@ function HeroPreview({ data }: { data: HomepageContentData }) {
       ? "justify-end"
       : "justify-start";
 
+  if (!data.showHero) {
+    return (
+      <div className="lg:sticky lg:top-6">
+        <p className={labelClass}>{t("admin.livePreview")}</p>
+        <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-dashed border-gray-300 bg-gray-50 flex items-center justify-center p-4">
+          <p className="text-xs text-gray-400 text-center">
+            The hero section is hidden — nothing here will show on the homepage.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="lg:sticky lg:top-6">
       <p className={labelClass}>{t("admin.livePreview")}</p>
@@ -383,7 +396,7 @@ export default function AdminHomepageEditorPage() {
   }
 
   return (
-    <div className={cn(activeTab === "appearance" ? "max-w-5xl" : "max-w-3xl", "pb-24")}>
+    <div className="max-w-5xl pb-24">
       <h1 className="text-2xl font-bold text-gray-900">{t("admin.homepageEditor")}</h1>
       <p className="text-sm text-gray-500 mt-1">
         Manage the content and appearance of the public homepage.
@@ -412,24 +425,27 @@ export default function AdminHomepageEditorPage() {
       ) : !data ? (
         <div className="mt-8 text-sm text-red-600">Could not load homepage content.</div>
       ) : activeTab === "sections" ? (
-        <Card className="mt-8 divide-y divide-gray-100">
-          <div className="px-6 py-4 border-b border-gray-100">
-            <p className="text-sm font-semibold text-gray-900">{t("admin.sectionVisibility")}</p>
-          </div>
-          {SECTION_VISIBILITY_FIELDS.map(({ key, labelKey, description }) => (
-            <div key={key} className="flex items-center justify-between gap-4 px-6 py-4">
-              <div className="min-w-0">
-                <p className="text-sm font-medium text-gray-900">{t(labelKey)}</p>
-                <p className="text-xs text-gray-500 mt-0.5">{description}</p>
-              </div>
-              <Toggle
-                checked={data[key]}
-                onChange={(checked) => updateField(key, checked)}
-                label={t(labelKey)}
-              />
+        <div className="mt-8 grid lg:grid-cols-[1fr_320px] gap-8 items-start">
+          <Card className="divide-y divide-gray-100 min-w-0">
+            <div className="px-6 py-4 border-b border-gray-100">
+              <p className="text-sm font-semibold text-gray-900">{t("admin.sectionVisibility")}</p>
             </div>
-          ))}
-        </Card>
+            {SECTION_VISIBILITY_FIELDS.map(({ key, labelKey, description }) => (
+              <div key={key} className="flex items-center justify-between gap-4 px-6 py-4">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-gray-900">{t(labelKey)}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{description}</p>
+                </div>
+                <Toggle
+                  checked={data[key]}
+                  onChange={(checked) => updateField(key, checked)}
+                  label={t(labelKey)}
+                />
+              </div>
+            ))}
+          </Card>
+          <HeroPreview data={data} />
+        </div>
       ) : activeTab === "appearance" ? (
         <div className="mt-8 grid lg:grid-cols-[1fr_320px] gap-8 items-start">
           <div className="space-y-8 min-w-0">
@@ -567,7 +583,8 @@ export default function AdminHomepageEditorPage() {
           <HeroPreview data={data} />
         </div>
       ) : (
-        <div className="mt-8 space-y-8">
+        <div className="mt-8 grid lg:grid-cols-[1fr_320px] gap-8 items-start">
+          <div className="space-y-8 min-w-0">
           {/* SECTION 1: HERO IMAGES */}
           <Card className="p-6">
             <h2 className="font-semibold text-gray-900">{t("admin.heroImages")}</h2>
@@ -825,6 +842,8 @@ export default function AdminHomepageEditorPage() {
               </div>
             </div>
           </Card>
+        </div>
+        <HeroPreview data={data} />
         </div>
       )}
 
