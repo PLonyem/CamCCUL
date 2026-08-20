@@ -2,12 +2,18 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { UserPlus, Search, ShieldCheck, Building2 } from "lucide-react";
-import { buttonVariants } from "@/components/ui/Button";
+import { UserPlus, Download, Search, ShieldCheck, Building2 } from "lucide-react";
+import { Button, buttonVariants } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import type { AdminUserListItem } from "@/app/api/admin/users/route";
 
 type RoleFilter = "all" | "admin" | "credit_union";
+
+const ROLE_FILTER_LABEL: Record<RoleFilter, string> = {
+  all: "users",
+  admin: "admins",
+  credit_union: "credit-unions",
+};
 
 function formatDate(ms: number | null): string {
   if (!ms) return "Never";
@@ -16,6 +22,43 @@ function formatDate(ms: number | null): string {
     month: "short",
     day: "numeric",
   });
+}
+
+// Wraps a value in quotes and escapes any quotes it contains only when
+// needed — cheap correctness for the rare name/affiliate with a comma or
+// quote in it, without visually cluttering every plain cell.
+function csvCell(value: string): string {
+  return /[",\n]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value;
+}
+
+function exportUsersCsv(users: AdminUserListItem[], roleFilter: RoleFilter) {
+  const header = ["Name", "Email", "Role", "Affiliate Name", "Affiliate Code", "Created", "Last Sign-In", "Banned"];
+  const rows = users.map((u) => [
+    u.name ?? "",
+    u.email ?? "",
+    u.role ?? "",
+    u.affiliateName ?? "",
+    u.affiliateCode ?? "",
+    formatDate(u.createdAt),
+    formatDate(u.lastSignInAt),
+    u.banned ? "Yes" : "No",
+  ]);
+  const csv = [header, ...rows].map((row) => row.map(csvCell).join(",")).join("\r\n");
+
+  // Leading BOM so Excel (the realistic target for a "download as CSV, then
+  // print" workflow) renders accented characters in French names/chapters
+  // correctly instead of guessing the wrong encoding.
+  const BOM = "﻿";
+  const blob = new Blob([BOM + csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  const today = new Date().toISOString().slice(0, 10);
+  link.href = url;
+  link.download = `camccul-${ROLE_FILTER_LABEL[roleFilter]}-${today}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 }
 
 function RoleBadge({ role }: { role: string | null }) {
@@ -89,10 +132,21 @@ export default function AdminUsersPage() {
             Every admin and credit union account in Clerk.
           </p>
         </div>
-        <Link href="/admin/users/create" className={buttonVariants({ variant: "default" })}>
-          <UserPlus className="h-4 w-4" />
-          Create Account
-        </Link>
+        <div className="flex gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            disabled={filtered.length === 0}
+            onClick={() => exportUsersCsv(filtered, roleFilter)}
+          >
+            <Download className="h-4 w-4" />
+            Export CSV
+          </Button>
+          <Link href="/admin/users/create" className={buttonVariants({ variant: "default" })}>
+            <UserPlus className="h-4 w-4" />
+            Create Account
+          </Link>
+        </div>
       </div>
 
       <div className="mt-6 flex flex-wrap gap-3">
