@@ -505,6 +505,7 @@ const en = {
   "admin.uploading": "Uploading...",
   "admin.notificationSettingsDescription":
     "Controls for the admin notification email and which profile-submission/approval emails are sent are coming soon. The underlying NotificationSettings data already exists — this page will read and write it.",
+  "admin.pendingAccountRequests": "Pending Account Requests",
 } as const;
 
 const fr: Record<keyof typeof en, string> = {
@@ -1005,6 +1006,7 @@ const fr: Record<keyof typeof en, string> = {
   "admin.uploading": "Téléversement...",
   "admin.notificationSettingsDescription":
     "Les contrôles pour l'e-mail de notification administrateur et les e-mails de soumission/approbation de profil envoyés seront bientôt disponibles. Les données NotificationSettings sous-jacentes existent déjà — cette page les lira et les écrira.",
+  "admin.pendingAccountRequests": "Demandes de Compte en Attente",
 };
 
 export const translations = { en, fr };

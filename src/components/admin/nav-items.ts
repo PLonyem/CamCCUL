@@ -8,6 +8,7 @@ import {
   ClipboardCheck,
   Users,
   UserPlus,
+  UserCheck,
   Mail,
   Settings,
   Bell,
@@ -60,6 +61,7 @@ export const adminNavGroups: AdminNavGroup[] = [
     items: [
       { href: "/admin/users", labelKey: "admin.allUsers", icon: Users },
       { href: "/admin/users/create", labelKey: "admin.createAccount", icon: UserPlus },
+      { href: "/admin/users/pending", labelKey: "admin.pendingAccountRequests", icon: UserCheck },
     ],
   },
   {
