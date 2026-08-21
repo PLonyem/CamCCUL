@@ -29,25 +29,35 @@ export function Sidebar({ onNavigate }: SidebarProps) {
   useEffect(() => {
     let ignore = false;
 
-    fetch("/api/admin/affiliates/review/count")
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data: { pending: number } | null) => {
-        if (!ignore && data) setAffiliateReviewCount(data.pending);
-      })
-      .catch(() => {});
+    function refetchBadgeCounts() {
+      fetch("/api/admin/affiliates/review/count")
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data: { pending: number } | null) => {
+          if (!ignore && data) setAffiliateReviewCount(data.pending);
+        })
+        .catch(() => {});
 
-    fetch("/api/admin/users/pending/count")
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data: { pending: number } | null) => {
-        if (!ignore && data) setPendingAccountsCount(data.pending);
-      })
-      .catch(() => {});
+      fetch("/api/admin/users/pending/count")
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data: { pending: number } | null) => {
+          if (!ignore && data) setPendingAccountsCount(data.pending);
+        })
+        .catch(() => {});
+    }
+
+    refetchBadgeCounts();
+    // Approving/rejecting on either review page doesn't change pathname
+    // (it's the same page, just its own list refreshing), so that page
+    // dispatches this event as the signal to also refetch here — without
+    // it, a badge would only clear on the *next* navigation, not the
+    // moment the thing it's counting was actually handled.
+    window.addEventListener("admin-badge-refresh", refetchBadgeCounts);
 
     return () => {
       ignore = true;
+      window.removeEventListener("admin-badge-refresh", refetchBadgeCounts);
     };
-    // Re-fetch whenever the admin navigates, so approving/rejecting on
-    // either review page updates its badge without a full page reload.
+    // Also re-fetch whenever the admin navigates, as a fallback.
   }, [pathname]);
 
   const badgeCounts = { affiliateReview: affiliateReviewCount, pendingAccounts: pendingAccountsCount };

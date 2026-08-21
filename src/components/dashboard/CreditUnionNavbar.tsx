@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useClerk } from "@clerk/nextjs";
-import { Building2, LogOut } from "lucide-react";
+import { Building2, LogOut, ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 
 interface CreditUnionNavbarProps {
@@ -41,6 +42,13 @@ export function CreditUnionNavbar({ user }: CreditUnionNavbarProps) {
           <span className="text-sm font-medium text-gray-700 hidden sm:block truncate max-w-[220px]">
             {user.name}
           </span>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-primary-600 transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span className="hidden sm:inline">Back to Website</span>
+          </Link>
           <button
             type="button"
             onClick={handleSignOut}

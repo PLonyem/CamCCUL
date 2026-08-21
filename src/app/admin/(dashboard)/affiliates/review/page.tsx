@@ -184,6 +184,7 @@ export default function ChapterReviewPage() {
         : "Profile rejected."
     );
     setRefreshToken((t) => t + 1);
+    window.dispatchEvent(new Event("admin-badge-refresh"));
   }
 
   return (
@@ -292,32 +293,38 @@ export default function ChapterReviewPage() {
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex items-center justify-end gap-2">
-                            <Button
-                              type="button"
-                              size="sm"
-                              variant="outline"
-                              className="border-green-300 text-green-700 hover:bg-green-50"
-                              disabled={isActioning}
-                              onClick={() => runAction(chapter, "approve")}
-                            >
-                              {isActioning ? (
-                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                              ) : (
-                                <CheckCircle2 className="h-3.5 w-3.5" />
-                              )}
-                              {isActioning ? "Approving..." : "Approve"}
-                            </Button>
-                            <Button
-                              type="button"
-                              size="sm"
-                              variant="outline"
-                              className="border-red-300 text-red-700 hover:bg-red-50"
-                              disabled={isActioning}
-                              onClick={() => setRejectTarget(chapter)}
-                            >
-                              <XCircle className="h-3.5 w-3.5" />
-                              Reject
-                            </Button>
+                            {chapter.profileStatus === "approved" || chapter.profileStatus === "rejected" ? (
+                              <span className="text-xs text-gray-400">No action needed</span>
+                            ) : (
+                              <>
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="outline"
+                                  className="border-green-300 text-green-700 hover:bg-green-50"
+                                  disabled={isActioning}
+                                  onClick={() => runAction(chapter, "approve")}
+                                >
+                                  {isActioning ? (
+                                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                  ) : (
+                                    <CheckCircle2 className="h-3.5 w-3.5" />
+                                  )}
+                                  {isActioning ? "Approving..." : "Approve"}
+                                </Button>
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="outline"
+                                  className="border-red-300 text-red-700 hover:bg-red-50"
+                                  disabled={isActioning}
+                                  onClick={() => setRejectTarget(chapter)}
+                                >
+                                  <XCircle className="h-3.5 w-3.5" />
+                                  Reject
+                                </Button>
+                              </>
+                            )}
                           </div>
                         </td>
                       </tr>

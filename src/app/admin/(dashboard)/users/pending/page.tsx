@@ -202,6 +202,7 @@ export default function PendingAccountRequestsPage() {
     }
     setApproveTarget(null);
     loadData();
+    window.dispatchEvent(new Event("admin-badge-refresh"));
   }
 
   async function handleReject(reason: string) {
@@ -222,6 +223,7 @@ export default function PendingAccountRequestsPage() {
     }
     setRejectTarget(null);
     loadData();
+    window.dispatchEvent(new Event("admin-badge-refresh"));
   }
 
   return (
