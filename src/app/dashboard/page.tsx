@@ -10,6 +10,7 @@ import { ProfileCompletion, type ProfileField } from "@/components/dashboard/Pro
 import { SubmissionTimeline, type SubmissionEntry } from "@/components/dashboard/SubmissionTimeline";
 import { AnnouncementsFeed, type Announcement } from "@/components/dashboard/AnnouncementsFeed";
 import { QuickStats } from "@/components/dashboard/QuickStats";
+import { DeadlineCountdown } from "@/components/dashboard/DeadlineCountdown";
 
 // The four "official" news categories — see src/lib/mock-data.ts's
 // CATEGORIES for the full set, which also includes general-interest ones
@@ -263,6 +264,10 @@ export default async function DashboardPage() {
           yearEstablished={affiliate.yearEstablished}
           servicesCount={affiliate.services.length}
         />
+      </div>
+
+      <div className="mt-6">
+        <DeadlineCountdown />
       </div>
 
       <h1 className="font-display text-2xl font-bold text-primary-900 mt-8">
