@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { cn } from "@/lib/utils";
+import { cn, heroOverlayGradient } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
 import type { TranslationKey } from "@/lib/i18n";
 
@@ -261,10 +261,10 @@ function HeroPreview({ data }: { data: HomepageContentData }) {
                 }
           }
         />
-        {data.showOverlay && (
+        {data.showOverlay && data.overlayOpacity > 0 && (
           <div
             className="absolute inset-0"
-            style={{ backgroundColor: hexToCss(data.overlayColor), opacity: data.overlayOpacity / 100 }}
+            style={{ background: heroOverlayGradient(hexToCss(data.overlayColor), data.overlayOpacity, 100, 30, 65) }}
           />
         )}
         <div className={cn("absolute inset-0 flex flex-col justify-center gap-1.5 p-4", alignItems)}>

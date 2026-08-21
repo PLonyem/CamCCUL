@@ -9,6 +9,7 @@ import { regions, regionLabels } from "@/lib/mock-data";
 import { useLanguage } from "@/context/LanguageContext";
 import { localize, type TranslationKey } from "@/lib/i18n";
 import { FadeUp } from "@/components/ui/FadeUp";
+import { heroOverlayGradient } from "@/lib/utils";
 import type { HeroContent, HeroStats } from "./page";
 
 const yearsOfService = new Date().getFullYear() - 1968;
@@ -211,6 +212,12 @@ export function HomeClient({
   const heroTextShadow: CSSProperties | undefined =
     effectiveOverlayOpacity < 30 ? { textShadow: "0 2px 4px rgba(0,0,0,0.3)" } : undefined;
 
+  // Same shape as Layer 4's fixed legibility scrim below — dark on the side
+  // the text sits on, fading to transparent — so the admin's overlay color
+  // reinforces that scrim instead of washing the whole photo.
+  const overlayGradientMobile = heroOverlayGradient(heroOverlay.color, effectiveOverlayOpacity, 0, 42, 82);
+  const overlayGradientDesktop = heroOverlayGradient(heroOverlay.color, effectiveOverlayOpacity, 100, 30, 65);
+
   // Every band below the hero, in actual page order, with the flat tone it
   // renders on. Sections can be hidden independently via sectionVisibility,
   // so a section's own SectionBridge can't hard-code "the tone of whatever
@@ -345,17 +352,25 @@ export function HomeClient({
         )}
 
         {/* LAYER 2.5 — admin overlay: the Homepage Editor's Overlay Color/
-            Opacity controls. Flat opacity (no blend mode), matching the
-            editor's own live preview pixel-for-pixel, so what an admin sees
-            while dragging the slider is what ships. Skipped entirely at
-            opacity 0 (the shipped default) so it costs nothing until an
-            admin actually turns it on. */}
+            Opacity controls. Anchored on the same side as Layer 4's fixed
+            legibility scrim (left on desktop, bottom on mobile) rather than
+            washing the whole photo — matching the editor's own live preview
+            pixel-for-pixel, so what an admin sees while dragging the slider
+            is what ships. Skipped entirely at opacity 0 (the shipped
+            default) so it costs nothing until an admin actually turns it on. */}
         {heroOverlay.show && heroOverlay.opacity > 0 && (
-          <div
-            className="absolute inset-0"
-            style={{ backgroundColor: heroOverlay.color, opacity: heroOverlay.opacity / 100 }}
-            aria-hidden="true"
-          />
+          <>
+            <div
+              className="absolute inset-0 sm:hidden"
+              style={{ background: overlayGradientMobile }}
+              aria-hidden="true"
+            />
+            <div
+              className="absolute inset-0 hidden sm:block"
+              style={{ background: overlayGradientDesktop }}
+              aria-hidden="true"
+            />
+          </>
         )}
 
         {/* LAYER 3 — depth: directional weight, top-left */}
