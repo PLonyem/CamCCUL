@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { buttonVariants } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
-import { Clock, XCircle, Building2 } from "lucide-react";
+import { Clock, XCircle, Building2, Eye, Mail as MailIcon, Phone } from "lucide-react";
 import { ProfileCompletion, type ProfileField } from "@/components/dashboard/ProfileCompletion";
 import { SubmissionTimeline, type SubmissionEntry } from "@/components/dashboard/SubmissionTimeline";
 import { AnnouncementsFeed, type Announcement } from "@/components/dashboard/AnnouncementsFeed";
@@ -150,6 +150,13 @@ function AwaitingAffiliateLinkScreen() {
   );
 }
 
+function StatusBadge({ status }: { status: string | null }) {
+  if (status === "approved") return <Badge variant="success">Approved</Badge>;
+  if (status === "rejected") return <Badge variant="danger">Rejected</Badge>;
+  if (status === "pending") return <Badge className="bg-amber-100 text-amber-700">Under Review</Badge>;
+  return <Badge>Not Submitted</Badge>;
+}
+
 // layout.tsx already redirects unauthenticated sessions to /login and admin
 // sessions to /admin. A role of "credit_union" means an approved chapter
 // account with an affiliateId — anything else (no role at all) is a
@@ -167,29 +174,35 @@ export default async function DashboardPage() {
     return <AwaitingAffiliateLinkScreen />;
   }
 
-  const affiliate = await prisma.affiliate.findUnique({
-    where: { id: affiliateId },
-    select: {
-      name: true,
-      code: true,
-      chapter: true,
-      profileStatus: true,
-      profileUpdatedAt: true,
-      yearEstablished: true,
-      city: true,
-      address: true,
-      phone: true,
-      email: true,
-      briefHistory: true,
-      totalMembers: true,
-      branchCount: true,
-      services: true,
-      chapterPresident: true,
-      chapterSupervisor: true,
-      boardSize: true,
-      staffCount: true,
-    },
-  });
+  const [affiliate, siteSettings] = await Promise.all([
+    prisma.affiliate.findUnique({
+      where: { id: affiliateId },
+      select: {
+        name: true,
+        code: true,
+        chapter: true,
+        profileStatus: true,
+        profileUpdatedAt: true,
+        yearEstablished: true,
+        city: true,
+        address: true,
+        phone: true,
+        email: true,
+        briefHistory: true,
+        totalMembers: true,
+        branchCount: true,
+        services: true,
+        chapterPresident: true,
+        chapterSupervisor: true,
+        boardSize: true,
+        staffCount: true,
+      },
+    }),
+    // Single source of truth for CamCCUL's own contact details (Need Help
+    // section below) — never hardcoded here, since this app has a standing
+    // history of conflicting phone/email values scattered across files.
+    prisma.siteSettings.findUnique({ where: { id: "default" } }),
+  ]);
   if (!affiliate) {
     return <AwaitingAffiliateLinkScreen />;
   }
@@ -253,95 +266,80 @@ export default async function DashboardPage() {
   ];
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">
+      {/* 1. WELCOME HEADER */}
+      <div>
+        <h1 className="font-display text-2xl font-bold text-primary-900">
+          Welcome, {affiliate.name}
+        </h1>
+        <div className="flex flex-wrap items-center gap-2 mt-3">
+          {affiliate.chapter && <Badge>{affiliate.chapter}</Badge>}
+          <Badge>{affiliate.code}</Badge>
+        </div>
+      </div>
+
+      {/* 2. PROFILE COMPLETION */}
       <ProfileCompletion fields={profileFields} />
 
-      <div className="mt-6">
-        <QuickStats
-          isApproved={status === "approved"}
-          totalMembers={affiliate.totalMembers}
-          branchCount={affiliate.branchCount}
-          yearEstablished={affiliate.yearEstablished}
-          servicesCount={affiliate.services.length}
-        />
-      </div>
+      {/* 3. QUICK STATS */}
+      <QuickStats
+        isApproved={status === "approved"}
+        totalMembers={affiliate.totalMembers}
+        branchCount={affiliate.branchCount}
+        yearEstablished={affiliate.yearEstablished}
+        servicesCount={affiliate.services.length}
+      />
 
-      <div className="mt-6">
-        <DeadlineCountdown />
-      </div>
-
-      <h1 className="font-display text-2xl font-bold text-primary-900 mt-8">
-        Welcome, {affiliate.name}
-      </h1>
-
-      <div className="flex flex-wrap items-center gap-2 mt-3">
-        {affiliate.chapter && <Badge>{affiliate.chapter}</Badge>}
-        <Badge>{affiliate.code}</Badge>
-      </div>
-
-      <Card className="p-6 mt-6">
-        {status === null && (
-          <>
-            <p className="text-sm text-gray-600">
-              You have not submitted your profile yet.
-            </p>
-            <Link href="/dashboard/profile" className={cn(buttonVariants(), "mt-4")}>
-              Complete Your Profile
-            </Link>
-          </>
-        )}
-
-        {status === "pending" && (
-          <>
-            <Badge className="bg-amber-100 text-amber-700">Under Review</Badge>
-            <p className="text-sm text-gray-600 mt-3">
-              Your profile is being reviewed. You will receive an email when
-              it is approved.
-            </p>
-            <Link
-              href="/dashboard/profile"
-              className={cn(buttonVariants({ variant: "outline" }), "mt-4")}
-            >
-              Update Profile
-            </Link>
-          </>
-        )}
-
-        {status === "approved" && (
-          <>
-            <Badge variant="success">Approved</Badge>
-            <p className="text-sm text-gray-600 mt-3">
-              Your profile is live on the website.
-            </p>
-            <Link
-              href="/dashboard/profile"
-              className={cn(buttonVariants({ variant: "outline" }), "mt-4")}
-            >
-              Update Profile
-            </Link>
-          </>
-        )}
-
-        {status === "rejected" && (
-          <>
-            <Badge variant="danger">Rejected</Badge>
-            <p className="text-sm text-gray-600 mt-3">
-              Please update and resubmit your profile.
-            </p>
-            <Link href="/dashboard/profile" className={cn(buttonVariants(), "mt-4")}>
-              Update Profile
-            </Link>
-          </>
-        )}
+      {/* 4. QUICK ACTIONS */}
+      <Card className="p-6">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <h2 className="font-semibold text-lg text-gray-900">Quick Actions</h2>
+          <StatusBadge status={status} />
+        </div>
+        <div className="flex flex-wrap gap-3">
+          <Link href="/dashboard/profile" className={buttonVariants()}>
+            {status === null ? "Complete Profile" : "Update Profile"}
+          </Link>
+          <Link href={`/affiliates/${affiliate.code}`} className={buttonVariants({ variant: "outline" })}>
+            <Eye className="h-4 w-4" />
+            Preview Profile
+          </Link>
+          <Link href="/contact" className={buttonVariants({ variant: "outline" })}>
+            Contact CamCCUL
+          </Link>
+        </div>
       </Card>
 
-      <div className="mt-6">
-        <SubmissionTimeline submissions={submissions} hasMore={submissionRows.length > 5} />
-      </div>
+      {/* 5. DEADLINE COUNTDOWN */}
+      <DeadlineCountdown />
 
-      <div className="mt-6">
-        <AnnouncementsFeed announcements={announcements} />
-      </div>
+      {/* 6. ANNOUNCEMENTS FEED */}
+      <AnnouncementsFeed announcements={announcements} />
+
+      {/* 7. SUBMISSION HISTORY */}
+      <SubmissionTimeline submissions={submissions} hasMore={submissionRows.length > 5} />
+
+      {/* 8. NEED HELP */}
+      <Card className="p-6">
+        <h2 className="font-semibold text-lg text-gray-900 mb-3">Need Help?</h2>
+        <div className="space-y-2 text-sm text-gray-600">
+          {siteSettings?.phone && (
+            <p className="flex items-center gap-2">
+              <Phone className="h-4 w-4 text-gray-400 shrink-0" />
+              {siteSettings.phone}
+            </p>
+          )}
+          {siteSettings?.email && (
+            <p className="flex items-center gap-2">
+              <MailIcon className="h-4 w-4 text-gray-400 shrink-0" />
+              {siteSettings.email}
+            </p>
+          )}
+        </div>
+        <Link href="/contact" className={cn(buttonVariants({ variant: "outline" }), "mt-4")}>
+          Contact Us
+        </Link>
+      </Card>
     </div>
   );
 }
