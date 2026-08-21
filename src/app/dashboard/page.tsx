@@ -8,6 +8,13 @@ import { cn } from "@/lib/utils";
 import { Clock, XCircle, Building2 } from "lucide-react";
 import { ProfileCompletion, type ProfileField } from "@/components/dashboard/ProfileCompletion";
 import { SubmissionTimeline, type SubmissionEntry } from "@/components/dashboard/SubmissionTimeline";
+import { AnnouncementsFeed, type Announcement } from "@/components/dashboard/AnnouncementsFeed";
+
+// The four "official" news categories — see src/lib/mock-data.ts's
+// CATEGORIES for the full set, which also includes general-interest ones
+// (Network News, Projects, Insights) that don't belong in a chapter's
+// "announcements from headquarters" feed.
+const ANNOUNCEMENT_CATEGORIES = ["Announcement", "Circular", "Training", "COBAC"];
 
 const STEPS = ["Submitted", "Under Review", "Approved"];
 
@@ -204,6 +211,23 @@ export default async function DashboardPage() {
     rejectionReason: row.rejectionReason,
   }));
 
+  // English only — this portal has no language switcher anywhere else
+  // (unlike the public site), so there's no French variant to pick between.
+  const announcementRows = await prisma.newsArticle.findMany({
+    where: { published: true, language: "en", category: { in: ANNOUNCEMENT_CATEGORIES } },
+    orderBy: { publishedAt: "desc" },
+    take: 3,
+    select: { id: true, slug: true, category: true, title: true, excerpt: true, publishedAt: true },
+  });
+  const announcements: Announcement[] = announcementRows.map((row) => ({
+    id: row.id,
+    slug: row.slug,
+    category: row.category,
+    title: row.title,
+    excerpt: row.excerpt,
+    publishedAt: (row.publishedAt ?? new Date()).toISOString(),
+  }));
+
   // "Filled" means present — 0 is a legitimate real value for a count
   // field, so only null/undefined/empty-string/empty-array count as
   // missing. Labels and anchorId both match /dashboard/profile's field
@@ -297,6 +321,10 @@ export default async function DashboardPage() {
 
       <div className="mt-6">
         <SubmissionTimeline submissions={submissions} hasMore={submissionRows.length > 5} />
+      </div>
+
+      <div className="mt-6">
+        <AnnouncementsFeed announcements={announcements} />
       </div>
     </div>
   );
