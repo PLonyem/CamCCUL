@@ -77,6 +77,7 @@ const en = {
   home2_stat_members_label: "Members served",
   home2_stat_regions_label: "Regions covered",
   home2_stat_years_label: "Years since 1968",
+  home2_stat_assets_label: "Total assets",
   home2_value_regulatory_title: "Regulatory oversight",
   home2_value_regulatory_body:
     "We supervise affiliated credit unions to ensure sound governance and financial stability.",
@@ -577,6 +578,7 @@ const fr: Record<keyof typeof en, string> = {
   home2_stat_members_label: "Membres desservis",
   home2_stat_regions_label: "Régions couvertes",
   home2_stat_years_label: "Années depuis 1968",
+  home2_stat_assets_label: "Actifs totaux",
   home2_value_regulatory_title: "Supervision réglementaire",
   home2_value_regulatory_body:
     "Nous supervisons les coopératives affiliées pour garantir une gouvernance et une stabilité financière saines.",

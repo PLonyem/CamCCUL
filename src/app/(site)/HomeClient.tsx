@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect, useRef, type CSSProperties } from "react";
+import { Fragment, useEffect, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import type { LucideIcon } from "lucide-react";
-import { Shield, ShieldCheck, GraduationCap, Laptop, Lock, Building2, Users, Globe, Calendar } from "lucide-react";
+import { Shield, ShieldCheck, GraduationCap, Laptop, Lock, Building2, Users, Globe, Calendar, Landmark } from "lucide-react";
 import { regions, regionLabels } from "@/lib/mock-data";
 import { useLanguage } from "@/context/LanguageContext";
 import { localize, type TranslationKey } from "@/lib/i18n";
 import { FadeUp } from "@/components/ui/FadeUp";
-import heroPhoto from "../../../public/camccul-hero.jpg";
+import type { HeroContent, HeroStats } from "./page";
 
 const yearsOfService = new Date().getFullYear() - 1968;
 
@@ -60,6 +60,39 @@ interface HomeClientProps {
   recentArticles: HomeRecentArticle[];
   sectionVisibility: SectionVisibility;
   heroOverlay: HeroOverlay;
+  heroContent: HeroContent;
+  heroStats: HeroStats;
+}
+
+// Maps the Homepage Editor's Appearance-tab enum to a real CSS gradient
+// direction — kept identical to the admin's own HeroPreview mapping so the
+// gradient an admin sees while editing is what ships.
+const GRADIENT_DIRECTION_CSS: Record<HeroContent["gradientDirection"], string> = {
+  "to-r": "to right",
+  "to-b": "to bottom",
+  "to-br": "to bottom right",
+  "to-bl": "to bottom left",
+};
+
+// Cycles through uploaded hero images every 5 seconds, per the Homepage
+// Editor's own copy ("Multiple images create an automatic slideshow every 5
+// seconds"). No-op (and no timer) for 0 or 1 images.
+function useHeroSlideshow(imageCount: number) {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    if (imageCount <= 1) return;
+    const timer = window.setInterval(() => {
+      // imageCount is a static server-rendered prop for this component's
+      // whole lifetime (a fresh page load is what picks up an admin's
+      // edit), so modulo alone keeps this in bounds — no separate
+      // out-of-bounds guard needed.
+      setIndex((i) => (i + 1) % imageCount);
+    }, 5000);
+    return () => window.clearInterval(timer);
+  }, [imageCount]);
+
+  return index;
 }
 
 // One radius, used everywhere on this page without exception (cards,
@@ -137,11 +170,37 @@ export function HomeClient({
   recentArticles,
   sectionVisibility,
   heroOverlay,
+  heroContent,
+  heroStats,
 }: HomeClientProps) {
   const { t, language } = useLanguage();
   const regulators = ["COBAC", t("home_trust_mof"), "ANEMCAM", "ACCOSCA"];
   const photoRef = useRef<HTMLDivElement>(null);
   useHeroParallax(photoRef);
+
+  const hasHeroImage = heroContent.images.length > 0;
+  const slideIndex = useHeroSlideshow(heroContent.images.length);
+  const titleLines = heroContent.title.split("\n").filter((line) => line.trim().length > 0);
+
+  const primaryButtonClass =
+    heroContent.buttonStyle === "outline"
+      ? "border border-white text-white hover:bg-white/[0.12]"
+      : heroContent.buttonStyle === "ghost"
+      ? "text-white underline underline-offset-4 hover:text-white/80"
+      : "bg-white text-primary-700 shadow-[0_10px_30px_-8px_rgba(32,82,149,0.55)] hover:shadow-[0_14px_36px_-8px_rgba(32,82,149,0.7)]"; // solid
+
+  const heroAlignClass =
+    heroContent.textAlignment === "center"
+      ? "items-center text-center mx-auto"
+      : heroContent.textAlignment === "right"
+      ? "items-end text-right ml-auto"
+      : "items-start text-left";
+  const heroButtonsJustifyClass =
+    heroContent.textAlignment === "center"
+      ? "justify-center"
+      : heroContent.textAlignment === "right"
+      ? "justify-end"
+      : "justify-start";
 
   // Below 30% the admin overlay (Layer 2.5) barely tints the photo, so hero
   // text falls back on Layer 4's scrim alone — usually enough, but a thin
@@ -184,16 +243,22 @@ export function HomeClient({
   const heroBleedTarget =
     sectionOrder.find((s) => sectionVisibility[s.key])?.tone ?? TINT_BG;
 
-  // affiliateCount and regions.length are real, live-computed values used
-  // elsewhere on this page too; "members served" has no data source
-  // anywhere in the codebase yet, so it's a plain placeholder — flagged in
-  // the chat summary as needing a real figure from CamCCUL before launch.
+  // Affiliates/Members figures come from the Homepage Editor's Statistics
+  // fields (heroStats) so admin edits actually show up here — distinct from
+  // the live affiliateCount used down in the Reach band, which is a real
+  // count of Affiliate rows rather than an admin-entered headline number.
+  // Regions/Years have no editor field (nothing to type in), so they stay
+  // live-computed. Assets only appears once an admin fills it in.
   const stats: { icon: LucideIcon; value: string; labelKey: TranslationKey }[] = [
-    { icon: Building2, value: `${affiliateCount}+`, labelKey: "home2_stat_affiliates_label" },
-    { icon: Users, value: "50,000+", labelKey: "home2_stat_members_label" },
+    { icon: Building2, value: `${heroStats.affiliates}+`, labelKey: "home2_stat_affiliates_label" },
+    { icon: Users, value: heroStats.members, labelKey: "home2_stat_members_label" },
     { icon: Globe, value: `${regions.length}`, labelKey: "home2_stat_regions_label" },
     { icon: Calendar, value: `${yearsOfService}`, labelKey: "home2_stat_years_label" },
   ];
+  if (heroStats.assets.trim().length > 0) {
+    stats.push({ icon: Landmark, value: heroStats.assets, labelKey: "home2_stat_assets_label" });
+  }
+  const statsGridClass = stats.length === 5 ? "grid-cols-2 md:grid-cols-5" : "grid-cols-2 md:grid-cols-4";
 
   function handleHeroImageError() {
     // Navbar listens for this to fall back to its solid bar immediately —
@@ -239,28 +304,45 @@ export function HomeClient({
         className="relative isolate flex items-end sm:items-center overflow-hidden -mt-16"
         style={{ minHeight: "92svh" }}
       >
-        {/* LAYER 1 — photograph */}
-        <div ref={photoRef} className="hero-parallax-photo absolute inset-0 will-change-transform">
-          <Image
-            src={heroPhoto}
-            alt={t("home2_hero_image_alt")}
-            fill
-            priority
-            placeholder="blur"
-            quality={75}
-            sizes="100vw"
-            className="object-cover"
-            style={{ objectPosition: "center 22%" }}
-            onError={handleHeroImageError}
-          />
-        </div>
+        {hasHeroImage ? (
+          <>
+            {/* LAYER 1 — photograph(s): uploaded via the Homepage Editor's
+                Content tab. Cycles automatically when more than one is set. */}
+            <div ref={photoRef} className="hero-parallax-photo absolute inset-0 will-change-transform">
+              <Image
+                key={heroContent.images[slideIndex]}
+                src={heroContent.images[slideIndex]}
+                alt={t("home2_hero_image_alt")}
+                fill
+                priority
+                quality={75}
+                sizes="100vw"
+                className="object-cover"
+                style={{ objectPosition: "center 22%" }}
+                onError={handleHeroImageError}
+              />
+            </div>
 
-        {/* LAYER 2 — colour grade: tints the photo toward brand blue */}
-        <div
-          className="absolute inset-0"
-          style={{ backgroundColor: BRAND_BLUE, opacity: 0.35, mixBlendMode: "color" }}
-          aria-hidden="true"
-        />
+            {/* LAYER 2 — colour grade: tints the photo toward brand blue */}
+            <div
+              className="absolute inset-0"
+              style={{ backgroundColor: BRAND_BLUE, opacity: 0.35, mixBlendMode: "color" }}
+              aria-hidden="true"
+            />
+          </>
+        ) : (
+          /* No hero image uploaded yet — the Homepage Editor's own Content
+             tab tells an admin this falls back to a gradient built from the
+             Appearance tab's Background Color / Gradient Direction, mirrored
+             here pixel-for-pixel against HeroPreview's own fallback. */
+          <div
+            className="absolute inset-0"
+            style={{
+              background: `linear-gradient(${GRADIENT_DIRECTION_CSS[heroContent.gradientDirection]}, ${heroContent.backgroundColor}, transparent)`,
+            }}
+            aria-hidden="true"
+          />
+        )}
 
         {/* LAYER 2.5 — admin overlay: the Homepage Editor's Overlay Color/
             Opacity controls. Flat opacity (no blend mode), matching the
@@ -316,13 +398,13 @@ export function HomeClient({
         />
 
         <div className="relative z-10 max-w-[1200px] mx-auto px-4 py-16 sm:py-24 w-full">
-          <div className="max-w-[620px]">
+          <div className={`max-w-[620px] flex flex-col ${heroAlignClass}`}>
             <FadeUp hero staggerMs={120} index={0}>
               <p
                 className="text-white/70 font-semibold uppercase"
                 style={{ fontSize: "13px", letterSpacing: "0.14em", ...heroTextShadow }}
               >
-                {t("nav_tagline")}
+                {heroContent.badge}
               </p>
             </FadeUp>
 
@@ -337,9 +419,12 @@ export function HomeClient({
                   ...heroTextShadow,
                 }}
               >
-                {t("home2_hero_heading_line1")}
-                <br />
-                {t("home2_hero_heading_line2")}
+                {titleLines.map((line, index) => (
+                  <Fragment key={index}>
+                    {index > 0 && <br />}
+                    {line}
+                  </Fragment>
+                ))}
               </h1>
             </FadeUp>
 
@@ -348,23 +433,23 @@ export function HomeClient({
                 className="mt-5 text-white/[0.82] max-w-[34ch]"
                 style={{ fontSize: "20px", lineHeight: 1.6, ...heroTextShadow }}
               >
-                {t("home2_hero_subtitle")}
+                {heroContent.subtitle}
               </p>
             </FadeUp>
 
             <FadeUp hero staggerMs={120} index={3}>
-              <div className="mt-8 flex flex-col sm:flex-row gap-4">
+              <div className={`mt-8 flex flex-col sm:flex-row gap-4 ${heroButtonsJustifyClass}`}>
                 <Link
-                  href="/affiliates"
-                  className={`inline-flex items-center justify-center ${RADIUS} bg-white text-primary-700 px-6 py-3 text-sm font-medium transition-shadow w-full sm:w-auto shadow-[0_10px_30px_-8px_rgba(32,82,149,0.55)] hover:shadow-[0_14px_36px_-8px_rgba(32,82,149,0.7)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent`}
+                  href={heroContent.primaryButtonLink}
+                  className={`inline-flex items-center justify-center ${RADIUS} px-6 py-3 text-sm font-medium transition-shadow w-full sm:w-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent ${primaryButtonClass}`}
                 >
-                  {t("home2_hero_cta_primary")}
+                  {heroContent.primaryButtonText}
                 </Link>
                 <Link
-                  href="/contact"
+                  href={heroContent.secondaryButtonLink}
                   className={`inline-flex items-center justify-center ${RADIUS} border border-white/70 text-white px-6 py-3 text-sm font-medium transition-colors w-full sm:w-auto hover:bg-white/[0.12] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent`}
                 >
-                  {t("home2_hero_cta_secondary")}
+                  {heroContent.secondaryButtonText}
                 </Link>
               </div>
             </FadeUp>
@@ -380,7 +465,7 @@ export function HomeClient({
          hero is hidden, this is simply the first thing on the page. */
       <section className="py-10 md:py-14" style={{ backgroundColor: TINT_BG }}>
         <div className="max-w-[1200px] mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-y-8">
+          <div className={`grid ${statsGridClass} gap-y-8`}>
             {stats.map((stat, index) => (
               <FadeUp key={stat.labelKey} index={index} staggerMs={70} refined className="relative text-center px-4">
                 {index > 0 && (
