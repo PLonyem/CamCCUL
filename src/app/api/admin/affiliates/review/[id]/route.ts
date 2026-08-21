@@ -63,6 +63,24 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     },
   });
 
+  // Closes out the submission this decision is actually about, for
+  // SubmissionTimeline's history. Older affiliates approved/rejected
+  // before this table existed simply have no rows to update — a no-op,
+  // not an error.
+  const latestSubmission = await prisma.affiliateSubmission.findFirst({
+    where: { affiliateId: id, status: "pending" },
+    orderBy: { submittedAt: "desc" },
+  });
+  if (latestSubmission) {
+    await prisma.affiliateSubmission.update({
+      where: { id: latestSubmission.id },
+      data: {
+        status: action === "approve" ? "approved" : "rejected",
+        rejectionReason: reason,
+      },
+    });
+  }
+
   if (action === "approve") {
     const recipients = affiliate.email ? [affiliate.email] : [];
 

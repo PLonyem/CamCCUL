@@ -101,6 +101,7 @@ model Affiliate {
 
   documents      AffiliateDocument[]
   signupRequests CreditUnionSignupRequest[]
+  submissions    AffiliateSubmission[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -109,6 +110,28 @@ model Affiliate {
   @@index([name])
   @@index([profileStatus])
   @@map("affiliates")
+}
+
+// One row per profile submission/resubmission, preserving history that
+// Affiliate.profileStatus/profileReviewNote/profileUpdatedAt overwrite each
+// time — those three fields stay the single source of truth for "current"
+// state everywhere else in the app; this table exists purely to feed
+// SubmissionTimeline on the credit union dashboard. Created (status:
+// "pending") by POST /api/dashboard/profile on every submit, updated in
+// place by PUT /api/admin/affiliates/review/[id] when an admin decides.
+// "superseded" covers the case where a chapter resubmits before a prior
+// submission was ever decided — that stale row is closed out rather than
+// left showing "pending" forever alongside the newer one.
+model AffiliateSubmission {
+  id              String    @id @default(cuid())
+  affiliateId     String
+  affiliate       Affiliate @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+  status          String    @default("pending") // pending | approved | rejected | superseded
+  rejectionReason String?
+  submittedAt     DateTime  @default(now())
+
+  @@index([affiliateId])
+  @@map("affiliate_submissions")
 }
 
 // A self-service "I want a login for my credit union" request, reviewed by

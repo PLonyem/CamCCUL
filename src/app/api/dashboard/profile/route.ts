@@ -127,33 +127,46 @@ export async function POST(request: NextRequest) {
   // own profile, so it always bumps profileUpdatedAt and resets status
   // back to "pending" — unlike the admin's general-purpose PUT endpoint,
   // there's no case here where the content changes but review shouldn't
-  // restart.
+  // restart. A new AffiliateSubmission row is created alongside it for
+  // SubmissionTimeline's history; any of this affiliate's still-"pending"
+  // rows are closed out as "superseded" first, so a resubmission before a
+  // prior one was ever decided doesn't leave two simultaneous "pending"
+  // entries in that history.
   const submittedAt = new Date();
-  const affiliate = await prisma.affiliate.update({
-    where: { id: affiliateId },
-    data: {
-      name: data.creditUnionName,
-      code: data.code,
-      chapter: data.chapter,
-      city: data.city,
-      address: data.address,
-      phone: data.phone,
-      email: data.email,
-      website: data.website?.trim() || null,
-      yearEstablished: data.yearFounded,
-      briefHistory: data.briefHistory,
-      totalMembers: data.totalMembers,
-      branchCount: data.branchCount,
-      services,
-      chapterPresident: data.boardChairperson,
-      chapterSupervisor: data.generalManager,
-      boardSize: data.boardMemberCount,
-      staffCount: data.staffCount,
-      profileUpdatedAt: submittedAt,
-      profileStatus: "pending",
-    },
-    select: { name: true, code: true, chapter: true },
-  });
+  const [, affiliate] = await prisma.$transaction([
+    prisma.affiliateSubmission.updateMany({
+      where: { affiliateId, status: "pending" },
+      data: { status: "superseded" },
+    }),
+    prisma.affiliate.update({
+      where: { id: affiliateId },
+      data: {
+        name: data.creditUnionName,
+        code: data.code,
+        chapter: data.chapter,
+        city: data.city,
+        address: data.address,
+        phone: data.phone,
+        email: data.email,
+        website: data.website?.trim() || null,
+        yearEstablished: data.yearFounded,
+        briefHistory: data.briefHistory,
+        totalMembers: data.totalMembers,
+        branchCount: data.branchCount,
+        services,
+        chapterPresident: data.boardChairperson,
+        chapterSupervisor: data.generalManager,
+        boardSize: data.boardMemberCount,
+        staffCount: data.staffCount,
+        profileUpdatedAt: submittedAt,
+        profileStatus: "pending",
+      },
+      select: { name: true, code: true, chapter: true },
+    }),
+    prisma.affiliateSubmission.create({
+      data: { affiliateId, status: "pending", submittedAt },
+    }),
+  ]);
 
   // The profile is already saved at this point — an email provider hiccup
   // shouldn't turn a successful submission into an error response, so

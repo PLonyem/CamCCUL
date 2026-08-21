@@ -7,6 +7,7 @@ import { buttonVariants } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import { Clock, XCircle, Building2 } from "lucide-react";
 import { ProfileCompletion, type ProfileField } from "@/components/dashboard/ProfileCompletion";
+import { SubmissionTimeline, type SubmissionEntry } from "@/components/dashboard/SubmissionTimeline";
 
 const STEPS = ["Submitted", "Under Review", "Approved"];
 
@@ -186,6 +187,23 @@ export default async function DashboardPage() {
 
   const status = affiliate.profileUpdatedAt !== null ? (affiliate.profileStatus ?? "pending") : null;
 
+  // "superseded" rows (a resubmission before a prior one was ever decided)
+  // are deliberately excluded — nothing meaningful to show about those.
+  // Fetches one extra row (6, not 5) purely to know whether "View All"
+  // should appear, without a separate count query.
+  const submissionRows = await prisma.affiliateSubmission.findMany({
+    where: { affiliateId, NOT: { status: "superseded" } },
+    orderBy: { submittedAt: "desc" },
+    take: 6,
+    select: { id: true, submittedAt: true, status: true, rejectionReason: true },
+  });
+  const submissions: SubmissionEntry[] = submissionRows.slice(0, 5).map((row) => ({
+    id: row.id,
+    submittedAt: row.submittedAt.toISOString(),
+    status: row.status as SubmissionEntry["status"],
+    rejectionReason: row.rejectionReason,
+  }));
+
   // "Filled" means present — 0 is a legitimate real value for a count
   // field, so only null/undefined/empty-string/empty-array count as
   // missing. Labels and anchorId both match /dashboard/profile's field
@@ -276,6 +294,10 @@ export default async function DashboardPage() {
           </>
         )}
       </Card>
+
+      <div className="mt-6">
+        <SubmissionTimeline submissions={submissions} hasMore={submissionRows.length > 5} />
+      </div>
     </div>
   );
 }
