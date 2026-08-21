@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/Card";
 import { buttonVariants } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import { Clock, XCircle, Building2 } from "lucide-react";
+import { ProfileCompletion, type ProfileField } from "@/components/dashboard/ProfileCompletion";
 
 const STEPS = ["Submitted", "Under Review", "Approved"];
 
@@ -164,6 +165,19 @@ export default async function DashboardPage() {
       chapter: true,
       profileStatus: true,
       profileUpdatedAt: true,
+      yearEstablished: true,
+      city: true,
+      address: true,
+      phone: true,
+      email: true,
+      briefHistory: true,
+      totalMembers: true,
+      branchCount: true,
+      services: true,
+      chapterPresident: true,
+      chapterSupervisor: true,
+      boardSize: true,
+      staffCount: true,
     },
   });
   if (!affiliate) {
@@ -172,9 +186,33 @@ export default async function DashboardPage() {
 
   const status = affiliate.profileUpdatedAt !== null ? (affiliate.profileStatus ?? "pending") : null;
 
+  // "Filled" means present — 0 is a legitimate real value for a count
+  // field, so only null/undefined/empty-string/empty-array count as
+  // missing. Labels and anchorId both match /dashboard/profile's field
+  // labels and input ids exactly, since a mismatch here would silently
+  // break the "click a missing field to jump to it" links.
+  const profileFields: ProfileField[] = [
+    { key: "creditUnionName", label: "Credit Union Name", anchorId: "creditUnionName", filled: true },
+    { key: "yearEstablished", label: "Year Founded", anchorId: "yearFounded", filled: affiliate.yearEstablished != null },
+    { key: "city", label: "City", anchorId: "city", filled: !!affiliate.city },
+    { key: "address", label: "Address", anchorId: "address", filled: !!affiliate.address },
+    { key: "phone", label: "Phone", anchorId: "phone", filled: !!affiliate.phone },
+    { key: "email", label: "Email", anchorId: "email", filled: !!affiliate.email },
+    { key: "briefHistory", label: "Brief History", anchorId: "briefHistory", filled: !!affiliate.briefHistory },
+    { key: "totalMembers", label: "Number of Members", anchorId: "totalMembers", filled: affiliate.totalMembers != null },
+    { key: "branchCount", label: "Number of Branches", anchorId: "branchCount", filled: affiliate.branchCount != null },
+    { key: "services", label: "Services Offered", anchorId: "servicesOffered", filled: affiliate.services.length > 0 },
+    { key: "chapterPresident", label: "Board Chairperson", anchorId: "boardChairperson", filled: !!affiliate.chapterPresident },
+    { key: "chapterSupervisor", label: "General Manager", anchorId: "generalManager", filled: !!affiliate.chapterSupervisor },
+    { key: "boardSize", label: "Number of Board Members", anchorId: "boardMemberCount", filled: affiliate.boardSize != null },
+    { key: "staffCount", label: "Number of Staff", anchorId: "staffCount", filled: affiliate.staffCount != null },
+  ];
+
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="font-display text-2xl font-bold text-primary-900">
+      <ProfileCompletion fields={profileFields} />
+
+      <h1 className="font-display text-2xl font-bold text-primary-900 mt-8">
         Welcome, {affiliate.name}
       </h1>
 

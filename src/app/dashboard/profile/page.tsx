@@ -352,7 +352,7 @@ export default function CreditUnionProfilePage() {
               </div>
             </div>
 
-            <div className="space-y-2 mt-5">
+            <div id="servicesOffered" className="space-y-2 mt-5">
               <p className={labelClass}>Services Offered</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
                 {SERVICE_OPTIONS.map((service) => (

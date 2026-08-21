@@ -4,6 +4,10 @@
 html {
   scroll-behavior: smooth;
   overflow-x: hidden;
+  /* Keeps an anchor-scroll target (e.g. #boardChairperson from the
+     Profile Completion "click a missing field" links) from landing
+     underneath the sticky top navbar used throughout the site. */
+  scroll-padding-top: 5rem;
 }
 
 * {

@@ -49,17 +49,18 @@ export function CreditUnionNavbar({ user }: CreditUnionNavbarProps) {
             <ArrowLeft className="h-4 w-4" />
             <span className="hidden sm:inline">Back to Website</span>
           </Link>
-          <button
-            type="button"
-            onClick={handleSignOut}
-            disabled={isSigningOut}
-            className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-primary-600 transition-colors disabled:opacity-50"
-          >
-            <LogOut className="h-4 w-4" />
-            {isSigningOut ? "Signing out..." : "Sign Out"}
-          </button>
         </div>
       </div>
+
+      <button
+        type="button"
+        onClick={handleSignOut}
+        disabled={isSigningOut}
+        className="fixed bottom-4 left-4 z-40 inline-flex items-center gap-2 bg-white border border-gray-200 shadow-sm rounded-lg px-3 py-2 text-sm font-medium text-gray-500 hover:text-primary-600 hover:border-primary-200 transition-colors disabled:opacity-50"
+      >
+        <LogOut className="h-4 w-4" />
+        {isSigningOut ? "Signing out..." : "Sign Out"}
+      </button>
     </header>
   );
 }
