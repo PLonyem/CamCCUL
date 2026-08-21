@@ -3,22 +3,50 @@ import { auth, clerkClient } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import { sendAccountApprovedEmail } from "@/lib/email";
 
-// Approving a signup request has to do two things, not one: flip the
-// review-queue row to "approved" (cosmetic — nothing else reads this
-// status), and grant the applicant's existing Clerk account
-// role: "credit_union" in publicMetadata — that role is never set
-// automatically at signup, and dashboard/page.tsx uses it to decide
-// between the review-status screen and the real chapter dashboard.
-// Skipping the metadata update would leave the account showing "pending"
-// forever despite an "approved" email telling them to sign in.
-//
-// Deliberately does not set affiliateId here — matching this request to a
-// specific Affiliate record is a separate, more involved action (picking
-// which of that chapter's Affiliate rows this is) that this simple
-// approve/reject flow doesn't cover. affiliateId stays null until that
-// exists, which is why dashboard/page.tsx has its own fallback for
-// role: "credit_union" + no affiliateId yet, instead of assuming approval
-// alone means a fully-linked account.
+// Maps a SIGNUP_CHAPTERS value ("Northwest Chapter") to the region code
+// Affiliate.region uses ("NORTHWEST") and the two-letter prefix its
+// Affiliate.code values use ("NW-001", "NW-002", ...) — confirmed against
+// every existing code in src/lib/mock-data.ts rather than assumed (e.g.
+// South is "SO", not "SW" — that's Southwest).
+const CHAPTER_TO_REGION: Record<string, { region: string; codePrefix: string }> = {
+  "Northwest Chapter": { region: "NORTHWEST", codePrefix: "NW" },
+  "Southwest Chapter": { region: "SOUTHWEST", codePrefix: "SW" },
+  "Littoral Chapter": { region: "LITTORAL", codePrefix: "LT" },
+  "Centre Chapter": { region: "CENTRE", codePrefix: "CE" },
+  "West Chapter": { region: "WEST", codePrefix: "WE" },
+  "Adamawa Chapter": { region: "ADAMAWA", codePrefix: "AD" },
+  "North Chapter": { region: "NORTH", codePrefix: "NO" },
+  "Far North Chapter": { region: "FAR NORTH", codePrefix: "FN" },
+  "East Chapter": { region: "EAST", codePrefix: "EA" },
+  "South Chapter": { region: "SOUTH", codePrefix: "SO" },
+};
+
+// Next sequential code for a chapter's prefix (NW-001, NW-002, ...),
+// zero-padded to 3 digits to match every existing code. Doesn't lock
+// against a concurrent approval for the same chapter generating the same
+// number — acceptable for a single-admin, occasional-approval tool; not
+// worth a transaction/advisory-lock for this traffic level.
+async function nextAffiliateCode(codePrefix: string): Promise<string> {
+  const existing = await prisma.affiliate.findMany({
+    where: { code: { startsWith: `${codePrefix}-` } },
+    select: { code: true },
+  });
+  const maxNumber = existing.reduce((max, { code }) => {
+    const n = Number(code.slice(codePrefix.length + 1));
+    return Number.isFinite(n) && n > max ? n : max;
+  }, 0);
+  return `${codePrefix}-${String(maxNumber + 1).padStart(3, "0")}`;
+}
+
+// Approving a signup request has to fully activate the account in one
+// step — creating the Affiliate record itself (named/chaptered from what
+// the applicant entered at signup, everything else blank for them to fill
+// in via /dashboard/profile, the same "Complete Your Profile" flow every
+// other chapter uses), then granting role: "credit_union" +
+// affiliateId/affiliateName/affiliateCode in Clerk publicMetadata. Doing
+// only the role half (an earlier version of this route) left approved
+// accounts stuck on dashboard/page.tsx's "Almost There" fallback
+// indefinitely, since nothing else ever created or linked the record.
 export async function PUT(request: NextRequest) {
   const { userId, sessionClaims } = await auth();
   if (!userId || sessionClaims?.metadata?.role !== "admin") {
@@ -39,6 +67,11 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ error: "This request has already been processed." }, { status: 400 });
   }
 
+  const chapterInfo = CHAPTER_TO_REGION[signupRequest.chapter];
+  if (!chapterInfo) {
+    return NextResponse.json({ error: `Unrecognized chapter: ${signupRequest.chapter}` }, { status: 400 });
+  }
+
   const clerk = await clerkClient();
   const { data: matches } = await clerk.users.getUserList({ emailAddress: [signupRequest.email] });
   const clerkUser = matches[0];
@@ -49,13 +82,35 @@ export async function PUT(request: NextRequest) {
     );
   }
 
+  // Affiliate created (DB) before Clerk metadata is updated, so a failure
+  // partway through never leaves the Clerk account pointing at an
+  // affiliateId that doesn't exist — worst case here is an unused,
+  // orphaned Affiliate row, not a broken account.
+  const code = await nextAffiliateCode(chapterInfo.codePrefix);
+  const affiliate = await prisma.affiliate.create({
+    data: {
+      code,
+      name: signupRequest.creditUnionName,
+      region: chapterInfo.region,
+      chapter: signupRequest.chapter,
+      email: signupRequest.email,
+      isActive: true,
+    },
+  });
+
   await clerk.users.updateUserMetadata(clerkUser.id, {
-    publicMetadata: { role: "credit_union", chapter: signupRequest.chapter },
+    publicMetadata: {
+      role: "credit_union",
+      affiliateId: affiliate.id,
+      affiliateName: affiliate.name,
+      affiliateCode: affiliate.code,
+      chapter: signupRequest.chapter,
+    },
   });
 
   const updated = await prisma.creditUnionSignupRequest.update({
     where: { id },
-    data: { status: "approved", rejectionReason: null },
+    data: { status: "approved", rejectionReason: null, affiliateId: affiliate.id },
   });
 
   try {
