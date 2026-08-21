@@ -6,17 +6,19 @@ import { sendAccountApprovedEmail } from "@/lib/email";
 // Approving a signup request has to do two things, not one: flip the
 // review-queue row to "approved" (cosmetic — nothing else reads this
 // status), and grant the applicant's existing Clerk account
-// role: "credit_union" in publicMetadata (the part that actually matters —
-// proxy.ts blocks /dashboard on role !== "credit_union", and that role is
-// never set automatically at signup). Skipping the metadata update would
-// leave the account permanently locked out despite an "approved" email
-// telling them to sign in.
+// role: "credit_union" in publicMetadata — that role is never set
+// automatically at signup, and dashboard/page.tsx uses it to decide
+// between the review-status screen and the real chapter dashboard.
+// Skipping the metadata update would leave the account showing "pending"
+// forever despite an "approved" email telling them to sign in.
 //
 // Deliberately does not set affiliateId here — matching this request to a
 // specific Affiliate record is a separate, more involved action (picking
 // which of that chapter's Affiliate rows this is) that this simple
 // approve/reject flow doesn't cover. affiliateId stays null until that
-// exists.
+// exists, which is why dashboard/page.tsx has its own fallback for
+// role: "credit_union" + no affiliateId yet, instead of assuming approval
+// alone means a fully-linked account.
 export async function PUT(request: NextRequest) {
   const { userId, sessionClaims } = await auth();
   if (!userId || sessionClaims?.metadata?.role !== "admin") {

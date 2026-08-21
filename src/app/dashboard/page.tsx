@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { buttonVariants } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
-import { Clock, XCircle } from "lucide-react";
+import { Clock, XCircle, Building2 } from "lucide-react";
 
 const STEPS = ["Submitted", "Under Review", "Approved"];
 
@@ -110,6 +110,35 @@ async function SignupStatusScreen() {
   );
 }
 
+// role: "credit_union" with no affiliateId is a real, reachable state, not
+// a data error — approving a signup request (POST /api/admin/users/approve)
+// deliberately grants the role without linking a specific Affiliate record,
+// since picking the right one is a separate admin action that doesn't exist
+// yet. Showing nothing here (as this used to) reads exactly like a broken
+// dashboard the moment someone gets approved.
+function AwaitingAffiliateLinkScreen() {
+  return (
+    <div className="max-w-2xl mx-auto">
+      <Card className="p-8 text-center">
+        <div className="w-14 h-14 rounded-full bg-primary-100 flex items-center justify-center mx-auto">
+          <Building2 className="h-7 w-7 text-primary-600" />
+        </div>
+        <h1 className="font-display text-2xl font-bold text-primary-900 mt-4">
+          Almost There
+        </h1>
+        <p className="text-gray-600 mt-2">
+          Your account has been approved, but CamCCUL headquarters hasn&apos;t finished linking it to
+          your credit union&apos;s record yet. This is usually quick — check back shortly, or contact
+          CamCCUL headquarters if it&apos;s been a while.
+        </p>
+        <Link href="/" className={cn(buttonVariants({ variant: "outline" }), "mt-6")}>
+          Back to Website
+        </Link>
+      </Card>
+    </div>
+  );
+}
+
 // layout.tsx already redirects unauthenticated sessions to /login and admin
 // sessions to /admin. A role of "credit_union" means an approved chapter
 // account with an affiliateId — anything else (no role at all) is a
@@ -124,7 +153,7 @@ export default async function DashboardPage() {
 
   const affiliateId = sessionClaims?.metadata?.affiliateId;
   if (!affiliateId) {
-    return null;
+    return <AwaitingAffiliateLinkScreen />;
   }
 
   const affiliate = await prisma.affiliate.findUnique({
@@ -138,7 +167,7 @@ export default async function DashboardPage() {
     },
   });
   if (!affiliate) {
-    return null;
+    return <AwaitingAffiliateLinkScreen />;
   }
 
   const status = affiliate.profileUpdatedAt !== null ? (affiliate.profileStatus ?? "pending") : null;
