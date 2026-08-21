@@ -205,7 +205,7 @@ export function Navbar() {
           className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium bg-primary-500 text-white hover:bg-primary-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary-500"
         >
           <FileText className="h-4 w-4" />
-          <span className="hidden sm:inline">My Dashboard</span>
+          <span className="hidden sm:inline">{t("nav_my_dashboard")}</span>
         </Link>
         {signOutButton}
       </div>
@@ -216,7 +216,7 @@ export function Navbar() {
           className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium bg-primary-900 text-white hover:bg-primary-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary-900"
         >
           <LayoutDashboard className="h-4 w-4" />
-          <span className="hidden sm:inline">Admin Dashboard</span>
+          <span className="hidden sm:inline">{t("nav_admin_dashboard")}</span>
         </Link>
         {signOutButton}
       </div>
@@ -230,7 +230,7 @@ export function Navbar() {
           className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium bg-primary-500 text-white hover:bg-primary-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary-500"
         >
           <FileText className="h-4 w-4" />
-          <span className="hidden sm:inline">My Dashboard</span>
+          <span className="hidden sm:inline">{t("nav_my_dashboard")}</span>
         </Link>
         {signOutButton}
       </div>

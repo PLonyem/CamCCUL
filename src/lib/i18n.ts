@@ -31,6 +31,8 @@ const en = {
   nav_services_toggle_aria: "Toggle services",
   nav_about_toggle_aria: "Toggle about",
   nav_find_credit_union: "Find a Credit Union",
+  nav_my_dashboard: "My Dashboard",
+  nav_admin_dashboard: "Admin Dashboard",
 
   // ─── Footer ───────────────────────────────────────────────────────────
   footer_tagline: "Cameroon Cooperative Credit Union League",
@@ -249,7 +251,7 @@ const en = {
   chapter_not_found_title: "Chapter Not Found",
   chapter_not_found_message:
     "We couldn't find a chapter with this code. It may have been moved, or the code may be incorrect.",
-  chapter_not_found_back: "Back to Affiliates Directory",
+  chapter_not_found_back: "Back to Find a Credit Union",
   chapter_about_prefix: "About",
   chapter_history_fallback:
     "History information coming soon. This chapter's full profile is being updated.",
@@ -338,7 +340,7 @@ const en = {
   cu_form_download_pdf: "Download as PDF",
   cu_form_title: "Credit Union Profile Form",
   cu_form_description:
-    "Please complete all fields for your credit union. This information will appear on the CamCCUL website when visitors click on your credit union in the Affiliates directory.",
+    "Please complete all fields for your credit union. This information will appear on the CamCCUL website when visitors click on your credit union on the Find a Credit Union page.",
   cu_form_version_label: "Form Version:",
   cu_form_version_value: "August 2026",
   cu_form_section1_title: "Section 1: Credit Union Information",
@@ -529,6 +531,8 @@ const fr: Record<keyof typeof en, string> = {
   nav_services_toggle_aria: "Basculer les services",
   nav_about_toggle_aria: "Basculer à propos",
   nav_find_credit_union: "Trouver une Coopérative",
+  nav_my_dashboard: "Mon Tableau de Bord",
+  nav_admin_dashboard: "Tableau de Bord Admin",
 
   // ─── Footer ───────────────────────────────────────────────────────────
   footer_tagline: "Ligue des Coopératives de Crédit du Cameroun",
@@ -749,7 +753,7 @@ const fr: Record<keyof typeof en, string> = {
   chapter_not_found_title: "Chapitre Introuvable",
   chapter_not_found_message:
     "Nous n'avons pas trouvé de chapitre avec ce code. Il a peut-être été déplacé, ou le code est peut-être incorrect.",
-  chapter_not_found_back: "Retour à l'Annuaire des Affiliés",
+  chapter_not_found_back: "Retour à Trouver une Coopérative",
   chapter_about_prefix: "À propos de",
   chapter_history_fallback:
     "Les informations historiques seront bientôt disponibles. Le profil complet de ce chapitre est en cours de mise à jour.",
@@ -839,7 +843,7 @@ const fr: Record<keyof typeof en, string> = {
   cu_form_download_pdf: "Télécharger en PDF",
   cu_form_title: "Formulaire de Profil de Coopérative de Crédit",
   cu_form_description:
-    "Veuillez remplir tous les champs pour votre coopérative de crédit. Ces informations apparaîtront sur le site web de CamCCUL lorsque les visiteurs cliqueront sur votre coopérative de crédit dans l'annuaire des Affiliés.",
+    "Veuillez remplir tous les champs pour votre coopérative de crédit. Ces informations apparaîtront sur le site web de CamCCUL lorsque les visiteurs cliqueront sur votre coopérative de crédit sur la page Trouver une Coopérative.",
   cu_form_version_label: "Version du formulaire :",
   cu_form_version_value: "Août 2026",
   cu_form_section1_title: "Section 1 : Informations sur la Coopérative de Crédit",

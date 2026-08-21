@@ -247,15 +247,15 @@ export const ENTRIES: KBEntry[] = [
     ],
     reply: {
       en:
-        "Use our **Affiliates Directory** — select your region to see every " +
+        "Use our **Find a Credit Union** page — select your region to see every " +
         "CamCCUL-affiliated credit union there, with contact details. We have affiliates " +
         "across all **10 regions** of Cameroon.",
       fr:
-        "Utilisez notre **Annuaire des Affiliés** — sélectionnez votre région pour voir " +
+        "Utilisez notre page **Trouver une Coopérative** — sélectionnez votre région pour voir " +
         "toutes les coopératives affiliées à CamCCUL, avec leurs coordonnées. Nous avons " +
         "des affiliées dans les **10 régions** du Cameroun.",
     },
-    action: { label: { en: "Open Affiliates Directory", fr: "Ouvrir l'annuaire des affiliés" }, href: "/affiliates" },
+    action: { label: { en: "Find a Credit Union", fr: "Trouver une Coopérative" }, href: "/affiliates" },
   },
 
   // Services

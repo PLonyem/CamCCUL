@@ -124,7 +124,7 @@ export async function sendProfileApprovalEmail({
       <h2>Your Profile Has Been Approved</h2>
       <p>Dear ${creditUnionName},</p>
       <p>Great news! Your credit union profile has been reviewed and approved.</p>
-      <p>Your profile is now live on the CamCCUL website. Visitors can see your information when they browse the Affiliates directory.</p>
+      <p>Your profile is now live on the CamCCUL website. Visitors can see your information on the Find a Credit Union page.</p>
       <p>If you need to make changes, sign in to your dashboard and update your profile.</p>
       <p>— CamCCUL Headquarters</p>
     `,

@@ -11,7 +11,7 @@ const CHAPTER_PROFILE_TEMPLATE_RESOURCE: PublicResource = {
   id: "res-chapter-profile-template",
   title: "Credit Union Profile Form",
   description:
-    "Download and complete this form to update your credit union's profile on the CamCCUL website. Once submitted, your information will appear when visitors click on your credit union in the Affiliates directory.",
+    "Download and complete this form to update your credit union's profile on the CamCCUL website. Once submitted, your information will appear when visitors click on your credit union on the Find a Credit Union page.",
   category: "Form",
   fileType: "PDF",
   fileUrl: "/api/resources/chapter-profile-template",

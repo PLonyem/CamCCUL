@@ -3850,8 +3850,8 @@ export const resources: Resource[] = [
       fr: "Formulaire de Profil de Coopérative de Crédit",
     },
     description: {
-      en: "Download and complete this form to update your credit union's profile on the CamCCUL website. Once submitted, your information will appear when visitors click on your credit union in the Affiliates directory.",
-      fr: "Téléchargez et complétez ce formulaire pour mettre à jour le profil de votre coopérative de crédit sur le site web de CamCCUL. Une fois soumis, vos informations apparaîtront lorsque les visiteurs cliqueront sur votre coopérative de crédit dans l'annuaire des Affiliés.",
+      en: "Download and complete this form to update your credit union's profile on the CamCCUL website. Once submitted, your information will appear when visitors click on your credit union on the Find a Credit Union page.",
+      fr: "Téléchargez et complétez ce formulaire pour mettre à jour le profil de votre coopérative de crédit sur le site web de CamCCUL. Une fois soumis, vos informations apparaîtront lorsque les visiteurs cliqueront sur votre coopérative de crédit sur la page Trouver une Coopérative.",
     },
     category: "Form",
     fileType: "PDF",
