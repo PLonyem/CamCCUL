@@ -33,7 +33,7 @@ export const homepageContentSchema = z.object({
   // Appearance
   showOverlay: z.boolean(),
   overlayColor: hexColor,
-  overlayOpacity: z.number().int().min(0).max(90),
+  overlayOpacity: z.number().int().min(0).max(100),
   backgroundColor: hexColor,
   gradientDirection: z.enum(["to-r", "to-b", "to-br", "to-bl"]),
   textAlignment: z.enum(["left", "center", "right"]),

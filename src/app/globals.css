@@ -15,6 +15,52 @@ html {
   scrollbar-color: theme(colors.primary.300) transparent;
 }
 
+/* Custom range-input thumb for the Homepage Editor's Overlay Opacity
+   slider — the track/fill themselves are drawn by sibling divs (see
+   the Appearance tab), so this only needs to hide the native track and
+   restyle the thumb. Kept as a real <input type="range"> rather than a
+   from-scratch div-based slider, so keyboard/touch/drag all keep working
+   for free. */
+.styled-range {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+.styled-range::-webkit-slider-runnable-track {
+  background: transparent;
+}
+.styled-range::-moz-range-track {
+  background: transparent;
+}
+.styled-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  background: white;
+  border: 2px solid theme(colors.primary.500);
+  border-radius: 9999px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: transform 150ms ease;
+}
+.styled-range::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+.styled-range::-moz-range-thumb {
+  width: 1.25rem;
+  height: 1.25rem;
+  background: white;
+  border: 2px solid theme(colors.primary.500);
+  border-radius: 9999px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: transform 150ms ease;
+}
+.styled-range::-moz-range-thumb:hover {
+  transform: scale(1.15);
+}
+
 *::-webkit-scrollbar {
   width: 8px;
   height: 8px;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import type { LucideIcon } from "lucide-react";
@@ -142,6 +142,15 @@ export function HomeClient({
   const regulators = ["COBAC", t("home_trust_mof"), "ANEMCAM", "ACCOSCA"];
   const photoRef = useRef<HTMLDivElement>(null);
   useHeroParallax(photoRef);
+
+  // Below 30% the admin overlay (Layer 2.5) barely tints the photo, so hero
+  // text falls back on Layer 4's scrim alone — usually enough, but a thin
+  // text-shadow is cheap insurance against a bright patch of photo landing
+  // right under a letter. Skipped once the overlay is doing real work
+  // (>=30%) since the text is then sitting on much more contrast already.
+  const effectiveOverlayOpacity = heroOverlay.show ? heroOverlay.opacity : 0;
+  const heroTextShadow: CSSProperties | undefined =
+    effectiveOverlayOpacity < 30 ? { textShadow: "0 2px 4px rgba(0,0,0,0.3)" } : undefined;
 
   // Every band below the hero, in actual page order, with the flat tone it
   // renders on. Sections can be hidden independently via sectionVisibility,
@@ -311,7 +320,7 @@ export function HomeClient({
             <FadeUp hero staggerMs={120} index={0}>
               <p
                 className="text-white/70 font-semibold uppercase"
-                style={{ fontSize: "13px", letterSpacing: "0.14em" }}
+                style={{ fontSize: "13px", letterSpacing: "0.14em", ...heroTextShadow }}
               >
                 {t("nav_tagline")}
               </p>
@@ -325,6 +334,7 @@ export function HomeClient({
                   letterSpacing: "-0.03em",
                   lineHeight: 1.05,
                   textWrap: "balance",
+                  ...heroTextShadow,
                 }}
               >
                 {t("home2_hero_heading_line1")}
@@ -334,7 +344,10 @@ export function HomeClient({
             </FadeUp>
 
             <FadeUp hero staggerMs={120} index={2}>
-              <p className="mt-5 text-white/[0.82] max-w-[34ch]" style={{ fontSize: "20px", lineHeight: 1.6 }}>
+              <p
+                className="mt-5 text-white/[0.82] max-w-[34ch]"
+                style={{ fontSize: "20px", lineHeight: 1.6, ...heroTextShadow }}
+              >
                 {t("home2_hero_subtitle")}
               </p>
             </FadeUp>

@@ -76,8 +76,19 @@ const tabs: { key: Tab; labelKey: TranslationKey }[] = [
   { key: "sections", labelKey: "admin.sections" },
 ];
 
-const OVERLAY_COLOR_PRESETS = ["#000000", "#0A2647", "#1E3A5F", "#1A1A1A"];
+// CamCCUL Blue (primary-500), Deep Navy (primary-900), Dark Blue
+// (primary-700), Black — plus the ColorField's own free-text/native
+// color-picker input for anything else.
+const OVERLAY_COLOR_PRESETS = ["#205295", "#0A2647", "#144272", "#000000"];
 const BACKGROUND_COLOR_PRESETS = ["#0A2647", "#144272", "#205295"];
+
+const OVERLAY_OPACITY_PRESETS: { value: number; label: string }[] = [
+  { value: 0, label: "Transparent" },
+  { value: 25, label: "Light" },
+  { value: 50, label: "Medium" },
+  { value: 75, label: "Strong" },
+  { value: 100, label: "Solid Blue" },
+];
 
 const GRADIENT_DIRECTION_OPTIONS: { value: GradientDirection; label: string; css: string }[] = [
   { value: "to-r", label: "Left to Right", css: "to right" },
@@ -217,6 +228,12 @@ function HeroPreview({ data }: { data: HomepageContentData }) {
       ? "justify-end"
       : "justify-start";
 
+  // Mirrors HomeClient.tsx's own readability fallback: a thin/absent
+  // overlay leaves text sitting directly on a bright photo, so give it a
+  // shadow to fall back on below 30% — matches what actually ships.
+  const effectiveOpacity = data.showOverlay ? data.overlayOpacity : 0;
+  const textShadowStyle = effectiveOpacity < 30 ? { textShadow: "0 2px 4px rgba(0,0,0,0.3)" } : undefined;
+
   if (!data.showHero) {
     return (
       <div className="lg:sticky lg:top-6">
@@ -251,13 +268,19 @@ function HeroPreview({ data }: { data: HomepageContentData }) {
           />
         )}
         <div className={cn("absolute inset-0 flex flex-col justify-center gap-1.5 p-4", alignItems)}>
-          <p className="text-white/70 text-[9px] font-semibold uppercase tracking-wide">
+          <p
+            className="text-white/70 text-[9px] font-semibold uppercase tracking-wide"
+            style={textShadowStyle}
+          >
             {data.heroBadge || "Badge text"}
           </p>
-          <p className="text-white font-bold text-sm leading-tight">
+          <p className="text-white font-bold text-sm leading-tight" style={textShadowStyle}>
             {data.heroTitle || "Headline"}
           </p>
-          <p className="text-white/80 text-[10px] leading-snug line-clamp-2 max-w-[85%]">
+          <p
+            className="text-white/80 text-[10px] leading-snug line-clamp-2 max-w-[85%]"
+            style={textShadowStyle}
+          >
             {data.heroSubtitle || "Subtitle"}
           </p>
           <div className={cn("flex gap-1.5 mt-1.5", justifyButtons)}>
@@ -475,22 +498,52 @@ export default function AdminHomepageEditorPage() {
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label className={cn(labelClass, "mb-0")}>{t("admin.overlayOpacity")}</label>
-                  <span className="text-sm text-gray-500 tabular-nums">{data.overlayOpacity}%</span>
+                  <span className="text-sm font-semibold text-primary-700 tabular-nums">
+                    {data.overlayOpacity}%
+                  </span>
                 </div>
-                <input
-                  type="range"
-                  min={0}
-                  max={90}
-                  value={data.overlayOpacity}
-                  onChange={(e) => updateField("overlayOpacity", Number(e.target.value))}
-                  disabled={!data.showOverlay}
-                  className="w-full accent-primary-500 disabled:opacity-50"
-                />
+
+                <div className={cn("relative h-5 flex items-center", !data.showOverlay && "opacity-50")}>
+                  <div className="absolute inset-x-0 h-2 bg-gray-200 rounded-full" />
+                  <div
+                    className="absolute left-0 h-2 bg-primary-500 rounded-full transition-[width] duration-150"
+                    style={{ width: `${data.overlayOpacity}%` }}
+                  />
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={data.overlayOpacity}
+                    onChange={(e) => updateField("overlayOpacity", Number(e.target.value))}
+                    disabled={!data.showOverlay}
+                    className="styled-range relative w-full disabled:cursor-not-allowed"
+                  />
+                </div>
+
                 <div className="flex justify-between text-[10px] text-gray-400 mt-0.5">
-                  <span>0 = transparent</span>
-                  <span>90 = very dark</span>
+                  <span>0% = transparent</span>
+                  <span>100% = solid blue</span>
                 </div>
                 {fieldErrors.overlayOpacity && <p className={errorClass}>{fieldErrors.overlayOpacity}</p>}
+
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {OVERLAY_OPACITY_PRESETS.map((preset) => (
+                    <button
+                      key={preset.value}
+                      type="button"
+                      onClick={() => updateField("overlayOpacity", preset.value)}
+                      disabled={!data.showOverlay}
+                      className={cn(
+                        "px-2.5 py-1 rounded-full text-xs font-medium border transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
+                        data.overlayOpacity === preset.value
+                          ? "bg-primary-500 border-primary-500 text-white"
+                          : "bg-white border-gray-300 text-gray-600 hover:bg-gray-50"
+                      )}
+                    >
+                      {preset.value}% ({preset.label})
+                    </button>
+                  ))}
+                </div>
               </div>
             </Card>
 
