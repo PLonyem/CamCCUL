@@ -164,7 +164,7 @@ export async function POST(request: NextRequest) {
       select: { name: true, code: true, chapter: true },
     }),
     prisma.affiliateSubmission.create({
-      data: { affiliateId, status: "pending", submittedAt },
+      data: { affiliateId, status: "pending", submittedAt, fieldSnapshot: data },
     }),
   ]);
 

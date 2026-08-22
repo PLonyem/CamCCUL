@@ -129,6 +129,13 @@ model AffiliateSubmission {
   status          String    @default("pending") // pending | approved | rejected | superseded
   rejectionReason String?
   submittedAt     DateTime  @default(now())
+  // Full CreditUnionProfileValues (src/lib/validation/credit-union-profile.ts)
+  // as submitted at this point in time — lets the Edit History page
+  // (src/app/dashboard/profile/history) diff consecutive submissions into
+  // real "field: old -> new" entries instead of just a status timeline.
+  // Nullable because rows created before this column existed have none —
+  // those can't be retroactively diffed, only rows from here on.
+  fieldSnapshot   Json?
 
   @@index([affiliateId])
   @@map("affiliate_submissions")

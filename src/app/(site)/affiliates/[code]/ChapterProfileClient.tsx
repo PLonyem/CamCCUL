@@ -110,9 +110,15 @@ function NotFoundState({ requestedCode }: { requestedCode: string }) {
 export function ChapterProfileClient({
   affiliate,
   requestedCode,
+  previewMode = false,
 }: {
   affiliate: ChapterDetail | null;
   requestedCode: string;
+  // Used by the credit union dashboard's Preview Profile page (src/app/
+  // dashboard/profile/preview) to show the full public layout regardless
+  // of profileStatus — the entire point of a preview is seeing what
+  // "approved" will look like before it's actually approved.
+  previewMode?: boolean;
 }) {
   const { t, language } = useLanguage();
 
@@ -150,10 +156,16 @@ export function ChapterProfileClient({
     hasPresident || hasSupervisor || hasBoardCount || hasStaffCount;
 
   const hasMemberCreditUnions = affiliate.memberCreditUnions.length > 0;
-  const isApproved = affiliate.profileStatus === "approved";
+  const isApproved = previewMode || affiliate.profileStatus === "approved";
 
   return (
     <>
+      {previewMode && affiliate.profileStatus !== "approved" && (
+        <div className="bg-amber-50 border-b border-amber-200 text-amber-800 text-sm text-center py-2 px-4">
+          This is a preview of how your profile will look once approved — it isn&apos;t live yet.
+        </div>
+      )}
+
       {/* HERO */}
       <section className="bg-primary-900 text-white py-12">
         <div className="max-w-4xl mx-auto px-4">
