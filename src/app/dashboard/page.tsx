@@ -279,16 +279,20 @@ export default async function DashboardPage() {
       </div>
 
       {/* 2. PROFILE COMPLETION */}
-      <ProfileCompletion fields={profileFields} />
+      <div id="profile-completion" className="scroll-mt-28">
+        <ProfileCompletion fields={profileFields} />
+      </div>
 
       {/* 3. QUICK STATS */}
-      <QuickStats
-        isApproved={status === "approved"}
-        totalMembers={affiliate.totalMembers}
-        branchCount={affiliate.branchCount}
-        yearEstablished={affiliate.yearEstablished}
-        servicesCount={affiliate.services.length}
-      />
+      <div id="quick-stats" className="scroll-mt-28">
+        <QuickStats
+          isApproved={status === "approved"}
+          totalMembers={affiliate.totalMembers}
+          branchCount={affiliate.branchCount}
+          yearEstablished={affiliate.yearEstablished}
+          servicesCount={affiliate.services.length}
+        />
+      </div>
 
       {/* 4. QUICK ACTIONS */}
       <Card className="p-6">
@@ -311,13 +315,19 @@ export default async function DashboardPage() {
       </Card>
 
       {/* 5. DEADLINE COUNTDOWN */}
-      <DeadlineCountdown />
+      <div id="deadline-countdown" className="scroll-mt-28">
+        <DeadlineCountdown />
+      </div>
 
       {/* 6. ANNOUNCEMENTS FEED */}
-      <AnnouncementsFeed announcements={announcements} />
+      <div id="announcements" className="scroll-mt-28">
+        <AnnouncementsFeed announcements={announcements} />
+      </div>
 
       {/* 7. SUBMISSION HISTORY */}
-      <SubmissionTimeline submissions={submissions} hasMore={submissionRows.length > 5} />
+      <div id="submission-history" className="scroll-mt-28">
+        <SubmissionTimeline submissions={submissions} hasMore={submissionRows.length > 5} />
+      </div>
 
       {/* 8. NEED HELP */}
       <Card className="p-6">

@@ -4,10 +4,13 @@
 html {
   scroll-behavior: smooth;
   overflow-x: hidden;
-  /* Keeps an anchor-scroll target (e.g. #boardChairperson from the
-     Profile Completion "click a missing field" links) from landing
-     underneath the sticky top navbar used throughout the site. */
-  scroll-padding-top: 5rem;
+  /* Keeps an anchor-scroll target from landing underneath the credit
+     union dashboard's sticky bars — the only place in the app that uses
+     in-page anchors at all: ProfileCompletion's "click a missing field"
+     links and DashboardNav's dropdown items. 7rem clears both the
+     CreditUnionNavbar (h-16) and DashboardNav (h-12) stacked on top of
+     each other. */
+  scroll-padding-top: 7rem;
 }
 
 * {

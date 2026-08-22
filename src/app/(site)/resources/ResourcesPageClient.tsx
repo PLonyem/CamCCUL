@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { FileText, FileSpreadsheet, Download, FolderOpen } from "lucide-react";
 import { PageHero } from "@/components/layout/PageHero";
 import { Card } from "@/components/ui/Card";
@@ -32,9 +33,15 @@ export interface PublicResource {
   fileUrl?: string | null;
 }
 
-export function ResourcesPageClient({ resources }: { resources: PublicResource[] }) {
+function ResourcesPageContent({ resources }: { resources: PublicResource[] }) {
   const { t } = useLanguage();
-  const [activeCategory, setActiveCategory] = useState(tabs[0].category);
+  const searchParams = useSearchParams();
+  // Deep-linked from the credit union dashboard's Resources nav dropdown
+  // (e.g. /resources?category=Form) — falls back to the first tab for any
+  // missing or unrecognized value instead of a blank/broken filter state.
+  const categoryParam = searchParams.get("category");
+  const matchedTab = tabs.find((tab) => tab.category === categoryParam);
+  const [activeCategory, setActiveCategory] = useState(matchedTab?.category ?? tabs[0].category);
 
   const filteredResources = resources.filter(
     (resource) => resource.category === activeCategory
@@ -122,5 +129,15 @@ export function ResourcesPageClient({ resources }: { resources: PublicResource[]
         </div>
       </div>
     </>
+  );
+}
+
+// useSearchParams (for the ?category= deep link) requires a Suspense
+// boundary around whatever reads it — same pattern as the /affiliates page.
+export function ResourcesPageClient({ resources }: { resources: PublicResource[] }) {
+  return (
+    <Suspense fallback={null}>
+      <ResourcesPageContent resources={resources} />
+    </Suspense>
   );
 }

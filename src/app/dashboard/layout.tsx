@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { CreditUnionNavbar } from "@/components/dashboard/CreditUnionNavbar";
+import { DashboardNav } from "@/components/dashboard/DashboardNav";
 
 export default async function DashboardLayout({
   children,
@@ -27,6 +28,7 @@ export default async function DashboardLayout({
   return (
     <div className="min-h-screen bg-gray-50">
       <CreditUnionNavbar user={{ name: sessionClaims?.metadata?.affiliateName }} />
+      <DashboardNav />
       <main className="p-4 sm:p-6">{children}</main>
     </div>
   );
