@@ -40,9 +40,9 @@ export const adminNavGroups: AdminNavGroup[] = [
     labelKey: "admin.websiteContent",
     items: [
       { href: "/admin/homepage", labelKey: "admin.homepageEditor", icon: Home },
+      { href: "/admin/announcements", labelKey: "admin.announcementsManager", icon: Megaphone },
       { href: "/admin/news", labelKey: "admin.newsManager", icon: Newspaper },
       { href: "/admin/resources", labelKey: "admin.resourcesManager", icon: FolderOpen },
-      { href: "/admin/announcements", labelKey: "admin.announcementsManager", icon: Megaphone },
     ],
   },
   {
