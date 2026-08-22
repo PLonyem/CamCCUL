@@ -29,7 +29,7 @@ export default async function DashboardLayout({
     <div className="min-h-screen bg-gray-50">
       <CreditUnionNavbar user={{ name: sessionClaims?.metadata?.affiliateName }} />
       <DashboardNav />
-      <main className="p-4 sm:p-6">{children}</main>
+      <main className="max-w-5xl mx-auto px-4 py-6">{children}</main>
     </div>
   );
 }
