@@ -124,6 +124,61 @@ async function seedContactMessages() {
   console.log(`${sampleMessages.length} sample contact messages seeded`);
 }
 
+async function seedAnnouncements() {
+  const now = new Date();
+  const sampleAnnouncements = [
+    {
+      id: "announcement-1",
+      title: "Q3 Reporting Deadline",
+      content:
+        "All affiliated credit unions are reminded that Q3 2026 COBAC reports are due by September 30, 2026. Please ensure your submission is complete and accurate before the deadline.",
+      category: "Circular",
+      priority: "high",
+      isPublished: true,
+      publishedAt: now,
+    },
+    {
+      id: "announcement-2",
+      title: "Digital Training Session",
+      content:
+        "CamCCUL is hosting a digital banking training session for credit union staff, covering mobile banking platforms, digital security, and member onboarding best practices. Contact your regional chapter for scheduling details.",
+      category: "Training",
+      priority: "normal",
+      isPublished: true,
+      publishedAt: now,
+    },
+    {
+      id: "announcement-3",
+      title: "New COBAC Guidelines",
+      content:
+        "COBAC has issued updated regulatory guidelines affecting reporting requirements for cooperative credit unions. All affiliates should review the new guidelines and ensure compliance with the revised standards.",
+      category: "COBAC",
+      priority: "urgent",
+      isPublished: true,
+      publishedAt: now,
+    },
+    {
+      id: "announcement-4",
+      title: "Profile Update Reminder",
+      content:
+        "Credit unions that have not yet updated their profile information are reminded to complete their submission through the credit union dashboard. An up-to-date profile ensures accurate information is displayed to the public.",
+      category: "Announcement",
+      priority: "normal",
+      isPublished: false,
+    },
+  ];
+
+  for (const sample of sampleAnnouncements) {
+    const { id, ...data } = sample;
+    await prisma.announcement.upsert({
+      where: { id },
+      update: {},
+      create: { id, ...data },
+    });
+  }
+  console.log(`${sampleAnnouncements.length} announcements seeded`);
+}
+
 // HomepageContent, SiteSettings, and NotificationSettings each have no
 // natural unique business key (no email/slug/code) since they're meant to
 // exist as a single row — "default" is a fixed, well-known id so this stays
@@ -162,6 +217,7 @@ async function main() {
   await seedAffiliates();
   await seedResources();
   await seedContactMessages();
+  await seedAnnouncements();
   await seedHomepageContent();
   await seedSiteSettings();
   await seedNotificationSettings();

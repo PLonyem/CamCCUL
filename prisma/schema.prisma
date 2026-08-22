@@ -155,12 +155,12 @@ model AffiliateSubmission {
 // src/lib/auth.ts — dead since the 2026-08-15 migration (nothing has
 // written to it since; Clerk owns all credentials).
 model CreditUnionSignupRequest {
-  id String @id @default(cuid())
+  id              String     @id @default(cuid())
   // Globally unique because it's the email of a real Clerk account by the
   // time this row exists — Clerk itself never allows two accounts to share
   // an email, so this can't conflict the way a bare business-data field
   // might.
-  email String @unique
+  email           String     @unique
   // Uniqueness on this field is enforced in application code (a
   // case-insensitive lookup — see /api/signup/credit-union), not here:
   // "Bamenda Credit Union" and "bamenda credit union" must collide, which a
@@ -169,12 +169,12 @@ model CreditUnionSignupRequest {
   // Selected from the same chapter dropdown as the profile-upload form —
   // free text here (not a relation) because the applicant is naming their
   // own chapter before any admin has matched them to a specific Affiliate.
-  chapter String
+  chapter         String
   // Set by the admin at approval time once they've matched this request to
   // an actual affiliate record — null until then.
-  affiliateId String?
-  affiliate   Affiliate? @relation(fields: [affiliateId], references: [id])
-  status          String  @default("pending") // pending | approved | rejected
+  affiliateId     String?
+  affiliate       Affiliate? @relation(fields: [affiliateId], references: [id])
+  status          String     @default("pending") // pending | approved | rejected
   rejectionReason String?
 
   createdAt DateTime @default(now())
@@ -219,6 +219,25 @@ model Resource {
 
   @@index([category])
   @@map("resources")
+}
+
+model Announcement {
+  id            String    @id @default(cuid())
+  title         String
+  content       String    @db.Text
+  category      String    @default("Circular") // Circular, Training, COBAC, Announcement, Event
+  priority      String    @default("normal") // low, normal, high, urgent
+  targetChapter String? // null = all chapters, or specific chapter
+  isPublished   Boolean   @default(false)
+  publishedAt   DateTime?
+  expiryDate    DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([isPublished])
+  @@index([publishedAt])
+  @@index([category])
+  @@map("announcements")
 }
 
 model ContactMessage {
