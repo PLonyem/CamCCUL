@@ -278,28 +278,30 @@ export function HomeClient({
     <>
       {sectionVisibility.showHero && (
       /*
-        BAND 3: HERO — six stacked layers, bottom to top. Re-tune here:
+        BAND 3: HERO — four stacked layers, bottom to top. Re-tune here:
 
-        1. PHOTOGRAPH        next/image, object-cover, focal point on faces.
-        2. COLOUR GRADE      mix-blend-mode:color at ~35% brand blue — shifts
-                              the photo's own hues toward the brand instead of
-                              veiling it. THE key layer: if faces read grey,
-                              this opacity is too high; if the image still
-                              looks neutral/ungraded, it's too low.
-        3. DEPTH              mix-blend-mode:multiply, deep blue top-left
-                              fading out by 60% — gives the image a direction
-                              instead of sitting flat.
-        4. LEGIBILITY SCRIM   deep blue ~88% opacity anchored under the text
-                              block, angled on desktop, vertical bottom-up on
-                              mobile (where text stacks below the faces).
-        5. BOTTOM BLEED       transparent to the exact solid tone the stats
-                              band below resolves to (TINT_BG) — removes the
-                              hard line at the hero's base. Biggest single
-                              contributor to the page feeling smooth.
-        6. GRAIN               feTurbulence noise at ~3.5% opacity, breaks up
-                              banding on the large flat-ish gradients above.
+        1. PHOTOGRAPH/GRADIENT  the uploaded photo as-is (or the Appearance
+                                tab's gradient when none is uploaded) — no
+                                fixed tinting on top of it. What an admin
+                                sees when Show Overlay is off is meant to be
+                                exactly what they uploaded/configured.
+        2. ADMIN OVERLAY        the Homepage Editor's Overlay Color/Opacity
+                                controls — the *only* shading effect on the
+                                image, entirely optional. Anchored under the
+                                text block (left on desktop, bottom on
+                                mobile) rather than washing the whole photo.
+                                Skipped entirely when off or at 0%.
+        3. BOTTOM BLEED         transparent to the exact solid tone the stats
+                                band below resolves to (TINT_BG) — removes the
+                                hard line at the hero's base. Biggest single
+                                contributor to the page feeling smooth.
+        4. GRAIN                feTurbulence noise at ~3.5% opacity, breaks up
+                                banding on the gradients above.
 
-        Content sits above all six in a `relative z-10` layer.
+        Content sits above all four in a `relative z-10` layer. Below 30%
+        effective overlay opacity, hero text falls back on a text-shadow
+        (heroTextShadow) rather than a forced scrim, since there's no
+        always-on darkening layer to lean on anymore.
         -mt-16 pulls the section up underneath the sticky Navbar's own h-16
         box: Navbar and Hero are siblings in normal flow, not overlapping, so
         without this the "transparent" Navbar would only reveal the page
@@ -311,31 +313,23 @@ export function HomeClient({
         style={{ minHeight: "92svh" }}
       >
         {hasHeroImage ? (
-          <>
-            {/* LAYER 1 — photograph(s): uploaded via the Homepage Editor's
-                Content tab. Cycles automatically when more than one is set. */}
-            <div ref={photoRef} className="hero-parallax-photo absolute inset-0 will-change-transform">
-              <Image
-                key={heroContent.images[slideIndex]}
-                src={heroContent.images[slideIndex]}
-                alt={t("home2_hero_image_alt")}
-                fill
-                priority
-                quality={75}
-                sizes="100vw"
-                className="object-cover"
-                style={{ objectPosition: "center 22%" }}
-                onError={handleHeroImageError}
-              />
-            </div>
-
-            {/* LAYER 2 — colour grade: tints the photo toward brand blue */}
-            <div
-              className="absolute inset-0"
-              style={{ backgroundColor: BRAND_BLUE, opacity: 0.35, mixBlendMode: "color" }}
-              aria-hidden="true"
+          /* LAYER 1 — photograph(s): uploaded via the Homepage Editor's
+             Content tab, shown unedited. Cycles automatically when more
+             than one is set. */
+          <div ref={photoRef} className="hero-parallax-photo absolute inset-0 will-change-transform">
+            <Image
+              key={heroContent.images[slideIndex]}
+              src={heroContent.images[slideIndex]}
+              alt={t("home2_hero_image_alt")}
+              fill
+              priority
+              quality={75}
+              sizes="100vw"
+              className="object-cover"
+              style={{ objectPosition: "center 22%" }}
+              onError={handleHeroImageError}
             />
-          </>
+          </div>
         ) : (
           /* No hero image uploaded yet — the Homepage Editor's own Content
              tab tells an admin this falls back to a gradient built from the
@@ -350,13 +344,11 @@ export function HomeClient({
           />
         )}
 
-        {/* LAYER 2.5 — admin overlay: the Homepage Editor's Overlay Color/
-            Opacity controls. Anchored on the same side as Layer 4's fixed
-            legibility scrim (left on desktop, bottom on mobile) rather than
-            washing the whole photo — matching the editor's own live preview
-            pixel-for-pixel, so what an admin sees while dragging the slider
-            is what ships. Skipped entirely at opacity 0 (the shipped
-            default) so it costs nothing until an admin actually turns it on. */}
+        {/* LAYER 2 — admin overlay: the Homepage Editor's Overlay Color/
+            Opacity controls, and the only shading this hero ever applies.
+            Off (or 0%) means the image renders exactly as uploaded — no
+            other tinting layer to fall back on — matching the editor's own
+            live preview pixel-for-pixel. */}
         {heroOverlay.show && heroOverlay.opacity > 0 && (
           <>
             <div
@@ -372,27 +364,7 @@ export function HomeClient({
           </>
         )}
 
-        {/* LAYER 3 — depth: directional weight, top-left */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background: "linear-gradient(135deg, #0A2647 0%, rgba(10,38,71,0) 60%)",
-            mixBlendMode: "multiply",
-          }}
-          aria-hidden="true"
-        />
-
-        {/* LAYER 4 — legibility scrim: anchored under the text block */}
-        <div
-          className={[
-            "absolute inset-0",
-            "[background:linear-gradient(0deg,rgba(10,38,71,0.88)_0%,rgba(10,38,71,0.88)_42%,rgba(10,38,71,0)_82%)]",
-            "sm:[background:linear-gradient(100deg,rgba(10,38,71,0.88)_0%,rgba(10,38,71,0.88)_30%,rgba(10,38,71,0)_65%)]",
-          ].join(" ")}
-          aria-hidden="true"
-        />
-
-        {/* LAYER 5 — bottom bleed: resolves into whichever section is
+        {/* LAYER 3 — bottom bleed: resolves into whichever section is
             actually next (heroBleedTarget), not always the stats band —
             stats can be hidden via sectionVisibility */}
         <div
@@ -401,7 +373,7 @@ export function HomeClient({
           aria-hidden="true"
         />
 
-        {/* LAYER 6 — grain: breaks up banding on the gradients above */}
+        {/* LAYER 4 — grain: breaks up banding on the gradients above */}
         <div
           className="absolute inset-0 opacity-[0.035] mix-blend-overlay"
           style={{
