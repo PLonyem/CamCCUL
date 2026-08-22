@@ -3,20 +3,6 @@ import { resources as mockResources } from "@/lib/mock-data";
 import { isPlaceholder } from "@/lib/utils";
 import { ResourcesPageClient, type PublicResource } from "./ResourcesPageClient";
 
-// Ships with the codebase (the printable form at /resources/chapter-profile-
-// template) rather than being admin-managed CMS content, so it's merged in
-// here unconditionally instead of depending on a database row that would
-// need seeding into the live database.
-const CHAPTER_PROFILE_TEMPLATE_RESOURCE: PublicResource = {
-  id: "res-chapter-profile-template",
-  title: "Credit Union Profile Form",
-  description:
-    "Download and complete this form to update your credit union's profile on the CamCCUL website. Once submitted, your information will appear when visitors click on your credit union on the Find a Credit Union page.",
-  category: "Form",
-  fileType: "PDF",
-  fileUrl: "/api/resources/chapter-profile-template",
-};
-
 async function getActiveResources(): Promise<PublicResource[]> {
   try {
     const resources = await prisma.resource.findMany({
@@ -59,10 +45,5 @@ async function getActiveResources(): Promise<PublicResource[]> {
 
 export default async function ResourcesPage() {
   const resources = await getActiveResources();
-  const withTemplate = resources.some(
-    (r) => r.id === CHAPTER_PROFILE_TEMPLATE_RESOURCE.id
-  )
-    ? resources
-    : [...resources, CHAPTER_PROFILE_TEMPLATE_RESOURCE];
-  return <ResourcesPageClient resources={withTemplate} />;
+  return <ResourcesPageClient resources={resources} />;
 }
