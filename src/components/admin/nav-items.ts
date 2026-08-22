@@ -3,6 +3,7 @@ import {
   Home,
   Newspaper,
   FolderOpen,
+  Megaphone,
   Building2,
   ClipboardCheck,
   Users,
@@ -41,6 +42,7 @@ export const adminNavGroups: AdminNavGroup[] = [
       { href: "/admin/homepage", labelKey: "admin.homepageEditor", icon: Home },
       { href: "/admin/news", labelKey: "admin.newsManager", icon: Newspaper },
       { href: "/admin/resources", labelKey: "admin.resourcesManager", icon: FolderOpen },
+      { href: "/admin/announcements", labelKey: "admin.announcementsManager", icon: Megaphone },
     ],
   },
   {
