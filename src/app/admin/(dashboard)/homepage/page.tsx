@@ -643,7 +643,7 @@ export default function AdminHomepageEditorPage() {
             <h2 className="font-semibold text-gray-900">{t("admin.heroImages")}</h2>
             <p className="text-sm text-gray-500 mt-1">
               Upload 1-5 images. Multiple images create an automatic slideshow
-              every 5 seconds.
+              every 10 seconds.
             </p>
 
             {data.heroImages.length === 0 ? (

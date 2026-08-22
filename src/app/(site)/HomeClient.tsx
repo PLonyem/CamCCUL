@@ -75,9 +75,8 @@ const GRADIENT_DIRECTION_CSS: Record<HeroContent["gradientDirection"], string> =
   "to-bl": "to bottom left",
 };
 
-// Cycles through uploaded hero images every 5 seconds, per the Homepage
-// Editor's own copy ("Multiple images create an automatic slideshow every 5
-// seconds"). No-op (and no timer) for 0 or 1 images.
+// Cycles through uploaded hero images every 10 seconds. No-op (and no
+// timer) for 0 or 1 images.
 function useHeroSlideshow(imageCount: number) {
   const [index, setIndex] = useState(0);
 
@@ -89,7 +88,7 @@ function useHeroSlideshow(imageCount: number) {
       // edit), so modulo alone keeps this in bounds — no separate
       // out-of-bounds guard needed.
       setIndex((i) => (i + 1) % imageCount);
-    }, 5000);
+    }, 10000);
     return () => window.clearInterval(timer);
   }, [imageCount]);
 
