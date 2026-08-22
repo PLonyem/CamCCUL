@@ -6,6 +6,14 @@ import {
 } from "@/lib/mock-data";
 import { HomeClient, type HomeRecentArticle } from "./HomeClient";
 
+// This page has no cookies()/headers()/searchParams usage, so Next.js would
+// otherwise treat it as fully static and prerender it once at build time —
+// meaning every Homepage Editor save (all Content/Appearance/Sections
+// fields) would only reach the live site on the *next deployment*, not
+// immediately. Forcing it dynamic makes getHomeData() run fresh on every
+// request instead.
+export const dynamic = "force-dynamic";
+
 export interface SectionVisibility {
   showHero: boolean;
   showStats: boolean;
