@@ -107,7 +107,7 @@ function DropdownLink({
   const Icon = item.icon;
   const content = (
     <>
-      <Icon className="h-4 w-4" />
+      <Icon className="h-4 w-4 text-gray-400 transition-colors duration-150 group-hover:text-primary-600" />
       {item.label}
     </>
   );
@@ -177,24 +177,44 @@ export function DashboardNav() {
                 type="button"
                 onClick={() => handleTriggerClick(group.label)}
                 aria-expanded={openLabel === group.label}
-                className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-primary-600 hover:bg-gray-50 rounded-lg cursor-pointer flex items-center gap-1"
+                className={cn(
+                  "px-4 py-2 text-sm font-medium rounded-lg cursor-pointer flex items-center gap-1 transition-colors duration-150",
+                  openLabel === group.label
+                    ? "text-primary-600 bg-primary-50"
+                    : "text-gray-600 hover:text-primary-600 hover:bg-gray-50"
+                )}
               >
                 {group.label}
-                <ChevronDown className="h-3 w-3" />
+                <ChevronDown
+                  className={cn(
+                    "h-3 w-3 transition-transform duration-150",
+                    openLabel === group.label && "rotate-180"
+                  )}
+                />
               </button>
 
-              {openLabel === group.label && (
-                <div className="absolute top-full left-0 bg-white border border-gray-200 rounded-lg shadow-lg min-w-48 py-2 z-50">
-                  {group.items.map((item) => (
-                    <DropdownLink
-                      key={item.label}
-                      item={item}
-                      onNavigate={() => setOpenLabel(null)}
-                      className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary-600 flex items-center gap-2"
-                    />
-                  ))}
-                </div>
-              )}
+              {/* Always mounted (not conditionally rendered) so the fade +
+                  slide-down actually animates on both open and close —
+                  pointer-events-none while closed keeps it from intercepting
+                  hover/click or catching tab focus while invisible. */}
+              <div
+                aria-hidden={openLabel !== group.label}
+                className={cn(
+                  "absolute top-full left-0 bg-white border border-gray-200 rounded-lg shadow-lg min-w-48 py-2 z-50 transition-all duration-200",
+                  openLabel === group.label
+                    ? "opacity-100 translate-y-0 pointer-events-auto"
+                    : "opacity-0 -translate-y-1 pointer-events-none"
+                )}
+              >
+                {group.items.map((item) => (
+                  <DropdownLink
+                    key={item.label}
+                    item={item}
+                    onNavigate={() => setOpenLabel(null)}
+                    className="group px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary-600 flex items-center gap-2 transition-colors duration-150"
+                  />
+                ))}
+              </div>
             </div>
           ))}
         </div>
@@ -236,7 +256,7 @@ export function DashboardNav() {
                       key={item.label}
                       item={item}
                       onNavigate={closeMobile}
-                      className="pl-10 pr-6 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary-600 flex items-center gap-2"
+                      className="group pl-10 pr-6 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary-600 flex items-center gap-2 transition-colors duration-150"
                     />
                   ))}
                 </div>
