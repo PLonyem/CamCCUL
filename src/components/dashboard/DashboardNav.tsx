@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   ChevronDown,
@@ -161,6 +161,26 @@ export function DashboardNav() {
   function closeMobile() {
     setIsMobileOpen(false);
   }
+
+  // DashboardNav lives in the shared dashboard layout, so this only runs
+  // once per real page load (a hard refresh, or first arrival), never on
+  // in-app client-side navigation between dashboard pages — layouts don't
+  // remount for those. A refresh with a leftover #section hash in the URL
+  // (from an earlier nav dropdown click, or a ProfileCompletion "missing
+  // field" jump) makes the browser scroll straight back to that anchor
+  // instead of the top; the browser's own one-time scroll-to-anchor has
+  // already happened by the time this effect runs, so stripping the hash
+  // here doesn't undo it — it just means the *next* refresh starts clean
+  // instead of repeating the same jump forever. With no hash, some
+  // browsers still restore the exact scroll offset on reload, so that case
+  // gets an explicit reset to the top instead.
+  useEffect(() => {
+    if (window.location.hash) {
+      window.history.replaceState(null, "", window.location.pathname + window.location.search);
+    } else {
+      window.scrollTo(0, 0);
+    }
+  }, []);
 
   return (
     <nav className="w-full bg-white border-b border-gray-200 sticky top-16 z-20">
