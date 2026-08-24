@@ -493,23 +493,19 @@ export function Navbar() {
         <div
           aria-hidden={!isOpen}
           className={cn(
-            "md:hidden fixed top-16 left-0 right-0 bottom-0 z-50 flex flex-col bg-white p-6",
-            "overflow-y-auto shadow-xl border-b border-primary-100",
+            "md:hidden fixed top-16 right-4 z-50 w-72 max-w-[calc(100vw-2rem)]",
+            "max-h-[calc(100dvh-5rem)] flex flex-col bg-white p-4",
+            "rounded-xl border border-primary-100 shadow-xl overflow-y-auto",
             "transition-all duration-300 ease-in-out",
             isOpen
               ? "opacity-100 translate-y-0"
-              : "opacity-0 -translate-y-4 pointer-events-none"
+              : "opacity-0 -translate-y-2 pointer-events-none"
           )}
         >
-        <button
-          type="button"
-          onClick={closeMobileMenu}
-          aria-label={t("nav_menu_close_aria")}
-          className="self-end inline-flex items-center justify-center min-h-11 min-w-11 p-2 -mr-2 mb-2 rounded-lg text-primary-700 hover:bg-primary-50 transition-colors"
-        >
-          <X className="h-6 w-6" />
-        </button>
-
+        {/* No separate close button here — the hamburger button itself
+            (still visible in the navbar above) already toggles to an X
+            while this is open, so a second close control right below it
+            would be redundant in a compact card like this. */}
         <nav className="flex flex-col">
           {navLinks.map((link) => {
             const isActive = isLinkActive(link.href);
