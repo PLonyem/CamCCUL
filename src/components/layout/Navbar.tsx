@@ -126,6 +126,15 @@ export function Navbar() {
     };
   }, [isOpen]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setIsOpen(false);
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
+
   function toggleLanguage() {
     setLanguage(language === "en" ? "fr" : "en");
   }
@@ -425,23 +434,38 @@ export function Navbar() {
       </div>
 
       {/*
-        Anchored to the header (which is `sticky`, so it's a valid containing
-        block) and sized to its own content via `top-full` + `max-h`, instead
-        of a `fixed inset-0` overlay forced to the full viewport height. The
-        old approach relied on `100vh`-style sizing, which on mobile browsers
-        is computed against the layout viewport rather than what's actually
-        visible above the address bar — so the menu could render partly
-        below the fold until the page was scrolled once. Using `100dvh` here
-        tracks the real visible viewport, and capping with `max-h` (rather
-        than forcing a fixed height) means the menu is exactly as tall as
-        its content and only scrolls internally if content is genuinely
-        taller than the screen.
+        `fixed` (viewport-relative), not `absolute` (relative to the nearest
+        positioned ancestor — this header, which is `sticky`). In principle a
+        stuck sticky header never leaves the viewport's top edge so `absolute
+        top-full` should track it, but any ancestor further up the tree with
+        a `transform`/`filter`/`contain` creates its own containing block and
+        silently breaks that stickiness — the header (and this menu with it)
+        then scrolls away with the page instead of staying put, which is
+        exactly what "menu opens above the visible viewport after scrolling"
+        looks like. `fixed` sidesteps the whole question by anchoring to the
+        viewport directly.
+        Sized with `top-16`/`bottom-0` insets rather than an explicit height
+        (`h-screen`/`100vh`) — those compute against the larger layout
+        viewport on mobile (the one that includes the space the address bar
+        can occupy), so a menu sized that way can render partly below the
+        fold until the page is scrolled once. Insets-from-viewport-edges
+        don't have that problem: the element is simply "from 4rem down to
+        the bottom of whatever's visible right now."
       */}
+      <div
+        aria-hidden="true"
+        onClick={closeMobileMenu}
+        className={cn(
+          "md:hidden fixed inset-0 z-40 bg-black/30",
+          "transition-opacity duration-300 ease-in-out",
+          isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        )}
+      />
       <div
         aria-hidden={!isOpen}
         className={cn(
-          "md:hidden absolute left-0 right-0 top-full z-40 flex flex-col bg-white p-6",
-          "max-h-[calc(100dvh-4rem)] overflow-y-auto shadow-xl border-b border-primary-100",
+          "md:hidden fixed top-16 left-0 right-0 bottom-0 z-50 flex flex-col bg-white p-6",
+          "overflow-y-auto shadow-xl border-b border-primary-100",
           "transition-all duration-300 ease-in-out",
           isOpen
             ? "opacity-100 translate-y-0"
