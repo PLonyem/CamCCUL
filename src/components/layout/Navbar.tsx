@@ -15,6 +15,15 @@ import {
   FileText,
   LogIn,
   LogOut,
+  Home,
+  Info,
+  Briefcase,
+  Building2,
+  FolderOpen,
+  Newspaper,
+  HelpCircle,
+  Mail,
+  type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
@@ -43,6 +52,22 @@ const aboutLinks: { key: TranslationKey; href: string }[] = [
   { key: "home_services_title", href: "/services" },
 ];
 
+// Flat list for the mobile dropdown specifically — unlike the desktop nav,
+// mobile doesn't nest About/Services into their own expandable sub-menus
+// (no room for that inside a compact anchored card), and includes an
+// explicit Affiliates entry the desktop nav only exposes via the separate
+// "Find a Credit Union" CTA button.
+const mobileMenuLinks: { key: TranslationKey; href: string; icon: LucideIcon }[] = [
+  { key: "nav_home", href: "/", icon: Home },
+  { key: "nav_about", href: "/about", icon: Info },
+  { key: "nav_services", href: "/services", icon: Briefcase },
+  { key: "nav_affiliates", href: "/affiliates", icon: Building2 },
+  { key: "nav_resources", href: "/resources", icon: FolderOpen },
+  { key: "nav_news", href: "/news", icon: Newspaper },
+  { key: "nav_faq", href: "/faq", icon: HelpCircle },
+  { key: "nav_contact", href: "/contact", icon: Mail },
+];
+
 export function Navbar() {
   const pathname = usePathname();
   const { user, isLoaded, isSignedIn } = useUser();
@@ -51,9 +76,7 @@ export function Navbar() {
   const { language, setLanguage, t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
-  const [isMobileAboutOpen, setIsMobileAboutOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
-  const [isMobileServicesOpen, setIsMobileServicesOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const isHomepage = pathname === "/";
   // Lazy-initialized to the common case (fresh homepage load starts at
@@ -261,6 +284,92 @@ export function Navbar() {
       </div>
     );
 
+  // Same role logic as accountLink above, restyled as full-width stacked
+  // buttons for the mobile dropdown instead of a compact horizontal
+  // cluster — accountLink itself is hidden on mobile (see its wrapper
+  // below) once this is in place, so signed-in visitors still have a way
+  // to sign out on mobile even though signOutButton's icon-only button
+  // isn't reused here.
+  const mobileAuthButtonClass =
+    "flex items-center justify-center gap-2 w-full px-4 py-3 rounded-lg text-sm font-medium transition-colors";
+  const mobileAuthSection =
+    !isLoaded ? null : !isSignedIn ? (
+      <Link
+        href="/login"
+        onClick={closeMobileMenu}
+        className={cn(mobileAuthButtonClass, "bg-primary-500 text-white hover:bg-primary-600")}
+      >
+        <LogIn className="h-4 w-4" />
+        Sign In
+      </Link>
+    ) : role === "credit_union" ? (
+      <div className="flex flex-col gap-2">
+        <Link
+          href="/dashboard"
+          onClick={closeMobileMenu}
+          className={cn(mobileAuthButtonClass, "bg-primary-500 text-white hover:bg-primary-600")}
+        >
+          <FileText className="h-4 w-4" />
+          {t("nav_my_dashboard")}
+        </Link>
+        <button
+          type="button"
+          onClick={() => {
+            closeMobileMenu();
+            handleSignOut();
+          }}
+          className={cn(mobileAuthButtonClass, "border border-gray-300 text-gray-700 hover:bg-gray-50")}
+        >
+          <LogOut className="h-4 w-4" />
+          Sign Out
+        </button>
+      </div>
+    ) : role === "admin" ? (
+      <div className="flex flex-col gap-2">
+        <Link
+          href="/admin"
+          onClick={closeMobileMenu}
+          className={cn(mobileAuthButtonClass, "bg-primary-900 text-white hover:bg-primary-800")}
+        >
+          <LayoutDashboard className="h-4 w-4" />
+          {t("nav_admin_dashboard")}
+        </Link>
+        <button
+          type="button"
+          onClick={() => {
+            closeMobileMenu();
+            handleSignOut();
+          }}
+          className={cn(mobileAuthButtonClass, "border border-gray-300 text-gray-700 hover:bg-gray-50")}
+        >
+          <LogOut className="h-4 w-4" />
+          Sign Out
+        </button>
+      </div>
+    ) : (
+      <div className="flex flex-col gap-2">
+        <Link
+          href="/dashboard"
+          onClick={closeMobileMenu}
+          className={cn(mobileAuthButtonClass, "bg-primary-500 text-white hover:bg-primary-600")}
+        >
+          <FileText className="h-4 w-4" />
+          {t("nav_my_dashboard")}
+        </Link>
+        <button
+          type="button"
+          onClick={() => {
+            closeMobileMenu();
+            handleSignOut();
+          }}
+          className={cn(mobileAuthButtonClass, "border border-gray-300 text-gray-700 hover:bg-gray-50")}
+        >
+          <LogOut className="h-4 w-4" />
+          Sign Out
+        </button>
+      </div>
+    );
+
   return (
     <>
     <header
@@ -429,7 +538,7 @@ export function Navbar() {
           >
             {t("nav_find_credit_union")}
           </Link>
-          {accountLink}
+          <div className="hidden md:block">{accountLink}</div>
           {languageToggle}
 
           <button
@@ -441,7 +550,7 @@ export function Navbar() {
                 ? "text-white hover:bg-white/10"
                 : "text-primary-700 hover:bg-primary-50"
             )}
-            aria-label={t("nav_menu_open_aria")}
+            aria-label={isOpen ? t("nav_menu_close_aria") : t("nav_menu_open_aria")}
             aria-expanded={isOpen}
             onClick={() => setIsOpen((prev) => !prev)}
           >
@@ -469,15 +578,10 @@ export function Navbar() {
       containing block and silently breaks that stickiness — the header
       (and an absolutely-positioned menu riding on it) then scrolls away
       with the page instead of staying put. `fixed` sidesteps that question
-      too by anchoring to the viewport directly.
-
-      Sized with `top-16`/`bottom-0` insets rather than an explicit height
-      (`h-screen`/`100vh`) — those compute against the larger layout
-      viewport on mobile (the one that includes the space the address bar
-      can occupy), so a menu sized that way can render partly below the
-      fold until the page is scrolled once. Insets-from-viewport-edges
-      don't have that problem: the element is simply "from 4rem down to
-      the bottom of whatever's visible right now."
+      too by anchoring to the viewport directly. `top-16 right-4` puts it
+      right where `absolute top-full right-0` on the button itself would
+      have landed, so it still reads as "springing from the icon" without
+      inheriting the button's own containing-block/stacking problems.
     */}
     {isMounted && createPortal(
       <>
@@ -485,7 +589,7 @@ export function Navbar() {
           aria-hidden="true"
           onClick={closeMobileMenu}
           className={cn(
-            "md:hidden fixed inset-0 z-40 bg-black/30",
+            "md:hidden fixed inset-0 z-40 bg-black/20",
             "transition-opacity duration-300 ease-in-out",
             isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
           )}
@@ -493,146 +597,46 @@ export function Navbar() {
         <div
           aria-hidden={!isOpen}
           className={cn(
-            "md:hidden fixed top-16 right-4 z-50 w-72 max-w-[calc(100vw-2rem)]",
-            "max-h-[calc(100dvh-5rem)] flex flex-col bg-white p-4",
-            "rounded-xl border border-primary-100 shadow-xl overflow-y-auto",
-            "transition-all duration-300 ease-in-out",
-            isOpen
-              ? "opacity-100 translate-y-0"
-              : "opacity-0 -translate-y-2 pointer-events-none"
+            "md:hidden fixed top-16 right-4 z-50 w-72 max-w-[calc(100vw-2rem)] min-w-64",
+            "max-h-[calc(100dvh-5rem)] flex flex-col bg-white",
+            "rounded-xl border border-gray-200 shadow-xl overflow-hidden overflow-y-auto",
+            "origin-top-right",
+            isOpen ? "pointer-events-auto" : "pointer-events-none"
           )}
+          style={{
+            animation: isOpen
+              ? "springIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards"
+              : "springOut 0.15s ease-in forwards",
+          }}
         >
         {/* No separate close button here — the hamburger button itself
             (still visible in the navbar above) already toggles to an X
             while this is open, so a second close control right below it
             would be redundant in a compact card like this. */}
-        <nav className="flex flex-col">
-          {navLinks.map((link) => {
+        <nav className="flex flex-col py-2">
+          {mobileMenuLinks.map((link) => {
             const isActive = isLinkActive(link.href);
-
-            if (link.key === "nav_about") {
-              return (
-                <div key={link.href} className="border-b border-primary-100">
-                  <div className="flex items-center justify-between">
-                    <Link
-                      href={link.href}
-                      onClick={closeMobileMenu}
-                      className={cn(
-                        "flex-1 py-4 text-lg font-medium text-primary-700",
-                        isActive && "text-primary-600 font-semibold"
-                      )}
-                    >
-                      {t(link.key)}
-                    </Link>
-                    <button
-                      type="button"
-                      aria-label={t("nav_about_toggle_aria")}
-                      aria-expanded={isMobileAboutOpen}
-                      onClick={() => setIsMobileAboutOpen((prev) => !prev)}
-                      className="inline-flex items-center justify-center min-h-11 min-w-11 p-2 text-primary-500"
-                    >
-                      <ChevronDown
-                        className={cn(
-                          "h-5 w-5 transition-transform",
-                          isMobileAboutOpen && "rotate-180"
-                        )}
-                      />
-                    </button>
-                  </div>
-                  <div
-                    className={cn(
-                      "overflow-hidden pl-4 transition-[max-height] duration-300 ease-in-out",
-                      isMobileAboutOpen ? "max-h-[200px]" : "max-h-0"
-                    )}
-                  >
-                    {aboutLinks.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={closeMobileMenu}
-                        className="block py-3 text-base text-primary-600 hover:text-primary-500"
-                      >
-                        {t(item.key)}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              );
-            }
-
-            if (link.key === "nav_services") {
-              return (
-                <div key={link.href} className="border-b border-primary-100">
-                  <div className="flex items-center justify-between">
-                    <Link
-                      href={link.href}
-                      onClick={closeMobileMenu}
-                      className={cn(
-                        "flex-1 py-4 text-lg font-medium text-primary-700",
-                        isActive && "text-primary-600 font-semibold"
-                      )}
-                    >
-                      {t(link.key)}
-                    </Link>
-                    <button
-                      type="button"
-                      aria-label={t("nav_services_toggle_aria")}
-                      aria-expanded={isMobileServicesOpen}
-                      onClick={() => setIsMobileServicesOpen((prev) => !prev)}
-                      className="inline-flex items-center justify-center min-h-11 min-w-11 p-2 text-primary-500"
-                    >
-                      <ChevronDown
-                        className={cn(
-                          "h-5 w-5 transition-transform",
-                          isMobileServicesOpen && "rotate-180"
-                        )}
-                      />
-                    </button>
-                  </div>
-                  <div
-                    className={cn(
-                      "overflow-hidden pl-4 transition-[max-height] duration-300 ease-in-out",
-                      isMobileServicesOpen ? "max-h-[400px]" : "max-h-0"
-                    )}
-                  >
-                    {serviceLinks.map((service) => (
-                      <Link
-                        key={service.href}
-                        href={service.href}
-                        onClick={closeMobileMenu}
-                        className="block py-3 text-base text-primary-600 hover:text-primary-500"
-                      >
-                        {t(service.key)}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              );
-            }
-
+            const Icon = link.icon;
             return (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={closeMobileMenu}
                 className={cn(
-                  "py-4 text-lg font-medium text-primary-700 border-b border-primary-100",
-                  isActive && "text-primary-600 font-semibold"
+                  "px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-primary-600 flex items-center gap-3 transition-colors",
+                  isActive && "text-primary-600 font-semibold bg-primary-50/60"
                 )}
               >
+                <Icon className="h-4 w-4 text-gray-400" />
                 {t(link.key)}
               </Link>
             );
           })}
         </nav>
 
-        <Link
-          href="/affiliates"
-          onClick={closeMobileMenu}
-          className="mt-6 flex items-center justify-center w-full bg-primary-500 text-white px-4 py-3 rounded-lg text-base font-medium hover:bg-primary-600 transition-colors"
-        >
-          {t("nav_find_credit_union")}
-        </Link>
+        <div className="border-t border-gray-100 my-2" />
+
+        <div className="px-4 pb-4">{mobileAuthSection}</div>
         </div>
       </>,
       document.body

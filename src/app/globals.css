@@ -141,6 +141,33 @@ html {
   animation: fade-in 0.2s ease-out;
 }
 
+/* Mobile hamburger dropdown (Navbar.tsx) — the overshoot on entry
+   (cubic-bezier(0.34,1.56,0.64,1) pushes past scale(1) before settling)
+   is what reads as "springing" from the button; the exit has none, since
+   an overshoot on the way out looks like a bounce-back rather than a
+   dismissal. */
+@keyframes springIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.85) translateY(-8px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes springOut {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.85) translateY(-8px);
+  }
+}
+
 body {
   @apply bg-gray-50 text-gray-900;
 }
