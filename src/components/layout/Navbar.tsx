@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -135,6 +136,21 @@ export function Navbar() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen]);
 
+  // The mobile menu portals straight to <body> instead of rendering inside
+  // this header. The homepage hero uses `isolate` (to contain its grain
+  // layer's mix-blend-mode so it doesn't bleed onto content outside the
+  // hero) — isolate + mix-blend-mode is a known trigger for mobile Safari
+  // compositing this fixed menu *behind* that isolated stacking context
+  // regardless of z-index, when the menu is nested inside a sibling of it.
+  // Portaling escapes that entirely: document.body has no isolation of its
+  // own, so ordinary z-index rules apply. document.body doesn't exist
+  // during SSR, hence the mount guard.
+  const isMounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
+
   function toggleLanguage() {
     setLanguage(language === "en" ? "fr" : "en");
   }
@@ -246,6 +262,7 @@ export function Navbar() {
     );
 
   return (
+    <>
     <header
       className={cn(
         "print:hidden sticky top-0 z-40 transition-[background-color,border-color,backdrop-filter] duration-[240ms]",
@@ -432,46 +449,58 @@ export function Navbar() {
           </button>
         </div>
       </div>
+    </header>
 
-      {/*
-        `fixed` (viewport-relative), not `absolute` (relative to the nearest
-        positioned ancestor — this header, which is `sticky`). In principle a
-        stuck sticky header never leaves the viewport's top edge so `absolute
-        top-full` should track it, but any ancestor further up the tree with
-        a `transform`/`filter`/`contain` creates its own containing block and
-        silently breaks that stickiness — the header (and this menu with it)
-        then scrolls away with the page instead of staying put, which is
-        exactly what "menu opens above the visible viewport after scrolling"
-        looks like. `fixed` sidesteps the whole question by anchoring to the
-        viewport directly.
-        Sized with `top-16`/`bottom-0` insets rather than an explicit height
-        (`h-screen`/`100vh`) — those compute against the larger layout
-        viewport on mobile (the one that includes the space the address bar
-        can occupy), so a menu sized that way can render partly below the
-        fold until the page is scrolled once. Insets-from-viewport-edges
-        don't have that problem: the element is simply "from 4rem down to
-        the bottom of whatever's visible right now."
-      */}
-      <div
-        aria-hidden="true"
-        onClick={closeMobileMenu}
-        className={cn(
-          "md:hidden fixed inset-0 z-40 bg-black/30",
-          "transition-opacity duration-300 ease-in-out",
-          isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-        )}
-      />
-      <div
-        aria-hidden={!isOpen}
-        className={cn(
-          "md:hidden fixed top-16 left-0 right-0 bottom-0 z-50 flex flex-col bg-white p-6",
-          "overflow-y-auto shadow-xl border-b border-primary-100",
-          "transition-all duration-300 ease-in-out",
-          isOpen
-            ? "opacity-100 translate-y-0"
-            : "opacity-0 -translate-y-4 pointer-events-none"
-        )}
-      >
+    {/*
+      Portaled straight to <body>, not rendered inside the header. The
+      homepage hero uses `isolate` (to contain its grain layer's
+      mix-blend-mode so it doesn't bleed onto content outside the hero) —
+      isolate + mix-blend-mode is a known trigger for mobile Safari
+      compositing a sibling's fixed-position content *behind* that isolated
+      stacking context regardless of z-index. Portaling to body sidesteps it
+      entirely: body has no isolation of its own, so ordinary z-index rules
+      apply against every ancestor's content, hero included.
+
+      `fixed` (viewport-relative), not `absolute` (relative to the nearest
+      positioned ancestor — normally the header, which is `sticky`). In
+      principle a stuck sticky header never leaves the viewport's top edge
+      so `absolute top-full` should track it, but any ancestor further up
+      the tree with a `transform`/`filter`/`contain` creates its own
+      containing block and silently breaks that stickiness — the header
+      (and an absolutely-positioned menu riding on it) then scrolls away
+      with the page instead of staying put. `fixed` sidesteps that question
+      too by anchoring to the viewport directly.
+
+      Sized with `top-16`/`bottom-0` insets rather than an explicit height
+      (`h-screen`/`100vh`) — those compute against the larger layout
+      viewport on mobile (the one that includes the space the address bar
+      can occupy), so a menu sized that way can render partly below the
+      fold until the page is scrolled once. Insets-from-viewport-edges
+      don't have that problem: the element is simply "from 4rem down to
+      the bottom of whatever's visible right now."
+    */}
+    {isMounted && createPortal(
+      <>
+        <div
+          aria-hidden="true"
+          onClick={closeMobileMenu}
+          className={cn(
+            "md:hidden fixed inset-0 z-40 bg-black/30",
+            "transition-opacity duration-300 ease-in-out",
+            isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+          )}
+        />
+        <div
+          aria-hidden={!isOpen}
+          className={cn(
+            "md:hidden fixed top-16 left-0 right-0 bottom-0 z-50 flex flex-col bg-white p-6",
+            "overflow-y-auto shadow-xl border-b border-primary-100",
+            "transition-all duration-300 ease-in-out",
+            isOpen
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 -translate-y-4 pointer-events-none"
+          )}
+        >
         <button
           type="button"
           onClick={closeMobileMenu}
@@ -608,7 +637,10 @@ export function Navbar() {
         >
           {t("nav_find_credit_union")}
         </Link>
-      </div>
-    </header>
+        </div>
+      </>,
+      document.body
+    )}
+    </>
   );
 }
