@@ -1,14 +1,33 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronUp,
+  Calendar,
+  MapPin,
+  Clock,
+  User,
+  FileText,
+  AlertCircle,
+  Phone,
+  ClipboardList,
+  Info,
+  type LucideIcon,
+} from "lucide-react";
 import { Badge, type BadgeProps } from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";
+
+interface AnnouncementDetail {
+  label: string;
+  value: string;
+}
 
 interface Announcement {
   id: string;
   title: string;
-  content: string;
+  opening: string;
+  details: AnnouncementDetail[];
   category: string;
   priority: string;
   publishedAt: string | null;
@@ -30,6 +49,24 @@ const PRIORITY_DOT_COLOR: Record<string, string> = {
   normal: "bg-blue-500",
   low: "bg-gray-400",
 };
+
+// Detail labels are admin free-text (see the Announcements Manager's
+// datalist suggestions), so this matches loosely rather than requiring an
+// exact set — "Registration Deadline" and "Deadline" both need to land on
+// AlertCircle, which a plain lookup table keyed on the exact string
+// wouldn't catch.
+function iconForLabel(label: string): LucideIcon {
+  const normalized = label.trim().toLowerCase();
+  if (normalized === "date") return Calendar;
+  if (normalized === "venue") return MapPin;
+  if (normalized === "time") return Clock;
+  if (normalized === "facilitator") return User;
+  if (normalized === "topic") return FileText;
+  if (normalized.includes("deadline")) return AlertCircle;
+  if (normalized === "contact") return Phone;
+  if (normalized === "requirements") return ClipboardList;
+  return Info;
+}
 
 function formatDate(iso: string | null): string {
   if (!iso) return "";
@@ -62,14 +99,17 @@ function AnnouncementCard({
         isExpanded ? "bg-primary-50/50 border-primary-200" : "bg-white border-gray-200"
       )}
     >
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 mb-1">
         <span
           className={cn("h-2 w-2 rounded-full shrink-0", PRIORITY_DOT_COLOR[item.priority] ?? "bg-gray-400")}
           aria-hidden="true"
         />
-        <p className="font-medium text-sm text-gray-900">{item.title}</p>
+        <Badge variant={CATEGORY_BADGE_VARIANT[item.category] ?? "default"}>{item.category}</Badge>
       </div>
 
+      <p className="font-bold text-lg text-gray-900">{item.title}</p>
+
+      {/* Collapsed preview */}
       <div
         className={cn(
           "grid transition-[grid-template-rows,opacity] duration-300 ease-in-out",
@@ -77,10 +117,11 @@ function AnnouncementCard({
         )}
       >
         <div className="overflow-hidden">
-          <p className="text-sm text-gray-600 mt-1 line-clamp-2">{item.content}</p>
+          <p className="text-sm text-gray-600 mt-1 line-clamp-2">{item.opening}</p>
         </div>
       </div>
 
+      {/* Expanded body: full opening + detail bullets */}
       <div
         className={cn(
           "grid transition-[grid-template-rows,opacity] duration-300 ease-in-out",
@@ -88,31 +129,52 @@ function AnnouncementCard({
         )}
       >
         <div className="overflow-hidden">
-          <p className="text-sm text-gray-600 mt-1">{item.content}</p>
-          <div className="flex items-center gap-2 mt-2">
-            <Badge variant={CATEGORY_BADGE_VARIANT[item.category] ?? "default"}>{item.category}</Badge>
-            <span className="text-xs text-gray-400">{formatDate(item.publishedAt)}</span>
-          </div>
+          <p className="text-sm text-gray-600 mt-1">{item.opening}</p>
+
+          {item.details.length > 0 && (
+            <>
+              <div className="border-t border-gray-100 my-2" />
+              <div>
+                {item.details.map((detail, index) => {
+                  const Icon = iconForLabel(detail.label);
+                  return (
+                    <div key={index} className="flex items-start gap-3 py-1.5">
+                      <Icon className="h-4 w-4 text-primary-500 flex-shrink-0 mt-0.5" />
+                      <p className="text-sm">
+                        <span className="font-bold text-gray-900 mr-1">{detail.label}:</span>
+                        <span className="text-gray-700">{detail.value}</span>
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
         </div>
       </div>
 
-      <button
-        type="button"
-        onClick={onToggle}
-        className="mt-2 text-sm text-primary-600 font-medium inline-flex items-center gap-1"
-      >
-        {isExpanded ? (
-          <>
-            Show Less
-            <ChevronUp className="h-4 w-4" />
-          </>
-        ) : (
-          <>
-            Read More
-            <ChevronDown className="h-4 w-4" />
-          </>
-        )}
-      </button>
+      {isExpanded && <div className="border-t border-gray-100 my-2" />}
+
+      <div className="flex items-center justify-between mt-2">
+        <span className="text-xs font-bold text-gray-500">{formatDate(item.publishedAt)}</span>
+        <button
+          type="button"
+          onClick={onToggle}
+          className="text-sm text-primary-600 font-medium inline-flex items-center gap-1"
+        >
+          {isExpanded ? (
+            <>
+              Show Less
+              <ChevronUp className="h-4 w-4" />
+            </>
+          ) : (
+            <>
+              Read More
+              <ChevronDown className="h-4 w-4" />
+            </>
+          )}
+        </button>
+      </div>
     </div>
   );
 }

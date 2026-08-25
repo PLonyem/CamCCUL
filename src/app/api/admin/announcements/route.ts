@@ -53,7 +53,8 @@ export async function POST(request: NextRequest) {
   const announcement = await prisma.announcement.create({
     data: {
       title: data.title,
-      content: data.content,
+      opening: data.opening,
+      details: data.details,
       category: data.category,
       priority: data.priority,
       targetChapter: data.targetChapter?.trim() || null,

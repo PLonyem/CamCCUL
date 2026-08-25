@@ -130,18 +130,28 @@ async function seedAnnouncements() {
     {
       id: "announcement-1",
       title: "Q3 Reporting Deadline",
-      content:
-        "All affiliated credit unions are reminded that Q3 2026 COBAC reports are due by September 30, 2026. Please ensure your submission is complete and accurate before the deadline.",
+      opening:
+        "Dear Colleagues, This is to remind all credit unions of the upcoming Q3 reporting obligations. Please note the following:",
+      details: [
+        { label: "Reporting Period", value: "July – September 2026" },
+        { label: "Submission Deadline", value: "September 30, 2026" },
+        {
+          label: "Required Documents",
+          value: "Financial statements, loan portfolio report, liquidity ratio calculation",
+        },
+        { label: "Submission Method", value: "Via the CamCCUL online portal" },
+      ],
       category: "Circular",
-      priority: "high",
+      priority: "urgent",
       isPublished: true,
       publishedAt: now,
     },
     {
       id: "announcement-2",
       title: "Digital Training Session",
-      content:
+      opening:
         "CamCCUL is hosting a digital banking training session for credit union staff, covering mobile banking platforms, digital security, and member onboarding best practices. Contact your regional chapter for scheduling details.",
+      details: [],
       category: "Training",
       priority: "normal",
       isPublished: true,
@@ -150,8 +160,9 @@ async function seedAnnouncements() {
     {
       id: "announcement-3",
       title: "New COBAC Guidelines",
-      content:
+      opening:
         "COBAC has issued updated regulatory guidelines affecting reporting requirements for cooperative credit unions. All affiliates should review the new guidelines and ensure compliance with the revised standards.",
+      details: [],
       category: "COBAC",
       priority: "urgent",
       isPublished: true,
@@ -160,11 +171,30 @@ async function seedAnnouncements() {
     {
       id: "announcement-4",
       title: "Profile Update Reminder",
-      content:
+      opening:
         "Credit unions that have not yet updated their profile information are reminded to complete their submission through the credit union dashboard. An up-to-date profile ensures accurate information is displayed to the public.",
+      details: [],
       category: "Announcement",
       priority: "normal",
       isPublished: false,
+    },
+    {
+      id: "announcement-5",
+      title: "TrustSoft Training Seminar",
+      opening:
+        "Dear Colleagues, We are pleased to announce an upcoming hands-on training seminar facilitated by TrustSoft, scheduled to hold as follows:",
+      details: [
+        { label: "Date", value: "Thursday, September 12, 2026" },
+        { label: "Venue", value: "CamCCUL Conference Hall, Bamenda" },
+        { label: "Time", value: "9:00 AM – 4:00 PM" },
+        { label: "Facilitator", value: "TrustSoft" },
+        { label: "Topic", value: "Digital Reporting Tools" },
+        { label: "Registration Deadline", value: "September 5, 2026" },
+      ],
+      category: "Training",
+      priority: "high",
+      isPublished: true,
+      publishedAt: now,
     },
   ];
 

@@ -9,11 +9,13 @@ import { Badge, type BadgeProps } from "@/components/ui/Badge";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { regions, regionLabels } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
+import type { AnnouncementDetail } from "@/lib/validation/announcement";
 
 interface AnnouncementRow {
   id: string;
   title: string;
-  content: string;
+  opening: string;
+  details: AnnouncementDetail[];
   category: string;
   priority: string;
   targetChapter: string | null;
@@ -23,6 +25,22 @@ interface AnnouncementRow {
   createdAt: string;
   updatedAt: string;
 }
+
+// Suggestions for the detail-row label input — matches the icon mapping in
+// AnnouncementsFeed.tsx so an admin picking one of these sees the right
+// icon show up on the dashboard, but the field stays free-text since a
+// label outside this set still renders fine (falls back to a generic icon).
+const DETAIL_LABEL_SUGGESTIONS = [
+  "Date",
+  "Venue",
+  "Time",
+  "Facilitator",
+  "Topic",
+  "Deadline",
+  "Registration Deadline",
+  "Contact",
+  "Requirements",
+];
 
 const CATEGORIES = ["Circular", "Training", "COBAC", "Announcement", "Event"];
 const PRIORITIES: { value: string; label: string }[] = [
@@ -66,7 +84,8 @@ function formatDate(value: string | null): string {
 
 interface FormState {
   title: string;
-  content: string;
+  opening: string;
+  details: AnnouncementDetail[];
   category: string;
   priority: string;
   targetChapter: string; // "" = All Chapters
@@ -75,7 +94,8 @@ interface FormState {
 
 const EMPTY_FORM: FormState = {
   title: "",
-  content: "",
+  opening: "",
+  details: [],
   category: CATEGORIES[0],
   priority: "normal",
   targetChapter: "",
@@ -136,7 +156,8 @@ export default function AdminAnnouncementsPage() {
     setEditingId(announcement.id);
     setForm({
       title: announcement.title,
-      content: announcement.content,
+      opening: announcement.opening,
+      details: announcement.details,
       category: announcement.category,
       priority: announcement.priority,
       targetChapter: announcement.targetChapter ?? "",
@@ -146,13 +167,32 @@ export default function AdminAnnouncementsPage() {
     setIsModalOpen(true);
   }
 
+  function addDetailRow() {
+    setForm((f) => ({ ...f, details: [...f.details, { label: "", value: "" }] }));
+  }
+
+  function updateDetailRow(index: number, field: "label" | "value", value: string) {
+    setForm((f) => ({
+      ...f,
+      details: f.details.map((d, i) => (i === index ? { ...d, [field]: value } : d)),
+    }));
+  }
+
+  function removeDetailRow(index: number) {
+    setForm((f) => ({ ...f, details: f.details.filter((_, i) => i !== index) }));
+  }
+
   async function handleSave(isPublished: boolean) {
     setIsSaving(true);
     setFieldErrors({});
 
     const payload = {
       title: form.title,
-      content: form.content,
+      opening: form.opening,
+      // Rows an admin added but never actually filled in (both sides still
+      // blank) are dropped silently rather than tripping the "label is
+      // required" validation error on a row nobody meant to keep.
+      details: form.details.filter((d) => d.label.trim() || d.value.trim()),
       category: form.category,
       priority: form.priority,
       targetChapter: form.targetChapter || null,
@@ -281,7 +321,7 @@ export default function AdminAnnouncementsPage() {
                             Published {formatDate(announcement.publishedAt)}
                           </span>
                         </div>
-                        <p className="text-sm text-gray-600 mt-2 line-clamp-2">{announcement.content}</p>
+                        <p className="text-sm text-gray-600 mt-2 line-clamp-2">{announcement.opening}</p>
                         <div className="flex items-center gap-4 mt-3">
                           <button
                             type="button"
@@ -444,18 +484,75 @@ export default function AdminAnnouncementsPage() {
               </div>
 
               <div>
-                <label htmlFor="ann-content" className={labelClass}>
-                  Content
+                <label htmlFor="ann-opening" className={labelClass}>
+                  Opening Message
                 </label>
                 <textarea
-                  id="ann-content"
-                  rows={5}
-                  value={form.content}
-                  onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))}
+                  id="ann-opening"
+                  rows={3}
+                  placeholder="Dear Colleagues, We are pleased to announce..."
+                  value={form.opening}
+                  onChange={(e) => setForm((f) => ({ ...f, opening: e.target.value }))}
                   className={inputClass}
                   disabled={isSaving}
                 />
-                {fieldErrors.content && <p className={errorClass}>{fieldErrors.content}</p>}
+                {fieldErrors.opening && <p className={errorClass}>{fieldErrors.opening}</p>}
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className={labelClass}>Details</label>
+                  <button
+                    type="button"
+                    onClick={addDetailRow}
+                    disabled={isSaving}
+                    className="text-xs font-medium text-primary-600 hover:text-primary-700 transition-colors inline-flex items-center gap-1 disabled:opacity-50"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                    Add Detail
+                  </button>
+                </div>
+                {form.details.length === 0 ? (
+                  <p className="text-xs text-gray-400">No details added yet.</p>
+                ) : (
+                  <div className="space-y-2">
+                    {form.details.map((detail, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          list="ann-detail-label-suggestions"
+                          placeholder="Label (e.g. Date)"
+                          value={detail.label}
+                          onChange={(e) => updateDetailRow(index, "label", e.target.value)}
+                          className={cn(inputClass, "flex-1 min-w-0")}
+                          disabled={isSaving}
+                        />
+                        <input
+                          type="text"
+                          placeholder="Value (e.g. September 12, 2026)"
+                          value={detail.value}
+                          onChange={(e) => updateDetailRow(index, "value", e.target.value)}
+                          className={cn(inputClass, "flex-[2] min-w-0")}
+                          disabled={isSaving}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeDetailRow(index)}
+                          disabled={isSaving}
+                          aria-label="Remove detail"
+                          className="text-gray-400 hover:text-red-600 transition-colors shrink-0 disabled:opacity-50"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <datalist id="ann-detail-label-suggestions">
+                  {DETAIL_LABEL_SUGGESTIONS.map((label) => (
+                    <option key={label} value={label} />
+                  ))}
+                </datalist>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
