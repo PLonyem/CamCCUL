@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin, Mail } from "lucide-react";
+import { Building2, MapPin, Mail } from "lucide-react";
 import { contactInfo } from "@/lib/mock-data";
 import { useLanguage } from "@/context/LanguageContext";
 import { localize, type TranslationKey } from "@/lib/i18n";
@@ -138,6 +138,16 @@ export function Footer() {
               <SocialIcon platform="youtube" href={CAMCCUL_YOUTUBE_URL} />
             </div>
           </div>
+        </div>
+
+        <div className="mt-12 flex justify-center">
+          <Link
+            href="/affiliates"
+            className="flex items-center justify-center gap-2 bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-lg font-medium text-center w-full max-w-md mx-auto transition-colors"
+          >
+            <Building2 className="h-5 w-5" aria-hidden="true" />
+            {t("nav_find_credit_union")}
+          </Link>
         </div>
 
         <div className="border-t border-primary-700 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-primary-200 gap-4">

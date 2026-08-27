@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "eslint --ignore-pattern src/generated/**",
+    "typecheck": "tsc --noEmit --incremental false",
+    "test:loan": "tsx --test src/lib/loan-calculator/*.test.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

@@ -23,6 +23,7 @@ import {
   Newspaper,
   HelpCircle,
   Mail,
+  Calculator,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -34,6 +35,7 @@ const navLinks: { key: TranslationKey; href: string }[] = [
   { key: "nav_home", href: "/" },
   { key: "nav_about", href: "/about" },
   { key: "nav_services", href: "/services" },
+  { key: "nav_loan_calculator", href: "/loan-calculator" },
   { key: "nav_resources", href: "/resources" },
   { key: "nav_news", href: "/news" },
   { key: "nav_faq", href: "/faq" },
@@ -61,6 +63,7 @@ const mobileMenuLinks: { key: TranslationKey; href: string; icon: LucideIcon }[]
   { key: "nav_home", href: "/", icon: Home },
   { key: "nav_about", href: "/about", icon: Info },
   { key: "nav_services", href: "/services", icon: Briefcase },
+  { key: "nav_loan_calculator", href: "/loan-calculator", icon: Calculator },
   { key: "nav_affiliates", href: "/affiliates", icon: Building2 },
   { key: "nav_resources", href: "/resources", icon: FolderOpen },
   { key: "nav_news", href: "/news", icon: Newspaper },

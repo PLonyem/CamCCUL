@@ -10,11 +10,14 @@ const isPublicRoute = createRouteMatcher([
   "/news(.*)",
   "/faq(.*)",
   "/contact(.*)",
+  "/loan-calculator(.*)",
   "/api/chatbot(.*)",
   "/api/contact(.*)",
   "/api/affiliates(.*)",
   "/api/homepage(.*)",
   "/api/announcements(.*)",
+  "/api/loan-products(.*)",
+  "/api/simulations/calculate",
   "/api/signup/credit-union/check",
 ]);
 

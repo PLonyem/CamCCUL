@@ -102,6 +102,8 @@ model Affiliate {
   documents      AffiliateDocument[]
   signupRequests CreditUnionSignupRequest[]
   submissions    AffiliateSubmission[]
+  loanProductOverrides LoanProductAffiliate[]
+  loanSimulations LoanSimulation[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -110,6 +112,135 @@ model Affiliate {
   @@index([name])
   @@index([profileStatus])
   @@map("affiliates")
+}
+
+// Public loan products are deliberately policy-free. Every financial rule
+// lives in an immutable LoanProductVersion so a historical simulation can
+// always be reproduced after rates or limits change.
+model LoanProduct {
+  id             String   @id @default(cuid())
+  code           String   @unique
+  nameEn         String
+  nameFr         String
+  descriptionEn  String   @db.Text
+  descriptionFr  String   @db.Text
+  category       String
+  icon            String   @default("Landmark")
+  isActive        Boolean  @default(false)
+  versions        LoanProductVersion[]
+  affiliateRules LoanProductAffiliate[]
+  simulations    LoanSimulation[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([category])
+  @@index([isActive])
+  @@map("loan_products")
+}
+
+model LoanProductVersion {
+  id                        String   @id @default(cuid())
+  loanProductId             String
+  loanProduct               LoanProduct @relation(fields: [loanProductId], references: [id], onDelete: Cascade)
+  version                   Int
+  minimumAmount             Int
+  maximumAmount             Int
+  availableTerms            Int[]
+  interestRateBasisPoints   Int
+  interestPeriod            String   // annual | monthly
+  calculationMethod         String   // flat | reducing_balance
+  requiredSavingsBasisPoints Int
+  affordabilityBasisPoints  Int?     // optional indicative repayment-to-income ceiling
+  gracePeriodMonths         Int      @default(0)
+  eligibilityDescriptionEn String?  @db.Text
+  eligibilityDescriptionFr String?  @db.Text
+  requiredDocuments         Json     @default("[]")
+  feeRules                  Json     @default("[]")
+  effectiveFrom             DateTime
+  effectiveTo               DateTime?
+  isPublished               Boolean  @default(false)
+  changeReason              String?  @db.Text
+  createdBy                 String?
+  createdAt                 DateTime @default(now())
+  affiliateRules            LoanProductAffiliate[]
+  simulations               LoanSimulation[]
+
+  @@unique([loanProductId, version])
+  @@index([loanProductId, effectiveFrom])
+  @@index([isPublished, effectiveFrom])
+  @@map("loan_product_versions")
+}
+
+// Nullable fields inherit from the selected product version. This encodes
+// the precedence CamCCUL default -> product version -> affiliate override.
+model LoanProductAffiliate {
+  id                         String   @id @default(cuid())
+  loanProductId              String
+  loanProduct                LoanProduct @relation(fields: [loanProductId], references: [id], onDelete: Cascade)
+  loanProductVersionId       String
+  loanProductVersion         LoanProductVersion @relation(fields: [loanProductVersionId], references: [id], onDelete: Cascade)
+  affiliateId                String
+  affiliate                  Affiliate @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+  minimumAmount              Int?
+  maximumAmount              Int?
+  availableTerms             Int[]
+  interestRateBasisPoints    Int?
+  interestPeriod             String?
+  calculationMethod          String?
+  requiredSavingsBasisPoints Int?
+  feeRules                   Json?
+  isActive                   Boolean  @default(true)
+  effectiveFrom              DateTime
+  effectiveTo                DateTime?
+  changeReason               String?  @db.Text
+  createdBy                  String?
+  createdAt                  DateTime @default(now())
+  updatedAt                  DateTime @updatedAt
+
+  @@unique([loanProductVersionId, affiliateId])
+  @@index([affiliateId, isActive])
+  @@map("loan_product_affiliates")
+}
+
+model LoanSimulation {
+  id                   String   @id @default(cuid())
+  reference            String   @unique
+  loanProductId        String
+  loanProduct          LoanProduct @relation(fields: [loanProductId], references: [id])
+  loanProductVersionId String
+  loanProductVersion   LoanProductVersion @relation(fields: [loanProductVersionId], references: [id])
+  affiliateId          String?
+  affiliate            Affiliate? @relation(fields: [affiliateId], references: [id])
+  language             String   @default("en")
+  requestedAmount      Int
+  termMonths           Int
+  savingsBalance       Int
+  policySnapshot       Json
+  inputSnapshot        Json
+  resultSnapshot       Json
+  eligibilityStatus    String
+  createdAt            DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([loanProductId, createdAt])
+  @@index([affiliateId, createdAt])
+  @@map("loan_simulations")
+}
+
+model LoanPolicyAuditLog {
+  id           String   @id @default(cuid())
+  actorUserId  String
+  entityType   String
+  entityId     String
+  action       String
+  previousData Json?
+  newData      Json?
+  reason       String?  @db.Text
+  createdAt    DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@map("loan_policy_audit_logs")
 }
 
 // One row per profile submission/resubmission, preserving history that

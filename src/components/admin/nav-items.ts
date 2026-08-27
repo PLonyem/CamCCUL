@@ -11,6 +11,7 @@ import {
   Mail,
   Settings,
   Bell,
+  Calculator,
   type LucideIcon,
 } from "lucide-react";
 import type { TranslationKey } from "@/lib/i18n";
@@ -40,6 +41,7 @@ export const adminNavGroups: AdminNavGroup[] = [
     labelKey: "admin.websiteContent",
     items: [
       { href: "/admin/homepage", labelKey: "admin.homepageEditor", icon: Home },
+      { href: "/admin/loan-products", labelKey: "admin.loanCalculator", icon: Calculator },
       { href: "/admin/announcements", labelKey: "admin.announcementsManager", icon: Megaphone },
       { href: "/admin/news", labelKey: "admin.newsManager", icon: Newspaper },
       { href: "/admin/resources", labelKey: "admin.resourcesManager", icon: FolderOpen },
