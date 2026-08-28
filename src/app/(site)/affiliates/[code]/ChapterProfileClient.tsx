@@ -162,7 +162,7 @@ export function ChapterProfileClient({
     <>
       {previewMode && affiliate.profileStatus !== "approved" && (
         <div className="bg-amber-50 border-b border-amber-200 text-amber-800 text-sm text-center py-2 px-4">
-          This is a preview of how your profile will look once approved — it isn&apos;t live yet.
+          {t("chapter_preview_notice")}
         </div>
       )}
 

@@ -26,8 +26,8 @@ function parseFcfa(value: string) {
   return digits ? Number(digits) : 0;
 }
 
-function formatInput(value: number) {
-  return value > 0 ? value.toLocaleString("en-US") : "";
+function formatInput(value: number, language: "en" | "fr") {
+  return value > 0 ? value.toLocaleString(language === "fr" ? "fr-FR" : "en-US") : "";
 }
 
 function formatFcfa(value: number, language: "en" | "fr") {
@@ -48,13 +48,13 @@ export function CompactLoanCalculator() {
   useEffect(() => {
     fetch("/api/loan-products")
       .then(async (response) => {
-        if (!response.ok) throw new Error("Loan products could not be loaded.");
+        if (!response.ok) throw new Error(t("compact_loan_load_error"));
         return response.json();
       })
       .then((data) => setProducts(data.products ?? []))
-      .catch((reason) => setError(reason instanceof Error ? reason.message : "Loan products could not be loaded."))
+      .catch(() => setError(t("compact_loan_load_error")))
       .finally(() => setLoadingProducts(false));
-  }, []);
+  }, [t]);
 
   const selectedProduct = products.find((product) => product.id === productId);
   const validTerms = useMemo(
@@ -91,10 +91,10 @@ export function CompactLoanCalculator() {
         }),
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error ?? "The estimate could not be calculated.");
+      if (!response.ok) throw new Error(t("compact_loan_calculate_error"));
       setResult((data as SimulationResponse).result);
-    } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "The estimate could not be calculated.");
+    } catch {
+      setError(t("compact_loan_calculate_error"));
     } finally {
       setCalculating(false);
     }
@@ -145,7 +145,7 @@ export function CompactLoanCalculator() {
                   <input
                     type="text"
                     inputMode="numeric"
-                    value={formatInput(amount)}
+                    value={formatInput(amount, language)}
                     onChange={(event) => {
                       setAmount(parseFcfa(event.target.value));
                       setResult(null);

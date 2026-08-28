@@ -30,6 +30,8 @@ const en = {
   nav_menu_open_aria: "Open menu",
   nav_menu_close_aria: "Close menu",
   nav_find_credit_union: "Find a Credit Union",
+  nav_sign_in: "Sign In",
+  nav_sign_out: "Sign Out",
   nav_my_dashboard: "My Dashboard",
   nav_admin_dashboard: "Admin Dashboard",
 
@@ -115,6 +117,8 @@ const en = {
   compact_loan_open_full: "Open Full Calculator",
   compact_loan_disclaimer:
     "Indicative estimates only. Final terms determined by your affiliated credit union.",
+  compact_loan_load_error: "Loan products could not be loaded.",
+  compact_loan_calculate_error: "The estimate could not be calculated.",
   home2_values_sr_heading: "What CamCCUL does",
   home_glance_affiliates_label: "Affiliated Credit Unions",
   home_glance_regions_label: "Regions Covered",
@@ -245,6 +249,7 @@ const en = {
 
   // ─── Affiliates page ──────────────────────────────────────────────────
   affiliates_page_title: "Our Affiliate Credit Unions",
+  affiliates_load_error: "Could not load the credit union directory. Please refresh the page.",
   affiliates_page_subtitle: "Select a chapter to view its affiliated credit unions",
   affiliates_select_title: "Find Credit Unions in Your Chapter",
   affiliates_select_description:
@@ -274,6 +279,7 @@ const en = {
 
   // ─── Chapter Profile Page ───────────────────────────────────────────────
   chapter_not_found_title: "Chapter Not Found",
+  chapter_preview_notice: "This is a preview of how your profile will look once approved — it is not live yet.",
   chapter_not_found_message:
     "We couldn't find a chapter with this code. It may have been moved, or the code may be incorrect.",
   chapter_not_found_back: "Back to Find a Credit Union",
@@ -340,6 +346,11 @@ const en = {
   news_page_subtitle: "Stay informed with the latest updates from CamCCUL.",
   news_category_all: "All",
   news_read_more: "Read More →",
+  news_back: "Back to News",
+  news_share_article: "Share this article:",
+  news_copy_link: "Copy Link",
+  news_copied: "Copied!",
+  news_email: "Email",
   news_read_more_cta: "Read More",
   news_previous: "Previous",
   news_next: "Next",
@@ -557,6 +568,8 @@ const fr: Record<keyof typeof en, string> = {
   nav_menu_open_aria: "Ouvrir le menu",
   nav_menu_close_aria: "Fermer le menu",
   nav_find_credit_union: "Trouver une Coopérative",
+  nav_sign_in: "Se connecter",
+  nav_sign_out: "Se déconnecter",
   nav_my_dashboard: "Mon Tableau de Bord",
   nav_admin_dashboard: "Tableau de Bord Admin",
 
@@ -642,6 +655,8 @@ const fr: Record<keyof typeof en, string> = {
   compact_loan_open_full: "Ouvrir le calculateur complet",
   compact_loan_disclaimer:
     "Estimations indicatives uniquement. Les conditions finales sont déterminées par votre coopérative de crédit affiliée.",
+  compact_loan_load_error: "Impossible de charger les produits de prêt.",
+  compact_loan_calculate_error: "Impossible de calculer cette estimation.",
   home2_values_sr_heading: "Ce que fait CamCCUL",
   home_glance_affiliates_label: "Coopératives Affiliées",
   home_glance_regions_label: "Régions Couvertes",
@@ -774,6 +789,7 @@ const fr: Record<keyof typeof en, string> = {
 
   // ─── Affiliates page ──────────────────────────────────────────────────
   affiliates_page_title: "Nos Coopératives de Crédit Affiliées",
+  affiliates_load_error: "Impossible de charger l’annuaire des coopératives de crédit. Veuillez actualiser la page.",
   affiliates_page_subtitle: "Sélectionnez un chapitre pour voir ses coopératives de crédit affiliées",
   affiliates_select_title: "Trouvez des Coopératives de Crédit dans Votre Chapitre",
   affiliates_select_description:
@@ -803,6 +819,7 @@ const fr: Record<keyof typeof en, string> = {
 
   // ─── Chapter Profile Page ───────────────────────────────────────────────
   chapter_not_found_title: "Chapitre Introuvable",
+  chapter_preview_notice: "Voici un aperçu de votre profil une fois approuvé — il n’est pas encore publié.",
   chapter_not_found_message:
     "Nous n'avons pas trouvé de chapitre avec ce code. Il a peut-être été déplacé, ou le code est peut-être incorrect.",
   chapter_not_found_back: "Retour à Trouver une Coopérative",
@@ -870,6 +887,11 @@ const fr: Record<keyof typeof en, string> = {
   news_page_subtitle: "Restez informé des dernières actualités de CamCCUL.",
   news_category_all: "Toutes",
   news_read_more: "Lire la Suite →",
+  news_back: "Retour aux actualités",
+  news_share_article: "Partager cet article :",
+  news_copy_link: "Copier le lien",
+  news_copied: "Copié !",
+  news_email: "Courriel",
   news_read_more_cta: "Lire la Suite",
   news_previous: "Précédent",
   news_next: "Suivant",

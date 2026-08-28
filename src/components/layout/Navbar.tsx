@@ -208,8 +208,8 @@ export function Navbar() {
     <button
       type="button"
       onClick={handleSignOut}
-      title="Sign Out"
-      aria-label="Sign Out"
+      title={t("nav_sign_out")}
+      aria-label={t("nav_sign_out")}
       className={cn(
         "inline-flex items-center justify-center min-h-11 min-w-11 rounded-lg transition-colors",
         focusRing,
@@ -233,7 +233,7 @@ export function Navbar() {
       <Link
         href="/login"
         className={cn(
-          "inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium border transition-colors",
+          "inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-medium transition-colors xl:px-4",
           focusRing,
           lightChrome
             ? "border-white/40 text-white hover:bg-white/10"
@@ -241,7 +241,7 @@ export function Navbar() {
         )}
       >
         <LogIn className="h-4 w-4" />
-        Sign In
+        <span className="hidden xl:inline">{t("nav_sign_in")}</span>
       </Link>
     ) : role === "credit_union" ? (
       <div className="flex items-center gap-1">
@@ -250,7 +250,7 @@ export function Navbar() {
           className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium bg-primary-500 text-white hover:bg-primary-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary-500"
         >
           <FileText className="h-4 w-4" />
-          <span className="hidden sm:inline">{t("nav_my_dashboard")}</span>
+          <span className="hidden xl:inline">{t("nav_my_dashboard")}</span>
         </Link>
         {signOutButton}
       </div>
@@ -261,7 +261,7 @@ export function Navbar() {
           className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium bg-primary-900 text-white hover:bg-primary-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary-900"
         >
           <LayoutDashboard className="h-4 w-4" />
-          <span className="hidden sm:inline">{t("nav_admin_dashboard")}</span>
+          <span className="hidden xl:inline">{t("nav_admin_dashboard")}</span>
         </Link>
         {signOutButton}
       </div>
@@ -275,7 +275,7 @@ export function Navbar() {
           className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium bg-primary-500 text-white hover:bg-primary-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary-500"
         >
           <FileText className="h-4 w-4" />
-          <span className="hidden sm:inline">{t("nav_my_dashboard")}</span>
+          <span className="hidden xl:inline">{t("nav_my_dashboard")}</span>
         </Link>
         {signOutButton}
       </div>
@@ -297,7 +297,7 @@ export function Navbar() {
         className={cn(mobileAuthButtonClass, "bg-primary-500 text-white hover:bg-primary-600")}
       >
         <LogIn className="h-4 w-4" />
-        Sign In
+        {t("nav_sign_in")}
       </Link>
     ) : role === "credit_union" ? (
       <div className="flex flex-col gap-2">
@@ -318,7 +318,7 @@ export function Navbar() {
           className={cn(mobileAuthButtonClass, "border border-gray-300 text-gray-700 hover:bg-gray-50")}
         >
           <LogOut className="h-4 w-4" />
-          Sign Out
+          {t("nav_sign_out")}
         </button>
       </div>
     ) : role === "admin" ? (
@@ -340,7 +340,7 @@ export function Navbar() {
           className={cn(mobileAuthButtonClass, "border border-gray-300 text-gray-700 hover:bg-gray-50")}
         >
           <LogOut className="h-4 w-4" />
-          Sign Out
+          {t("nav_sign_out")}
         </button>
       </div>
     ) : (
@@ -362,7 +362,7 @@ export function Navbar() {
           className={cn(mobileAuthButtonClass, "border border-gray-300 text-gray-700 hover:bg-gray-50")}
         >
           <LogOut className="h-4 w-4" />
-          Sign Out
+          {t("nav_sign_out")}
         </button>
       </div>
     );
@@ -385,7 +385,7 @@ export function Navbar() {
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white text-primary-600 ring-1 ring-primary-100">
             <Building2 className="h-6 w-6" aria-hidden="true" />
           </div>
-          <div className="min-w-0">
+          <div className="hidden min-w-0 lg:block">
             <span
               className={cn(
                 "font-display block whitespace-nowrap text-xl font-bold leading-tight transition-colors",
@@ -405,7 +405,7 @@ export function Navbar() {
           </div>
         </Link>
 
-        <nav className="hidden min-w-0 flex-1 items-center justify-center gap-2 lg:flex xl:gap-4 2xl:gap-6">
+        <nav className="hidden min-w-0 flex-1 items-center justify-center gap-1.5 md:flex lg:gap-2 xl:gap-4 2xl:gap-6">
           {navLinks.map((link) => {
             const isActive = isLinkActive(link.href);
 
@@ -425,7 +425,7 @@ export function Navbar() {
                 >
                   <span
                     className={cn(
-                      "flex cursor-default items-center gap-1 whitespace-nowrap py-2 text-xs font-medium transition-colors xl:text-sm",
+                      "flex cursor-default items-center gap-1 whitespace-nowrap py-2 text-[11px] font-medium transition-colors lg:text-xs xl:text-sm",
                       lightChrome
                         ? "text-white hover:text-primary-100"
                         : "text-primary-700 hover:text-primary-600",
@@ -464,7 +464,7 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "whitespace-nowrap rounded text-xs font-medium transition-colors xl:text-sm",
+                  "whitespace-nowrap rounded text-[11px] font-medium transition-colors lg:text-xs xl:text-sm",
                   focusRing,
                   lightChrome
                     ? "text-white hover:text-primary-100"
@@ -482,16 +482,16 @@ export function Navbar() {
           {languageToggle}
           <Link
             href="/affiliates"
-            className="hidden items-center whitespace-nowrap rounded-lg bg-primary-500 px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary-500 lg:inline-flex xl:px-4 xl:text-sm"
+            className="hidden items-center whitespace-nowrap rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary-500 2xl:inline-flex"
           >
             {t("nav_find_credit_union")}
           </Link>
-          <div className="hidden xl:block">{accountLink}</div>
+          <div className="hidden md:block">{accountLink}</div>
 
           <button
             type="button"
             className={cn(
-              "inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg p-2 transition-colors lg:hidden",
+              "inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg p-2 transition-colors md:hidden",
               focusRing,
               lightChrome
                 ? "text-white hover:bg-white/10"
@@ -536,7 +536,7 @@ export function Navbar() {
           aria-hidden="true"
           onClick={closeMobileMenu}
           className={cn(
-            "fixed inset-0 z-40 bg-black/20 lg:hidden",
+            "fixed inset-0 z-40 bg-black/20 md:hidden",
             "transition-opacity duration-300 ease-in-out",
             isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
           )}
@@ -544,7 +544,7 @@ export function Navbar() {
         <div
           aria-hidden={!isOpen}
           className={cn(
-            "fixed right-4 top-16 z-50 w-72 min-w-64 max-w-[calc(100vw-2rem)] lg:hidden",
+            "fixed right-4 top-16 z-50 w-72 min-w-64 max-w-[calc(100vw-2rem)] md:hidden",
             "max-h-[calc(100dvh-5rem)] flex flex-col bg-white",
             "rounded-xl border border-gray-200 shadow-xl overflow-hidden overflow-y-auto",
             "origin-top-right",

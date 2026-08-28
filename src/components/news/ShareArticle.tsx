@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Link as LinkIcon, Check, MessageCircle, Share2, Mail } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface ShareArticleProps {
   title: string;
@@ -9,6 +10,7 @@ interface ShareArticleProps {
 }
 
 export function ShareArticle({ title, slug }: ShareArticleProps) {
+  const { t } = useLanguage();
   const [url, setUrl] = useState("");
   const [copied, setCopied] = useState(false);
 
@@ -30,7 +32,7 @@ export function ShareArticle({ title, slug }: ShareArticleProps) {
   return (
     <div className="border-t border-gray-200 pt-6 mt-8">
       <p className="text-sm font-medium text-gray-500 mb-3">
-        Share this article:
+        {t("news_share_article")}
       </p>
       <div className="flex flex-wrap gap-3">
         <button
@@ -39,7 +41,7 @@ export function ShareArticle({ title, slug }: ShareArticleProps) {
           className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors inline-flex items-center gap-2"
         >
           {copied ? <Check className="h-4 w-4" /> : <LinkIcon className="h-4 w-4" />}
-          {copied ? "Copied!" : "Copy Link"}
+          {copied ? t("news_copied") : t("news_copy_link")}
         </button>
 
         <a
@@ -67,7 +69,7 @@ export function ShareArticle({ title, slug }: ShareArticleProps) {
           className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors inline-flex items-center gap-2"
         >
           <Mail className="h-4 w-4" />
-          Email
+          {t("news_email")}
         </a>
       </div>
     </div>

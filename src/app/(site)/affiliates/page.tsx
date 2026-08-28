@@ -331,10 +331,10 @@ function AffiliatesPageContent() {
             </FadeUp>
 
             {isLoading ? (
-              <div className="text-center py-12 text-gray-400 text-sm">Loading…</div>
+              <div className="text-center py-12 text-gray-400 text-sm">{t("loading_text")}</div>
             ) : loadError ? (
               <div className="text-center py-12 text-gray-500 text-sm">
-                Could not load the credit union directory. Please refresh the page.
+                {t("affiliates_load_error")}
               </div>
             ) : filteredAffiliates.length > 0 ? (
               <div className="space-y-3">
