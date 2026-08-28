@@ -1,17 +1,14 @@
 "use client";
 
-import { useClerk, useUser } from "@clerk/nextjs";
-import { LogOut, Menu } from "lucide-react";
-import { useLanguage } from "@/context/LanguageContext";
+import { useUser } from "@clerk/nextjs";
+import { Menu } from "lucide-react";
 
 interface AdminNavbarProps {
   onMenuClick: () => void;
 }
 
 export function AdminNavbar({ onMenuClick }: AdminNavbarProps) {
-  const { signOut } = useClerk();
   const { user } = useUser();
-  const { t } = useLanguage();
   const displayName = user?.fullName ?? user?.primaryEmailAddress?.emailAddress ?? "";
   const initial = (displayName || "?").charAt(0).toUpperCase();
 
@@ -39,14 +36,6 @@ export function AdminNavbar({ onMenuClick }: AdminNavbarProps) {
               {displayName}
             </span>
           </div>
-          <button
-            type="button"
-            onClick={() => signOut({ redirectUrl: "/login" })}
-            className="inline-flex h-10 items-center gap-2 rounded-lg border border-gray-200 px-3 text-sm font-medium text-gray-600 transition-colors hover:border-primary-200 hover:bg-primary-50 hover:text-primary-600"
-          >
-            <LogOut className="h-4 w-4" />
-            <span className="hidden sm:inline">{t("nav_sign_out")}</span>
-          </button>
         </div>
       </div>
     </header>
