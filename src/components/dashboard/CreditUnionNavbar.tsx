@@ -3,8 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useClerk } from "@clerk/nextjs";
-import { Building2, LogOut, ArrowLeft } from "lucide-react";
-import { Badge } from "@/components/ui/Badge";
+import { Building2, LogOut } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface CreditUnionNavbarProps {
   user: {
@@ -14,53 +14,46 @@ interface CreditUnionNavbarProps {
 
 export function CreditUnionNavbar({ user }: CreditUnionNavbarProps) {
   const { signOut } = useClerk();
+  const { t } = useLanguage();
   const [isSigningOut, setIsSigningOut] = useState(false);
 
-  // A credit union manager signing out should land back on the public
-  // site, not on /login like the admin sign-out does.
   async function handleSignOut() {
     setIsSigningOut(true);
     await signOut({ redirectUrl: "/" });
   }
 
   return (
-    <header className="h-16 bg-white border-b border-gray-200 sticky top-0 z-40">
-      <div className="h-full px-4 sm:px-6 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3 min-w-0">
-          <div className="flex items-center gap-2 shrink-0">
-            <Building2 className="h-6 w-6 text-primary-600" />
-            <span className="font-display font-bold text-lg text-primary-900">
-              CamCCUL
+    <header className="sticky top-0 z-40 h-16 border-b border-gray-200 bg-white">
+      <div className="mx-auto flex h-full max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
+        <Link href="/dashboard" className="flex min-w-0 items-center gap-3 rounded-lg">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary-500 text-white">
+            <Building2 className="h-6 w-6" aria-hidden="true" />
+          </div>
+          <div className="min-w-0 leading-tight">
+            <span className="font-display block text-xl font-bold text-primary-900">CamCCUL</span>
+            <span className="block truncate text-xs text-gray-500">
+              {t("nav_credit_union_portal")}
             </span>
           </div>
-          <Badge variant="primary" className="hidden sm:inline-flex shrink-0">
-            Credit Union Portal
-          </Badge>
-        </div>
+        </Link>
 
-        <div className="flex items-center gap-4 shrink-0">
-          <span className="text-sm font-medium text-gray-700 hidden sm:block truncate max-w-[220px]">
+        <div className="flex shrink-0 items-center gap-3 sm:gap-4">
+          <span className="hidden max-w-[220px] truncate text-sm font-medium text-gray-700 sm:block">
             {user.name}
           </span>
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-primary-600 transition-colors"
+          <button
+            type="button"
+            onClick={handleSignOut}
+            disabled={isSigningOut}
+            className="inline-flex h-10 items-center gap-2 rounded-lg border border-gray-200 px-3 text-sm font-medium text-gray-600 transition-colors hover:border-primary-200 hover:bg-primary-50 hover:text-primary-600 disabled:opacity-50"
           >
-            <ArrowLeft className="h-4 w-4" />
-            <span className="hidden sm:inline">Back to Website</span>
-          </Link>
+            <LogOut className="h-4 w-4" />
+            <span className="hidden sm:inline">
+              {isSigningOut ? t("nav_signing_out") : t("nav_sign_out")}
+            </span>
+          </button>
         </div>
       </div>
-
-      <button
-        type="button"
-        onClick={handleSignOut}
-        disabled={isSigningOut}
-        className="fixed bottom-4 left-4 z-40 inline-flex items-center gap-2 bg-white border border-gray-200 shadow-sm rounded-lg px-3 py-2 text-sm font-medium text-gray-500 hover:text-primary-600 hover:border-primary-200 transition-colors disabled:opacity-50"
-      >
-        <LogOut className="h-4 w-4" />
-        {isSigningOut ? "Signing out..." : "Sign Out"}
-      </button>
     </header>
   );
 }

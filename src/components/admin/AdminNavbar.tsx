@@ -1,11 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useClerk, useUser } from "@clerk/nextjs";
-import { Menu, LogOut, ChevronDown, ArrowLeft } from "lucide-react";
-import { getAdminPageTitleKey } from "./nav-items";
+import { Building2, LogOut, Menu } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface AdminNavbarProps {
@@ -13,70 +10,55 @@ interface AdminNavbarProps {
 }
 
 export function AdminNavbar({ onMenuClick }: AdminNavbarProps) {
-  const pathname = usePathname();
   const { signOut } = useClerk();
   const { user } = useUser();
   const { t } = useLanguage();
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const title = t(getAdminPageTitleKey(pathname));
   const displayName = user?.fullName ?? user?.primaryEmailAddress?.emailAddress ?? "";
   const initial = (displayName || "?").charAt(0).toUpperCase();
 
   return (
-    <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6">
-      <div className="flex items-center gap-4">
-        <button
-          type="button"
-          onClick={onMenuClick}
-          className="md:hidden text-gray-500 hover:text-gray-700"
-          aria-label="Open menu"
-        >
-          <Menu className="h-6 w-6" />
-        </button>
-        <h1 className="text-lg font-semibold text-gray-900">{title}</h1>
-      </div>
-
-      <div className="flex items-center gap-4">
-        <Link
-          href="/"
-          className="hidden sm:flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-700"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          {t("admin.viewSite")}
-        </Link>
-        <div className="relative">
+    <header className="sticky top-0 z-40 h-16 shrink-0 border-b border-gray-200 bg-white">
+      <div className="flex h-full items-center justify-between gap-4 px-4 sm:px-6">
+        <div className="flex min-w-0 items-center gap-3">
           <button
             type="button"
-            onClick={() => setIsUserMenuOpen((open) => !open)}
-            className="flex items-center gap-2"
+            onClick={onMenuClick}
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-700 md:hidden"
+            aria-label="Open menu"
           >
-            <div className="w-8 h-8 rounded-full bg-primary-500 text-white flex items-center justify-center text-sm font-semibold shrink-0">
-              {initial}
-            </div>
-            <span className="text-sm font-medium text-gray-700 hidden sm:block">
-              {displayName}
-            </span>
-            <ChevronDown className="h-4 w-4 text-gray-400" />
+            <Menu className="h-6 w-6" />
           </button>
 
-          {isUserMenuOpen && (
-            <>
-              <div
-                className="fixed inset-0 z-10"
-                onClick={() => setIsUserMenuOpen(false)}
-              />
-              <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-20 py-1">
-                <button
-                  type="button"
-                  onClick={() => signOut({ redirectUrl: "/login" })}
-                  className="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50"
-                >
-                  <LogOut className="h-4 w-4" />
-                  Sign Out
-                </button>
-              </div>
-            </>
-          )}
+          <Link href="/admin" className="flex min-w-0 items-center gap-3 rounded-lg">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary-500 text-white">
+              <Building2 className="h-6 w-6" aria-hidden="true" />
+            </div>
+            <div className="min-w-0 leading-tight">
+              <span className="font-display block text-xl font-bold text-primary-900">CamCCUL</span>
+              <span className="block truncate text-xs text-gray-500">
+                {t("nav_admin_dashboard")}
+              </span>
+            </div>
+          </Link>
+        </div>
+
+        <div className="flex shrink-0 items-center gap-3 sm:gap-4">
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-500 text-sm font-semibold text-white">
+              {initial}
+            </div>
+            <span className="hidden max-w-48 truncate text-sm font-medium text-gray-700 sm:block">
+              {displayName}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => signOut({ redirectUrl: "/login" })}
+            className="inline-flex h-10 items-center gap-2 rounded-lg border border-gray-200 px-3 text-sm font-medium text-gray-600 transition-colors hover:border-primary-200 hover:bg-primary-50 hover:text-primary-600"
+          >
+            <LogOut className="h-4 w-4" />
+            <span className="hidden sm:inline">{t("nav_sign_out")}</span>
+          </button>
         </div>
       </div>
     </header>

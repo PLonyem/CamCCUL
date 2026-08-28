@@ -70,63 +70,8 @@ export function Navbar() {
   const { language, setLanguage, t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const isHomepage = pathname === "/";
-  // Lazy-initialized to the common case (fresh homepage load starts at
-  // scrollY 0) so there's no flash of the solid header before the effect
-  // below can measure scroll position on mount.
-  const [scrolledPastTop, setScrolledPastTop] = useState(() => !isHomepage);
-  // Guards the transparent-over-hero state: if the hero photo itself never
-  // loads, there's nothing for white nav text to sit on, so fall straight
-  // through to the solid bar instead of risking white-on-white. Set by a
-  // window event the hero's <img onError> dispatches (Navbar and the hero
-  // are siblings — the hero lives in HomeClient, not inside this component).
-  const [heroImageFailed, setHeroImageFailed] = useState(false);
-  // The homepage's hero section can be hidden entirely via the Homepage
-  // Editor's Sections tab (showHero=false) — in that case the page's first
-  // section is something with a light background (stats/value cards/etc),
-  // and white nav text would be illegible over it. Checked once per
-  // pathname since it reflects whatever the server actually rendered, not
-  // something that changes without a navigation.
-  const [heroPresent, setHeroPresent] = useState(true);
-
-  useEffect(() => {
-    function handleScroll() {
-      setIsScrolled(window.scrollY > 0);
-      if (isHomepage) setScrolledPastTop(window.scrollY > 80);
-    }
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [isHomepage]);
-
-  useEffect(() => {
-    function handleHeroImageError() {
-      setHeroImageFailed(true);
-    }
-    window.addEventListener("hero-image-error", handleHeroImageError);
-    return () => window.removeEventListener("hero-image-error", handleHeroImageError);
-  }, []);
-
-  useEffect(() => {
-    setHeroPresent(isHomepage && !!document.getElementById("home-hero"));
-  }, [isHomepage]);
-
-  // Two independent questions: which colour scheme reads legibly (white
-  // chrome the whole time we're on the hero-bearing homepage, regardless of
-  // scroll position — vs. the plain dark-on-white bar everywhere else), and
-  // whether the bar itself is still fully transparent over the photo or has
-  // solidified into the blurred brand-blue surface. Every other page (and a
-  // homepage with its hero toggled off) keeps the plain white bar.
-  const lightChrome = isHomepage && heroPresent;
-  const atHeroTop = lightChrome && !scrolledPastTop && !isOpen && !heroImageFailed;
-
-  const focusRing = cn(
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
-    lightChrome
-      ? "focus-visible:ring-white focus-visible:ring-offset-primary-900"
-      : "focus-visible:ring-primary-500 focus-visible:ring-offset-white"
-  );
+  const focusRing =
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white";
 
   // Close the mobile menu on navigation. Adjusted during render (rather than
   // in an effect) so the menu never flashes open on the destination page.
@@ -184,17 +129,14 @@ export function Navbar() {
       onClick={toggleLanguage}
       aria-label={t("nav_language_aria")}
       className={cn(
-        "inline-flex h-10 min-w-[4.5rem] items-center justify-center gap-2 rounded-full border px-3 text-xs font-semibold uppercase tracking-wide shadow-sm backdrop-blur-sm transition-colors",
+        "inline-flex h-10 min-w-[4.5rem] items-center justify-center gap-2 rounded-lg border border-primary-200 bg-primary-50 px-3 text-xs font-semibold uppercase tracking-wide text-primary-800 shadow-sm transition-colors hover:border-primary-300 hover:bg-primary-100",
         focusRing,
-        lightChrome
-          ? "border-white/30 bg-white/10 text-white hover:border-white/50 hover:bg-white/20"
-          : "border-primary-200 bg-primary-50 text-primary-800 hover:border-primary-300 hover:bg-primary-100"
       )}
     >
       <Globe className="h-4 w-4" aria-hidden="true" />
       <span
         aria-hidden="true"
-        className={cn("h-4 w-px", lightChrome ? "bg-white/30" : "bg-primary-200")}
+        className="h-4 w-px bg-primary-200"
       />
       <span>{language}</span>
     </button>
@@ -211,11 +153,8 @@ export function Navbar() {
       title={t("nav_sign_out")}
       aria-label={t("nav_sign_out")}
       className={cn(
-        "inline-flex items-center justify-center min-h-11 min-w-11 rounded-lg transition-colors",
+        "inline-flex min-h-10 min-w-10 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-700",
         focusRing,
-        lightChrome
-          ? "text-white/80 hover:text-white hover:bg-white/10"
-          : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
       )}
     >
       <LogOut className="h-4 w-4" />
@@ -235,9 +174,7 @@ export function Navbar() {
         className={cn(
           "inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-medium transition-colors xl:px-4",
           focusRing,
-          lightChrome
-            ? "border-white/40 text-white hover:bg-white/10"
-            : "border-gray-300 text-gray-700 hover:bg-gray-50"
+          "border-gray-300 text-gray-700 hover:bg-gray-50"
         )}
       >
         <LogIn className="h-4 w-4" />
@@ -369,43 +306,23 @@ export function Navbar() {
 
   return (
     <>
-    <header
-      className={cn(
-        "print:hidden sticky top-0 z-40 transition-[background-color,border-color,backdrop-filter] duration-[240ms]",
-        atHeroTop
-          ? "bg-transparent border-b border-transparent"
-          : lightChrome
-          ? "bg-primary-500/92 backdrop-blur-md backdrop-saturate-[1.4] border-b border-white/12"
-          : "bg-white border-b border-primary-100 transition-shadow",
-        !atHeroTop && isScrolled && "shadow-sm"
-      )}
-    >
-      <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between gap-4 px-4 xl:px-6">
+    <header className="sticky top-0 z-40 h-16 border-b border-gray-200 bg-white print:hidden">
+      <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 xl:gap-6">
         <Link href="/" className={cn("flex shrink-0 items-center gap-3 rounded-lg", focusRing)}>
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white text-primary-600 ring-1 ring-primary-100">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary-500 text-white">
             <Building2 className="h-6 w-6" aria-hidden="true" />
           </div>
-          <div className="hidden min-w-0 lg:block">
-            <span
-              className={cn(
-                "font-display block whitespace-nowrap text-xl font-bold leading-tight transition-colors",
-                lightChrome ? "text-white" : "text-primary-900"
-              )}
-            >
+          <div className="min-w-0">
+            <span className="font-display block whitespace-nowrap text-xl font-bold leading-tight text-primary-900">
               CamCCUL
             </span>
-            <span
-              className={cn(
-                "block max-w-[130px] truncate text-[10px] leading-tight transition-colors xl:max-w-[165px] xl:text-xs",
-                lightChrome ? "text-white/80" : "text-primary-600"
-              )}
-            >
+            <span className="hidden max-w-[120px] truncate text-[10px] leading-tight text-gray-500 sm:block md:max-w-[135px] xl:max-w-none xl:text-xs">
               {t("nav_tagline")}
             </span>
           </div>
         </Link>
 
-        <nav className="hidden min-w-0 flex-1 items-center justify-center gap-1.5 md:flex lg:gap-2 xl:gap-4 2xl:gap-6">
+        <nav className="hidden min-w-0 flex-1 items-center justify-center gap-1 md:flex lg:gap-2 xl:gap-4 2xl:gap-8">
           {navLinks.map((link) => {
             const isActive = isLinkActive(link.href);
 
@@ -425,11 +342,8 @@ export function Navbar() {
                 >
                   <span
                     className={cn(
-                      "flex cursor-default items-center gap-1 whitespace-nowrap py-2 text-[11px] font-medium transition-colors lg:text-xs xl:text-sm",
-                      lightChrome
-                        ? "text-white hover:text-primary-100"
-                        : "text-primary-700 hover:text-primary-600",
-                      isActive && !lightChrome && "text-primary-600 font-semibold"
+                      "flex cursor-default items-center gap-1 whitespace-nowrap py-2 text-[9px] font-medium text-gray-600 transition-colors hover:text-primary-600 lg:text-[11px] xl:text-sm",
+                      isActive && "font-semibold text-primary-600"
                     )}
                   >
                     {t(link.key)}
@@ -464,12 +378,9 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "whitespace-nowrap rounded text-[11px] font-medium transition-colors lg:text-xs xl:text-sm",
+                  "whitespace-nowrap rounded text-[9px] font-medium text-gray-600 transition-colors hover:text-primary-600 lg:text-[11px] xl:text-sm",
                   focusRing,
-                  lightChrome
-                    ? "text-white hover:text-primary-100"
-                    : "text-primary-700 hover:text-primary-600",
-                  isActive && !lightChrome && "text-primary-600 font-semibold"
+                  isActive && "font-semibold text-primary-600"
                 )}
               >
                 {t(link.key)}
@@ -478,11 +389,11 @@ export function Navbar() {
           })}
         </nav>
 
-        <div className="flex items-center gap-2 shrink-0">
-          {languageToggle}
+        <div className="ml-auto flex shrink-0 items-center gap-2">
+          <div className="hidden md:block">{languageToggle}</div>
           <Link
             href="/affiliates"
-            className="hidden items-center whitespace-nowrap rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary-500 2xl:inline-flex"
+            className="hidden items-center whitespace-nowrap rounded-lg bg-primary-500 px-2.5 py-2 text-[10px] font-medium text-white transition-colors hover:bg-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 md:inline-flex lg:px-3 lg:text-xs xl:px-4 xl:text-sm"
           >
             {t("nav_find_credit_union")}
           </Link>
@@ -493,9 +404,7 @@ export function Navbar() {
             className={cn(
               "inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg p-2 transition-colors md:hidden",
               focusRing,
-              lightChrome
-                ? "text-white hover:bg-white/10"
-                : "text-primary-700 hover:bg-primary-50"
+              "text-primary-700 hover:bg-primary-50"
             )}
             aria-label={isOpen ? t("nav_menu_close_aria") : t("nav_menu_open_aria")}
             aria-expanded={isOpen}
@@ -582,6 +491,8 @@ export function Navbar() {
         </nav>
 
         <div className="border-t border-gray-100 my-2" />
+
+        <div className="px-4 pb-3">{languageToggle}</div>
 
         <div className="px-4 pb-4">{mobileAuthSection}</div>
         </div>

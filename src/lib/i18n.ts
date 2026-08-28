@@ -34,6 +34,8 @@ const en = {
   nav_sign_out: "Sign Out",
   nav_my_dashboard: "My Dashboard",
   nav_admin_dashboard: "Admin Dashboard",
+  nav_credit_union_portal: "Credit Union Portal",
+  nav_signing_out: "Signing out...",
 
   // ─── Footer ───────────────────────────────────────────────────────────
   footer_tagline: "Cameroon Cooperative Credit Union League",
@@ -572,6 +574,8 @@ const fr: Record<keyof typeof en, string> = {
   nav_sign_out: "Se déconnecter",
   nav_my_dashboard: "Mon Tableau de Bord",
   nav_admin_dashboard: "Tableau de Bord Admin",
+  nav_credit_union_portal: "Portail de la Coopérative de Crédit",
+  nav_signing_out: "Déconnexion...",
 
   // ─── Footer ───────────────────────────────────────────────────────────
   footer_tagline: "Ligue des Coopératives de Crédit du Cameroun",
