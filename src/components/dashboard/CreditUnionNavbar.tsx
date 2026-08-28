@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useClerk } from "@clerk/nextjs";
-import { Building2, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface CreditUnionNavbarProps {
@@ -26,8 +27,15 @@ export function CreditUnionNavbar({ user }: CreditUnionNavbarProps) {
     <header className="sticky top-0 z-40 h-16 border-b border-gray-200 bg-white">
       <div className="mx-auto flex h-full max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
         <Link href="/dashboard" className="flex min-w-0 items-center gap-3 rounded-lg">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary-500 text-white">
-            <Building2 className="h-6 w-6" aria-hidden="true" />
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white">
+            <Image
+              src="/logo.jpg"
+              alt="CamCCUL logo"
+              width={74}
+              height={90}
+              priority
+              className="h-10 w-10 object-contain"
+            />
           </div>
           <div className="min-w-0 leading-tight">
             <span className="font-display block text-xl font-bold text-primary-900">CamCCUL</span>

@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useClerk, useUser } from "@clerk/nextjs";
-import { Building2, LogOut, Menu } from "lucide-react";
+import { LogOut, Menu } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface AdminNavbarProps {
@@ -30,8 +31,15 @@ export function AdminNavbar({ onMenuClick }: AdminNavbarProps) {
           </button>
 
           <Link href="/admin" className="flex min-w-0 items-center gap-3 rounded-lg">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary-500 text-white">
-              <Building2 className="h-6 w-6" aria-hidden="true" />
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white">
+              <Image
+                src="/logo.jpg"
+                alt="CamCCUL logo"
+                width={74}
+                height={90}
+                priority
+                className="h-10 w-10 object-contain"
+              />
             </div>
             <div className="min-w-0 leading-tight">
               <span className="font-display block text-xl font-bold text-primary-900">CamCCUL</span>

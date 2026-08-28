@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUser, useClerk } from "@clerk/nextjs";
@@ -17,7 +18,6 @@ import {
   Home,
   Info,
   Briefcase,
-  Building2,
   FolderOpen,
   Newspaper,
   HelpCircle,
@@ -32,7 +32,6 @@ const navLinks: { key: TranslationKey; href: string }[] = [
   { key: "nav_home", href: "/" },
   { key: "nav_about", href: "/about" },
   { key: "nav_services", href: "/services" },
-  { key: "nav_affiliates", href: "/affiliates" },
   { key: "nav_resources", href: "/resources" },
   { key: "nav_news", href: "/news" },
   { key: "nav_faq", href: "/faq" },
@@ -55,7 +54,6 @@ const mobileMenuLinks: { key: TranslationKey; href: string; icon: LucideIcon }[]
   { key: "nav_home", href: "/", icon: Home },
   { key: "nav_about", href: "/about", icon: Info },
   { key: "nav_services", href: "/services", icon: Briefcase },
-  { key: "nav_affiliates", href: "/affiliates", icon: Building2 },
   { key: "nav_resources", href: "/resources", icon: FolderOpen },
   { key: "nav_news", href: "/news", icon: Newspaper },
   { key: "nav_faq", href: "/faq", icon: HelpCircle },
@@ -309,8 +307,15 @@ export function Navbar() {
     <header className="sticky top-0 z-40 h-16 border-b border-gray-200 bg-white print:hidden">
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 xl:gap-6">
         <Link href="/" className={cn("flex shrink-0 items-center gap-3 rounded-lg", focusRing)}>
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary-500 text-white">
-            <Building2 className="h-6 w-6" aria-hidden="true" />
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white">
+            <Image
+              src="/logo.jpg"
+              alt="CamCCUL logo"
+              width={74}
+              height={90}
+              priority
+              className="h-10 w-10 object-contain"
+            />
           </div>
           <div className="min-w-0">
             <span className="font-display block whitespace-nowrap text-xl font-bold leading-tight text-primary-900">
@@ -342,7 +347,7 @@ export function Navbar() {
                 >
                   <span
                     className={cn(
-                      "flex cursor-default items-center gap-1 whitespace-nowrap py-2 text-[9px] font-medium text-gray-600 transition-colors hover:text-primary-600 lg:text-[11px] xl:text-sm",
+                      "flex cursor-default items-center gap-1 whitespace-nowrap py-2 text-[10px] font-medium text-gray-600 transition-colors hover:text-primary-600 lg:text-xs xl:text-[15px]",
                       isActive && "font-semibold text-primary-600"
                     )}
                   >
@@ -378,7 +383,7 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "whitespace-nowrap rounded text-[9px] font-medium text-gray-600 transition-colors hover:text-primary-600 lg:text-[11px] xl:text-sm",
+                  "whitespace-nowrap rounded text-[10px] font-medium text-gray-600 transition-colors hover:text-primary-600 lg:text-xs xl:text-[15px]",
                   focusRing,
                   isActive && "font-semibold text-primary-600"
                 )}
