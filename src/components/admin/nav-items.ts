@@ -6,12 +6,11 @@ import {
   Megaphone,
   Building2,
   ClipboardCheck,
-  Users,
-  UserCheck,
+  UserPlus,
+  Upload,
   Mail,
   Settings,
   Bell,
-  Calculator,
   type LucideIcon,
 } from "lucide-react";
 import type { TranslationKey } from "@/lib/i18n";
@@ -20,28 +19,24 @@ export interface AdminNavItem {
   href: string;
   labelKey: TranslationKey;
   icon: LucideIcon;
-  /** Shows a live count badge next to this item, sourced from the
-   * matching endpoint in Sidebar.tsx. Each badge kind has its own count
-   * and color — "affiliateReview" (blue) vs. "pendingAccounts" (red). */
-  badge?: "affiliateReview" | "pendingAccounts";
+  /** Shows the live profile-review count sourced by Sidebar.tsx. */
+  badge?: "affiliateReview";
 }
 
 export interface AdminNavGroup {
-  /** Section header label key — omitted for standalone top-level items
-   * (Dashboard, Messages) that don't belong under a named section. */
-  labelKey?: TranslationKey;
+  labelKey: TranslationKey;
   items: AdminNavItem[];
 }
 
 export const adminNavGroups: AdminNavGroup[] = [
   {
+    labelKey: "admin.dashboard",
     items: [{ href: "/admin", labelKey: "admin.dashboard", icon: LayoutDashboard }],
   },
   {
     labelKey: "admin.websiteContent",
     items: [
       { href: "/admin/homepage", labelKey: "admin.homepageEditor", icon: Home },
-      { href: "/admin/loan-products", labelKey: "admin.loanCalculator", icon: Calculator },
       { href: "/admin/announcements", labelKey: "admin.announcementsManager", icon: Megaphone },
       { href: "/admin/news", labelKey: "admin.newsManager", icon: Newspaper },
       { href: "/admin/resources", labelKey: "admin.resourcesManager", icon: FolderOpen },
@@ -50,7 +45,9 @@ export const adminNavGroups: AdminNavGroup[] = [
   {
     labelKey: "admin.affiliates",
     items: [
-      { href: "/admin/affiliates", labelKey: "admin.allAffiliates", icon: Building2 },
+      { href: "/admin/chapters", labelKey: "admin.chaptersCreditUnions", icon: Building2 },
+      { href: "/admin/users/create", labelKey: "admin.createNewCreditUnion", icon: UserPlus },
+      { href: "/admin/affiliates/upload-profile", labelKey: "admin.uploadProfiles", icon: Upload },
       {
         href: "/admin/affiliates/review",
         labelKey: "admin.reviewProfiles",
@@ -60,18 +57,7 @@ export const adminNavGroups: AdminNavGroup[] = [
     ],
   },
   {
-    labelKey: "admin.users",
-    items: [
-      { href: "/admin/users", labelKey: "admin.allUsers", icon: Users },
-      {
-        href: "/admin/users/pending",
-        labelKey: "admin.pendingApprovals",
-        icon: UserCheck,
-        badge: "pendingAccounts",
-      },
-    ],
-  },
-  {
+    labelKey: "admin.messages",
     items: [{ href: "/admin/messages", labelKey: "admin.messages", icon: Mail }],
   },
   {
@@ -90,12 +76,8 @@ export function isAdminNavItemActive(pathname: string, href: string) {
   return href === "/admin" ? pathname === href : pathname.startsWith(href);
 }
 
-// Picks the longest (most specific) matching href rather than the first
-// match in array order — "/admin/users" is a prefix of "/admin/users/create"
-// and "/admin/users/pending", which are siblings, not children, of "All
-// Users". Without picking a single winner here, every nav item sharing a
-// URL prefix with the current page would independently test "active" and
-// all of them would highlight at once instead of just the one you're on.
+// Picking the most specific matching route keeps nested admin pages tied
+// to the correct parent navigation item.
 function bestMatchingNavItem(pathname: string): AdminNavItem | undefined {
   return adminNavItems
     .filter((item) => isAdminNavItemActive(pathname, item.href))

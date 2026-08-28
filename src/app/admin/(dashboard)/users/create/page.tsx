@@ -1,211 +1,180 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { ShieldCheck, Building2, Copy, Check } from "lucide-react";
+import { useState, type FormEvent } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { CheckCircle2, Eye, EyeOff, Info, KeyRound, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { cn } from "@/lib/utils";
-import { ChapterCombobox, type ChapterOption } from "@/components/admin/ChapterCombobox";
+import { CAMCCUL_CHAPTERS } from "@/lib/chapters";
 
-type Role = "admin" | "credit_union";
-
-interface CreatedCredentials {
+interface FormState {
+  name: string;
+  code: string;
+  chapter: string;
+  city: string;
+  address: string;
+  phone: string;
   email: string;
   password: string;
 }
 
-const labelClass = "block text-sm font-medium text-gray-700 mb-1.5";
-const inputClass =
-  "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition disabled:opacity-50";
+const EMPTY_FORM: FormState = {
+  name: "",
+  code: "",
+  chapter: "",
+  city: "",
+  address: "",
+  phone: "",
+  email: "",
+  password: "",
+};
 
-export default function AdminCreateAccountPage() {
+const labelClass = "mb-1.5 block text-sm font-medium text-gray-700";
+const inputClass =
+  "w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-500 disabled:opacity-60";
+
+function generatePassword() {
+  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%";
+  const values = new Uint32Array(16);
+  crypto.getRandomValues(values);
+  return Array.from(values, (value) => alphabet[value % alphabet.length]).join("");
+}
+
+export default function CreateNewCreditUnionPage() {
   const router = useRouter();
-  const [role, setRole] = useState<Role>("credit_union");
-  const [email, setEmail] = useState("");
-  const [chapters, setChapters] = useState<ChapterOption[]>([]);
-  const [selectedChapter, setSelectedChapter] = useState<ChapterOption | null>(null);
+  const searchParams = useSearchParams();
+  const requestedChapter = searchParams.get("chapter");
+  const initialChapter =
+    requestedChapter && CAMCCUL_CHAPTERS.includes(requestedChapter as (typeof CAMCCUL_CHAPTERS)[number])
+      ? requestedChapter
+      : "";
+  const [form, setForm] = useState<FormState>(() => ({ ...EMPTY_FORM, chapter: initialChapter }));
+  const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [created, setCreated] = useState<CreatedCredentials | null>(null);
-  const [copied, setCopied] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetch("/api/admin/affiliates?limit=1000")
-      .then((res) => res.json())
-      .then((data) => setChapters(data.affiliates ?? []))
-      .catch(() => {});
-  }, []);
+  function updateField(field: keyof FormState, value: string) {
+    setForm((current) => ({ ...current, [field]: value }));
+  }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
     setError(null);
-
-    if (role === "credit_union" && !selectedChapter) {
-      setError("Select which credit union this account belongs to.");
-      return;
-    }
-
+    setToast(null);
     setIsSubmitting(true);
-    const res = await fetch("/api/admin/users", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email,
-        role,
-        affiliateId: role === "credit_union" ? selectedChapter?.id : undefined,
-      }),
-    });
-    const body = await res.json().catch(() => null);
-    setIsSubmitting(false);
 
-    if (!res.ok) {
-      setError(body?.error ?? "Something went wrong. Please try again.");
-      return;
+    try {
+      const response = await fetch("/api/admin/credit-unions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      const body = await response.json().catch(() => null);
+      if (!response.ok) throw new Error(body?.error ?? "Could not create the credit union.");
+
+      if (!body.emailSent) {
+        setError(
+          `The credit union and account were created, but the credentials email failed. Record this temporary password now: ${form.password}`
+        );
+        return;
+      }
+
+      setToast("Credit union and account created. Credentials emailed.");
+      window.setTimeout(() => router.push("/admin/chapters"), 1300);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Could not create the credit union.");
+    } finally {
+      setIsSubmitting(false);
     }
-
-    setCreated({ email: body.email, password: body.password });
-  }
-
-  async function handleCopy() {
-    if (!created) return;
-    await navigator.clipboard.writeText(
-      `Email: ${created.email}\nPassword: ${created.password}`
-    );
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 2000);
-  }
-
-  function handleCreateAnother() {
-    setCreated(null);
-    setEmail("");
-    setSelectedChapter(null);
-    setError(null);
   }
 
   return (
-    <div className="max-w-lg">
-      <h1 className="text-2xl font-bold text-gray-900">Create Account</h1>
-      <p className="text-sm text-gray-500 mt-1">
-        Create a new admin or credit union login in Clerk, fully linked from
-        the start — no manual metadata setup needed afterward.
+    <div className="mx-auto max-w-4xl">
+      {toast && (
+        <div className="fixed right-5 top-20 z-50 flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-medium text-white shadow-lg">
+          <CheckCircle2 className="h-5 w-5" />
+          {toast}
+        </div>
+      )}
+
+      <h1 className="text-2xl font-bold text-gray-900">Create New Credit Union</h1>
+      <p className="mt-1 text-sm text-gray-500">
+        Create a credit union and its login account in one step.
       </p>
 
-      <Card className="mt-6 p-6">
-        {created ? (
-          <div className="space-y-4">
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm">
-              <p className="font-medium text-amber-800">
-                Copy this now — the password won&rsquo;t be shown again.
-              </p>
-              <dl className="mt-3 space-y-1 font-mono text-xs text-gray-700">
-                <div className="flex gap-2">
-                  <dt className="text-gray-500 w-16 shrink-0">Email</dt>
-                  <dd className="break-all">{created.email}</dd>
-                </div>
-                <div className="flex gap-2">
-                  <dt className="text-gray-500 w-16 shrink-0">Password</dt>
-                  <dd className="break-all">{created.password}</dd>
-                </div>
-              </dl>
+      <form onSubmit={handleSubmit} className="mt-6 space-y-6">
+        <Card className="p-6">
+          <h2 className="font-display text-lg font-bold text-primary-900">Credit Union Information</h2>
+          <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
+            <div>
+              <label htmlFor="name" className={labelClass}>Credit Union Name *</label>
+              <input id="name" required value={form.name} onChange={(e) => updateField("name", e.target.value)} className={inputClass} />
             </div>
-            <div className="flex gap-3">
-              <Button type="button" variant="outline" size="sm" onClick={handleCopy}>
-                {copied ? (
-                  <>
-                    <Check className="h-3.5 w-3.5" />
-                    Copied
-                  </>
-                ) : (
-                  <>
-                    <Copy className="h-3.5 w-3.5" />
-                    Copy credentials
-                  </>
-                )}
-              </Button>
-              <Button type="button" variant="ghost" size="sm" onClick={handleCreateAnother}>
-                Create another
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => router.push("/admin/users")}
-              >
-                View all users
-              </Button>
+            <div>
+              <label htmlFor="code" className={labelClass}>Code *</label>
+              <input id="code" required placeholder="e.g., BCCU-003" value={form.code} onChange={(e) => updateField("code", e.target.value.toUpperCase())} className={inputClass} />
+            </div>
+            <div>
+              <label htmlFor="chapter" className={labelClass}>Chapter *</label>
+              <select id="chapter" required value={form.chapter} onChange={(e) => updateField("chapter", e.target.value)} className={inputClass}>
+                <option value="">Select a chapter</option>
+                {CAMCCUL_CHAPTERS.map((chapter) => <option key={chapter}>{chapter}</option>)}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="city" className={labelClass}>City/Town</label>
+              <input id="city" value={form.city} onChange={(e) => updateField("city", e.target.value)} className={inputClass} />
+            </div>
+            <div className="md:col-span-2">
+              <label htmlFor="address" className={labelClass}>Address</label>
+              <input id="address" value={form.address} onChange={(e) => updateField("address", e.target.value)} className={inputClass} />
+            </div>
+            <div>
+              <label htmlFor="phone" className={labelClass}>Phone</label>
+              <input id="phone" type="tel" value={form.phone} onChange={(e) => updateField("phone", e.target.value)} className={inputClass} />
             </div>
           </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-5">
+        </Card>
+
+        <Card className="p-6">
+          <h2 className="font-display text-lg font-bold text-primary-900">Account Credentials</h2>
+          <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
             <div>
-              <label className={labelClass}>Account type</label>
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  onClick={() => setRole("admin")}
-                  className={cn(
-                    "flex items-center gap-2 justify-center rounded-lg border py-2.5 text-sm font-medium transition-colors",
-                    role === "admin"
-                      ? "border-primary-500 bg-primary-50 text-primary-700"
-                      : "border-gray-300 text-gray-500 hover:bg-gray-50"
-                  )}
-                >
-                  <ShieldCheck className="h-4 w-4" />
-                  Admin
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setRole("credit_union")}
-                  className={cn(
-                    "flex items-center gap-2 justify-center rounded-lg border py-2.5 text-sm font-medium transition-colors",
-                    role === "credit_union"
-                      ? "border-primary-500 bg-primary-50 text-primary-700"
-                      : "border-gray-300 text-gray-500 hover:bg-gray-50"
-                  )}
-                >
-                  <Building2 className="h-4 w-4" />
-                  Credit Union
-                </button>
-              </div>
+              <label htmlFor="email" className={labelClass}>Login Email *</label>
+              <input id="email" type="email" required value={form.email} onChange={(e) => updateField("email", e.target.value)} className={inputClass} />
             </div>
-
             <div>
-              <label htmlFor="email" className={labelClass}>
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                required
-                placeholder="name@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={isSubmitting}
-                className={inputClass}
-              />
-            </div>
-
-            {role === "credit_union" && (
-              <div>
-                <label className={labelClass}>Credit union</label>
-                <ChapterCombobox
-                  chapters={chapters}
-                  value={selectedChapter}
-                  onChange={setSelectedChapter}
-                  disabled={isSubmitting}
-                />
+              <label htmlFor="password" className={labelClass}>Password *</label>
+              <div className="flex gap-2">
+                <div className="relative min-w-0 flex-1">
+                  <input id="password" type={showPassword ? "text" : "password"} required minLength={8} value={form.password} onChange={(e) => updateField("password", e.target.value)} className={`${inputClass} pr-10`} />
+                  <button type="button" aria-label={showPassword ? "Hide password" : "Show password"} onClick={() => setShowPassword((value) => !value)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+                <Button type="button" variant="outline" onClick={() => { updateField("password", generatePassword()); setShowPassword(true); }}>
+                  <KeyRound className="h-4 w-4" /> Generate
+                </Button>
               </div>
-            )}
+              <p className="mt-1 text-xs text-gray-500">At least 8 characters. You can enter one manually or generate it.</p>
+            </div>
+          </div>
+        </Card>
 
-            {error && <p className="text-sm text-red-600">{error}</p>}
+        <div className="rounded-xl border border-primary-200 bg-primary-50 p-4 text-sm text-primary-900">
+          <div className="flex gap-3">
+            <Info className="mt-0.5 h-5 w-5 shrink-0 text-primary-600" />
+            <p>The credit union will receive an email with their login credentials.</p>
+          </div>
+        </div>
 
-            <Button type="submit" disabled={isSubmitting} className="w-full justify-center">
-              {isSubmitting ? "Creating..." : "Create Account"}
-            </Button>
-          </form>
-        )}
-      </Card>
+        {error && <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
+
+        <Button type="submit" disabled={isSubmitting} className="w-full justify-center md:w-auto">
+          {isSubmitting ? <><Loader2 className="h-4 w-4 animate-spin" /> Creating...</> : "Create Credit Union + Account"}
+        </Button>
+      </form>
     </div>
   );
 }

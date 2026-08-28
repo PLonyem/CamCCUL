@@ -16,14 +16,6 @@ const affiliateCount = affiliates.filter((a) => a.isActive).length;
 // only runs after the whole page has already rendered and hydrated.
 const ADMIN_RELOAD_GUARD_SCRIPT = `(function(){try{if(!location.pathname.startsWith("/admin")||location.pathname==="/admin")return;var e=performance.getEntriesByType("navigation")[0];if(e&&e.type==="reload"){location.replace("/admin");}}catch(err){}})();`;
 
-// Refreshing mid-signup (form or verify-code step) loses that step's local
-// React state anyway — it just re-shows a blank form instead of resuming.
-// Rather than let that read as "did my signup just vanish?", a reload on
-// /signup sends the visitor to the homepage instead, same
-// beforeInteractive-before-hydration approach as the admin guard above so
-// there's no flash of a reset form first.
-const SIGNUP_RELOAD_GUARD_SCRIPT = `(function(){try{if(location.pathname!=="/signup")return;var e=performance.getEntriesByType("navigation")[0];if(e&&e.type==="reload"){location.replace("/");}}catch(err){}})();`;
-
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
@@ -65,11 +57,6 @@ export default function RootLayout({
             id="admin-reload-guard"
             strategy="beforeInteractive"
             dangerouslySetInnerHTML={{ __html: ADMIN_RELOAD_GUARD_SCRIPT }}
-          />
-          <Script
-            id="signup-reload-guard"
-            strategy="beforeInteractive"
-            dangerouslySetInnerHTML={{ __html: SIGNUP_RELOAD_GUARD_SCRIPT }}
           />
           <LanguageProvider>
             <ChatbotProvider>{children}</ChatbotProvider>

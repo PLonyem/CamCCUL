@@ -18,7 +18,6 @@ const isPublicRoute = createRouteMatcher([
   "/api/announcements(.*)",
   "/api/loan-products(.*)",
   "/api/simulations/calculate",
-  "/api/signup/credit-union/check",
 ]);
 
 const isAuthPage = createRouteMatcher(["/login(.*)", "/signup(.*)"]);
@@ -31,7 +30,7 @@ export default clerkMiddleware(async (auth, req) => {
   const isAuthenticated = !!userId;
   const role = sessionClaims?.metadata?.role;
 
-  // Logged-in users visiting /login or /signup get sent to their dashboard
+  // Logged-in users visiting an auth page go to their assigned dashboard.
   // instead of seeing the form again.
   if (isAuthPage(req) && isAuthenticated) {
     return NextResponse.redirect(
@@ -56,14 +55,9 @@ export default clerkMiddleware(async (auth, req) => {
     if (!isAuthenticated) {
       return authObject.redirectToSignIn({ returnBackUrl: req.url });
     }
-    // Role is NOT checked here on purpose — a signed-in account with no
-    // role yet is a pending/rejected credit union signup (see /signup),
-    // and dashboard/layout.tsx + dashboard/page.tsx already handle that
-    // case (showing a review-status screen) as well as redirecting admins
-    // to /admin. This block used to redirect role !== "credit_union"
-    // straight to "/" here too, which silently overrode that fix — this
-    // exact middleware check runs before any page code, so it was the
-    // real reason "/dashboard" kept bouncing to "/" for pending accounts.
+    if (role !== "credit_union") {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
     return NextResponse.next();
   }
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useClerk, useUser } from "@clerk/nextjs";
@@ -15,7 +16,6 @@ interface SidebarProps {
 
 const BADGE_COLOR: Record<NonNullable<AdminNavItem["badge"]>, string> = {
   affiliateReview: "bg-primary-500",
-  pendingAccounts: "bg-red-600",
 };
 
 export function Sidebar({ onNavigate }: SidebarProps) {
@@ -24,7 +24,6 @@ export function Sidebar({ onNavigate }: SidebarProps) {
   const { user } = useUser();
   const { t } = useLanguage();
   const [affiliateReviewCount, setAffiliateReviewCount] = useState<number | null>(null);
-  const [pendingAccountsCount, setPendingAccountsCount] = useState<number | null>(null);
 
   useEffect(() => {
     let ignore = false;
@@ -37,12 +36,6 @@ export function Sidebar({ onNavigate }: SidebarProps) {
         })
         .catch(() => {});
 
-      fetch("/api/admin/users/pending/count")
-        .then((res) => (res.ok ? res.json() : null))
-        .then((data: { pending: number } | null) => {
-          if (!ignore && data) setPendingAccountsCount(data.pending);
-        })
-        .catch(() => {});
     }
 
     refetchBadgeCounts();
@@ -60,34 +53,31 @@ export function Sidebar({ onNavigate }: SidebarProps) {
     // Also re-fetch whenever the admin navigates, as a fallback.
   }, [pathname]);
 
-  const badgeCounts = { affiliateReview: affiliateReviewCount, pendingAccounts: pendingAccountsCount };
+  const badgeCounts = { affiliateReview: affiliateReviewCount };
   const activeHref = getActiveAdminNavHref(pathname);
 
   return (
     <aside className="bg-gray-900 text-white h-full flex flex-col">
       <div className="flex flex-col items-center border-b border-gray-800 px-4 py-5 text-center">
         <div className="rounded-lg bg-white p-1 shadow-sm ring-1 ring-white/10">
-          <img
+          <Image
             src="/images/logo.jpg"
             alt="CamCCUL logo"
-            width="56"
-            height="68"
-            loading="eager"
-            decoding="sync"
+            width={56}
+            height={68}
+            priority
             className="block h-auto w-14 rounded-lg object-contain"
           />
         </div>
         <p className="mt-2 text-xs leading-tight text-gray-400">Admin Dashboard</p>
       </div>
 
-      <nav className="flex-1 mt-8 px-3">
+      <nav className="mt-2 flex-1 overflow-y-auto px-3 pb-4">
         {adminNavGroups.map((group, groupIndex) => (
-          <div key={group.labelKey ?? `group-${groupIndex}`}>
-            {group.labelKey && (
-              <p className="text-xs uppercase tracking-wider text-gray-500 font-semibold px-3 mt-6 mb-2">
-                {t(group.labelKey)}
-              </p>
-            )}
+          <div key={`${group.labelKey}-${groupIndex}`}>
+            <p className="text-xs uppercase tracking-wider text-gray-500 font-semibold px-3 mt-5 mb-2">
+              {t(group.labelKey)}
+            </p>
             <div className="space-y-1">
               {group.items.map(({ href, labelKey, icon: Icon, badge }) => {
                 const isActive = href === activeHref;

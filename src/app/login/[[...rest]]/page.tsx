@@ -14,7 +14,6 @@ export default function LoginPage() {
         <SignIn
           routing="path"
           path="/login"
-          signUpUrl="/signup"
           fallbackRedirectUrl="/dashboard"
           appearance={{
             elements: {
@@ -26,10 +25,13 @@ export default function LoginPage() {
               dividerRow: "!hidden",
               formFieldInput: "rounded-lg border-gray-300 focus:ring-2 focus:ring-primary-500",
               formButtonPrimary: "bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-lg",
-              footerActionLink: "text-primary-600 hover:text-primary-700 font-medium",
+              footerAction: "!hidden",
             },
           }}
         />
+        <p className="mt-5 text-center text-sm leading-6 text-gray-500">
+          Access is provided by CamCCUL. Contact your chapter supervisor if you need an account.
+        </p>
       </div>
     </div>
   );

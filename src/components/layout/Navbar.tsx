@@ -201,19 +201,7 @@ export function Navbar() {
         {signOutButton}
       </div>
     ) : (
-      // Signed in with no role yet — a credit union account awaiting
-      // admin review (see /signup). /dashboard shows the review-status
-      // screen for this case rather than the chapter dashboard.
-      <div className="flex items-center gap-1">
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium bg-primary-500 text-white hover:bg-primary-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary-500"
-        >
-          <FileText className="h-4 w-4" />
-          <span className="hidden xl:inline">{t("nav_my_dashboard")}</span>
-        </Link>
-        {signOutButton}
-      </div>
+      signOutButton
     );
 
   // Same role logic as accountLink above, restyled as full-width stacked
@@ -279,27 +267,17 @@ export function Navbar() {
         </button>
       </div>
     ) : (
-      <div className="flex flex-col gap-2">
-        <Link
-          href="/dashboard"
-          onClick={closeMobileMenu}
-          className={cn(mobileAuthButtonClass, "bg-primary-500 text-white hover:bg-primary-600")}
-        >
-          <FileText className="h-4 w-4" />
-          {t("nav_my_dashboard")}
-        </Link>
-        <button
-          type="button"
-          onClick={() => {
-            closeMobileMenu();
-            handleSignOut();
-          }}
-          className={cn(mobileAuthButtonClass, "border border-gray-300 text-gray-700 hover:bg-gray-50")}
-        >
-          <LogOut className="h-4 w-4" />
-          {t("nav_sign_out")}
-        </button>
-      </div>
+      <button
+        type="button"
+        onClick={() => {
+          closeMobileMenu();
+          handleSignOut();
+        }}
+        className={cn(mobileAuthButtonClass, "border border-gray-300 text-gray-700 hover:bg-gray-50")}
+      >
+        <LogOut className="h-4 w-4" />
+        {t("nav_sign_out")}
+      </button>
     );
 
   return (

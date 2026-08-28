@@ -131,129 +131,44 @@ export async function sendProfileApprovalEmail({
   });
 }
 
-interface NewSignupRequestToCamCCULParams {
+interface CreditUnionCredentialsParams {
   creditUnionName: string;
+  email: string;
+  password: string;
   chapter: string;
-  email: string;
 }
 
-// Notifies League HQ that a credit union has requested portal access
-// (POST /api/signup/credit-union, right after the applicant's Clerk
-// account is created) — parallels sendProfileSubmissionToCamCCUL above,
-// same console-log fallback when RESEND_API_KEY isn't set.
-export async function sendNewSignupRequestToCamCCUL({
+export async function sendCreditUnionCredentials({
   creditUnionName,
+  email,
+  password,
   chapter,
-  email,
-}: NewSignupRequestToCamCCULParams) {
+}: CreditUnionCredentialsParams) {
+  const website = process.env.NEXT_PUBLIC_SITE_URL || "https://camccul.cm";
+  const loginUrl = `${website.replace(/\/$/, "")}/login`;
+
   if (!resend) {
-    console.log("MOCK EMAIL TO CAMCCUL:", { creditUnionName, chapter, email });
+    console.log("MOCK CREDIT UNION CREDENTIALS EMAIL:", {
+      creditUnionName,
+      email,
+      chapter,
+      loginUrl,
+    });
     return;
   }
 
   await sendOrThrow({
-    from: FROM_NOTIFICATIONS,
-    to: ADMIN_EMAIL,
-    subject: `New Account Request — ${creditUnionName}`,
+    from: FROM_HEADQUARTERS,
+    to: email,
+    subject: "Your CamCCUL Portal Access",
     html: `
-      <h2>New Account Request</h2>
-      <p>A new account has been requested. Review in admin dashboard.</p>
-      <p><strong>Credit Union:</strong> ${creditUnionName}</p>
+      <p>Dear ${creditUnionName},</p>
+      <p>An account has been created for you by CamCCUL.</p>
       <p><strong>Chapter:</strong> ${chapter}</p>
-      <p><strong>Email:</strong> ${email}</p>
-    `,
-  });
-}
-
-interface SignupConfirmationToCreditUnionParams {
-  creditUnionName: string;
-  email: string;
-}
-
-// Confirms receipt to the applicant themselves, right after the HQ
-// notification above — same trigger point (POST /api/signup/credit-union).
-export async function sendSignupConfirmationToCreditUnion({
-  creditUnionName,
-  email,
-}: SignupConfirmationToCreditUnionParams) {
-  if (!resend) {
-    console.log("MOCK EMAIL TO CREDIT UNION:", { creditUnionName, email });
-    return;
-  }
-
-  await sendOrThrow({
-    from: FROM_HEADQUARTERS,
-    to: email,
-    subject: "Account Request Received — CamCCUL Portal",
-    html: `
-      <h2>Account Request Received</h2>
-      <p>Dear ${creditUnionName},</p>
-      <p>Your request is pending review. You'll be notified when approved.</p>
-      <p>— CamCCUL Headquarters</p>
-    `,
-  });
-}
-
-interface AccountApprovedEmailParams {
-  creditUnionName: string;
-  email: string;
-}
-
-// Sent when an admin approves a credit union's signup request, granting
-// portal access (role: "credit_union" on the Clerk account). No route
-// calls this yet — the admin approval action for CreditUnionSignupRequest
-// isn't built; this is ready for that route once it exists.
-export async function sendAccountApprovedEmail({
-  creditUnionName,
-  email,
-}: AccountApprovedEmailParams) {
-  if (!resend) {
-    console.log("MOCK APPROVAL EMAIL:", { creditUnionName, email });
-    return;
-  }
-
-  await sendOrThrow({
-    from: FROM_HEADQUARTERS,
-    to: email,
-    subject: "Account Approved — CamCCUL Portal",
-    html: `
-      <h2>Your Account Has Been Approved</h2>
-      <p>Dear ${creditUnionName},</p>
-      <p>Your account is now active. Sign in to access your dashboard.</p>
-      <p>— CamCCUL Headquarters</p>
-    `,
-  });
-}
-
-interface AccountRejectedEmailParams {
-  creditUnionName: string;
-  email: string;
-  reason: string;
-}
-
-// Sent when an admin rejects a credit union's signup request. Same
-// not-yet-wired status as the approval email above — ready for the admin
-// rejection action once it exists.
-export async function sendAccountRejectedEmail({
-  creditUnionName,
-  email,
-  reason,
-}: AccountRejectedEmailParams) {
-  if (!resend) {
-    console.log("MOCK REJECTION EMAIL:", { creditUnionName, email, reason });
-    return;
-  }
-
-  await sendOrThrow({
-    from: FROM_HEADQUARTERS,
-    to: email,
-    subject: "Account Request Update — CamCCUL Portal",
-    html: `
-      <h2>Account Request Update</h2>
-      <p>Dear ${creditUnionName},</p>
-      <p>Your account request was not approved.</p>
-      <p><strong>Reason:</strong> ${reason}</p>
-      <p>Contact CamCCUL for more information.</p>
+      <p><strong>Login Email:</strong> ${email}</p>
+      <p><strong>Temporary Password:</strong> ${password}</p>
+      <p>Please sign in and update your profile.</p>
+      <p><strong>Login URL:</strong> <a href="${loginUrl}">${loginUrl}</a></p>
       <p>— CamCCUL Headquarters</p>
     `,
   });
