@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
-import { sendProfileApprovalEmail } from "@/lib/email";
+import { sendProfileApprovalEmail, sendProfileRejectedEmail } from "@/lib/email";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -81,12 +81,18 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     });
   }
 
-  if (action === "approve") {
+  if (action === "approve" || action === "reject") {
     const recipients = affiliate.email ? [affiliate.email] : [];
 
     const results = await Promise.allSettled(
       recipients.map((email) =>
-        sendProfileApprovalEmail({ creditUnionName: affiliate.name, creditUnionEmail: email })
+        action === "approve"
+          ? sendProfileApprovalEmail({ creditUnionName: affiliate.name, creditUnionEmail: email })
+          : sendProfileRejectedEmail({
+              creditUnionName: affiliate.name,
+              creditUnionEmail: email,
+              rejectionReason: reason ?? "Please contact CamCCUL for more information.",
+            })
       )
     );
     for (const result of results) {

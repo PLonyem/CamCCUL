@@ -463,13 +463,39 @@ model SiteSettings {
 // src/lib/email.ts. adminNotificationEmail defaults to "info@camccul.cm",
 // matching that file's existing hardcoded recipient — not a new value.
 model NotificationSettings {
-  id                           String   @id @default(cuid())
-  adminNotificationEmail       String   @default("info@camccul.cm")
-  enableEmails                 Boolean  @default(true)
-  enableProfileSubmissionEmail Boolean  @default(true)
-  enableProfileApprovalEmail   Boolean  @default(true)
-  createdAt                    DateTime @default(now())
-  updatedAt                    DateTime @updatedAt
+  id                            String   @id @default(cuid())
+  adminNotificationEmail        String   @default("info@camccul.cm")
+  newCreditUnionCreated         Boolean  @default(true)
+  profileSubmittedForReview     Boolean  @default(true)
+  profileUpdated                Boolean  @default(false)
+  contactFormMessage            Boolean  @default(true)
+  accountCredentialsEmail       Boolean  @default(true)
+  profileSubmissionConfirmation Boolean  @default(true)
+  profileApprovedEmail          Boolean  @default(true)
+  profileRejectedEmail          Boolean  @default(true)
+  emailTemplates                Json     @default("{}")
+  // Kept for backwards-compatible deployments that already have these
+  // columns; the more specific switches above are the active controls.
+  enableEmails                  Boolean  @default(true)
+  enableProfileSubmissionEmail  Boolean  @default(true)
+  enableProfileApprovalEmail    Boolean  @default(true)
+  createdAt                     DateTime @default(now())
+  updatedAt                     DateTime @updatedAt
 
   @@map("notification_settings")
+}
+
+model AdminSecuritySettings {
+  id                       String   @id @default(cuid())
+  minimumPasswordLength    Int      @default(8)
+  requireNumbers           Boolean  @default(true)
+  requireSpecialCharacters Boolean  @default(false)
+  passwordExpiryDays       Int      @default(0)
+  sessionTimeoutMinutes    Int      @default(60)
+  maximumFailedAttempts    Int      @default(5)
+  lockoutDurationMinutes   Int      @default(15)
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  @@map("admin_security_settings")
 }

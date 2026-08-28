@@ -4,7 +4,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { CAMCCUL_CHAPTERS, CHAPTER_TO_REGION } from "@/lib/chapters";
 import { extractClerkErrorMessage } from "@/lib/clerk-admin-utils";
-import { sendCreditUnionCredentials } from "@/lib/email";
+import { sendCreditUnionCredentials, sendNewCreditUnionCreatedToCamCCUL } from "@/lib/email";
 
 const createCreditUnionSchema = z.object({
   name: z.string().trim().min(3, "Credit union name is required."),
@@ -126,6 +126,16 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     emailSent = false;
     console.error("Credit union credentials email failed:", error);
+  }
+
+  try {
+    await sendNewCreditUnionCreatedToCamCCUL({
+      creditUnionName: affiliate.name,
+      email: data.email,
+      chapter: data.chapter,
+    });
+  } catch (error) {
+    console.error("New credit union admin notification failed:", error);
   }
 
   return NextResponse.json(

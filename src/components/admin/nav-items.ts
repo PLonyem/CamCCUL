@@ -7,7 +7,6 @@ import {
   Building2,
   ClipboardCheck,
   UserPlus,
-  Upload,
   Mail,
   Settings,
   Bell,
@@ -47,7 +46,6 @@ export const adminNavGroups: AdminNavGroup[] = [
     items: [
       { href: "/admin/chapters", labelKey: "admin.chaptersCreditUnions", icon: Building2 },
       { href: "/admin/users/create", labelKey: "admin.createNewCreditUnion", icon: UserPlus },
-      { href: "/admin/affiliates/upload-profile", labelKey: "admin.uploadProfiles", icon: Upload },
       {
         href: "/admin/affiliates/review",
         labelKey: "admin.reviewProfiles",

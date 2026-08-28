@@ -1,4 +1,11 @@
 import { Resend } from "resend";
+import { prisma } from "@/lib/prisma";
+import {
+  DEFAULT_EMAIL_TEMPLATES,
+  DEFAULT_NOTIFICATION_SETTINGS,
+  type EmailTemplate,
+  type EmailTemplates,
+} from "@/lib/notification-settings";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
@@ -11,6 +18,47 @@ const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KE
 const FROM_NOTIFICATIONS = process.env.RESEND_FROM || "CamCCUL Portal <notifications@camccul.cm>";
 const FROM_HEADQUARTERS = process.env.RESEND_FROM || "CamCCUL Headquarters <info@camccul.cm>";
 const ADMIN_EMAIL = process.env.RESEND_ADMIN_EMAIL || "info@camccul.cm";
+
+async function getNotificationPreferences() {
+  try {
+    const settings = await prisma.notificationSettings.findUnique({ where: { id: "default" } });
+    if (!settings) return DEFAULT_NOTIFICATION_SETTINGS;
+    const savedTemplates =
+      settings.emailTemplates && typeof settings.emailTemplates === "object" && !Array.isArray(settings.emailTemplates)
+        ? (settings.emailTemplates as unknown as EmailTemplates)
+        : {};
+    return {
+      adminNotificationEmail: settings.adminNotificationEmail,
+      newCreditUnionCreated: settings.newCreditUnionCreated,
+      profileSubmittedForReview: settings.profileSubmittedForReview,
+      profileUpdated: settings.profileUpdated,
+      contactFormMessage: settings.contactFormMessage,
+      accountCredentialsEmail: true,
+      profileSubmissionConfirmation: settings.profileSubmissionConfirmation,
+      profileApprovedEmail: settings.profileApprovedEmail,
+      profileRejectedEmail: settings.profileRejectedEmail,
+      emailTemplates: { ...DEFAULT_EMAIL_TEMPLATES, ...savedTemplates },
+    };
+  } catch (error) {
+    console.error("Could not read notification preferences; using defaults:", error);
+    return DEFAULT_NOTIFICATION_SETTINGS;
+  }
+}
+
+function renderTemplate(template: EmailTemplate, variables: Record<string, string>) {
+  const replace = (value: string) =>
+    Object.entries(variables).reduce(
+      (result, [key, replacement]) => result.replaceAll(`{${key}}`, replacement),
+      value
+    );
+  return {
+    subject: replace(template.subject),
+    html: replace(template.body)
+      .split("\n")
+      .map((line) => (line ? `<p>${line}</p>` : "<br />"))
+      .join(""),
+  };
+}
 
 // The Resend SDK returns { data, error } rather than throwing on a
 // rejected send (bad domain, rate limit, invalid recipient, etc.) — every
@@ -43,6 +91,8 @@ export async function sendProfileSubmissionToCamCCUL({
   chapter,
   submittedAt,
 }: ProfileSubmissionToCamCCULParams) {
+  const preferences = await getNotificationPreferences();
+  if (!preferences.profileSubmittedForReview) return;
   if (!resend) {
     console.log("MOCK EMAIL TO CAMCCUL:", {
       creditUnionName,
@@ -53,18 +103,34 @@ export async function sendProfileSubmissionToCamCCUL({
     return;
   }
 
+  const rendered = renderTemplate(preferences.emailTemplates.profileSubmittedForReview, {
+    creditUnionName,
+    chapter,
+  });
   await sendOrThrow({
     from: FROM_NOTIFICATIONS,
-    to: ADMIN_EMAIL,
-    subject: `New Profile Submission — ${creditUnionName}`,
-    html: `
-      <h2>New Credit Union Profile Submission</h2>
-      <p><strong>Credit Union:</strong> ${creditUnionName}</p>
-      <p><strong>Code:</strong> ${creditUnionCode}</p>
-      <p><strong>Chapter:</strong> ${chapter}</p>
-      <p><strong>Submitted At:</strong> ${submittedAt}</p>
-      <p><a href="https://camccul.cm/admin/affiliates/review">Review in Admin Dashboard</a></p>
-    `,
+    to: preferences.adminNotificationEmail || ADMIN_EMAIL,
+    subject: rendered.subject,
+    html: `${rendered.html}<p><strong>Code:</strong> ${creditUnionCode}</p><p><strong>Submitted:</strong> ${submittedAt}</p>`,
+  });
+}
+
+export async function sendProfileUpdatedToCamCCUL(params: ProfileSubmissionToCamCCULParams) {
+  const preferences = await getNotificationPreferences();
+  if (!preferences.profileUpdated) return;
+  if (!resend) {
+    console.log("MOCK PROFILE UPDATED EMAIL:", params);
+    return;
+  }
+  const rendered = renderTemplate(preferences.emailTemplates.profileUpdated, {
+    creditUnionName: params.creditUnionName,
+    chapter: params.chapter,
+  });
+  await sendOrThrow({
+    from: FROM_NOTIFICATIONS,
+    to: preferences.adminNotificationEmail || ADMIN_EMAIL,
+    subject: rendered.subject,
+    html: `${rendered.html}<p><strong>Code:</strong> ${params.creditUnionCode}</p><p><strong>Updated:</strong> ${params.submittedAt}</p>`,
   });
 }
 
@@ -79,23 +145,19 @@ export async function sendProfileConfirmationToCreditUnion({
   creditUnionName,
   creditUnionEmail,
 }: ProfileConfirmationToCreditUnionParams) {
+  const preferences = await getNotificationPreferences();
+  if (!preferences.profileSubmissionConfirmation) return;
   if (!resend) {
     console.log("MOCK EMAIL TO CREDIT UNION:", { creditUnionName, creditUnionEmail });
     return;
   }
 
+  const rendered = renderTemplate(preferences.emailTemplates.profileSubmissionConfirmation, { creditUnionName });
   await sendOrThrow({
     from: FROM_HEADQUARTERS,
     to: creditUnionEmail,
-    subject: "Profile Submission Received — CamCCUL",
-    html: `
-      <h2>Thank You for Your Submission</h2>
-      <p>Dear ${creditUnionName},</p>
-      <p>Your credit union profile has been received and is now under review.</p>
-      <p>Once approved, your profile will appear on the CamCCUL website for the public to see.</p>
-      <p>You will receive another email when your profile has been approved.</p>
-      <p>— CamCCUL Headquarters</p>
-    `,
+    subject: rendered.subject,
+    html: rendered.html,
   });
 }
 
@@ -111,24 +173,31 @@ export async function sendProfileApprovalEmail({
   creditUnionName,
   creditUnionEmail,
 }: ProfileApprovalEmailParams) {
+  const preferences = await getNotificationPreferences();
+  if (!preferences.profileApprovedEmail) return;
   if (!resend) {
     console.log("MOCK APPROVAL EMAIL:", { creditUnionName, creditUnionEmail });
     return;
   }
 
+  const rendered = renderTemplate(preferences.emailTemplates.profileApprovedEmail, { creditUnionName });
   await sendOrThrow({
     from: FROM_HEADQUARTERS,
     to: creditUnionEmail,
-    subject: "Profile Approved — CamCCUL",
-    html: `
-      <h2>Your Profile Has Been Approved</h2>
-      <p>Dear ${creditUnionName},</p>
-      <p>Great news! Your credit union profile has been reviewed and approved.</p>
-      <p>Your profile is now live on the CamCCUL website. Visitors can see your information on the Find a Credit Union page.</p>
-      <p>If you need to make changes, sign in to your dashboard and update your profile.</p>
-      <p>— CamCCUL Headquarters</p>
-    `,
+    subject: rendered.subject,
+    html: rendered.html,
   });
+}
+
+export async function sendProfileRejectedEmail({ creditUnionName, creditUnionEmail, rejectionReason }: ProfileApprovalEmailParams & { rejectionReason: string }) {
+  const preferences = await getNotificationPreferences();
+  if (!preferences.profileRejectedEmail) return;
+  if (!resend) {
+    console.log("MOCK PROFILE REJECTED EMAIL:", { creditUnionName, creditUnionEmail, rejectionReason });
+    return;
+  }
+  const rendered = renderTemplate(preferences.emailTemplates.profileRejectedEmail, { creditUnionName, rejectionReason });
+  await sendOrThrow({ from: FROM_HEADQUARTERS, to: creditUnionEmail, subject: rendered.subject, html: rendered.html });
 }
 
 interface CreditUnionCredentialsParams {
@@ -144,6 +213,7 @@ export async function sendCreditUnionCredentials({
   password,
   chapter,
 }: CreditUnionCredentialsParams) {
+  const preferences = await getNotificationPreferences();
   const website = process.env.NEXT_PUBLIC_SITE_URL || "https://camccul.cm";
   const loginUrl = `${website.replace(/\/$/, "")}/login`;
 
@@ -157,19 +227,50 @@ export async function sendCreditUnionCredentials({
     return;
   }
 
+  const rendered = renderTemplate(preferences.emailTemplates.accountCredentialsEmail, {
+    creditUnionName,
+    email,
+    password,
+    chapter,
+  });
   await sendOrThrow({
     from: FROM_HEADQUARTERS,
     to: email,
-    subject: "Your CamCCUL Portal Access",
-    html: `
-      <p>Dear ${creditUnionName},</p>
-      <p>An account has been created for you by CamCCUL.</p>
-      <p><strong>Chapter:</strong> ${chapter}</p>
-      <p><strong>Login Email:</strong> ${email}</p>
-      <p><strong>Temporary Password:</strong> ${password}</p>
-      <p>Please sign in and update your profile.</p>
-      <p><strong>Login URL:</strong> <a href="${loginUrl}">${loginUrl}</a></p>
-      <p>— CamCCUL Headquarters</p>
-    `,
+    subject: rendered.subject,
+    html: `${rendered.html}<p><strong>Login URL:</strong> <a href="${loginUrl}">${loginUrl}</a></p>`,
+  });
+}
+
+export async function sendNewCreditUnionCreatedToCamCCUL(
+  params: Omit<CreditUnionCredentialsParams, "password">
+) {
+  const preferences = await getNotificationPreferences();
+  if (!preferences.newCreditUnionCreated) return;
+  if (!resend) {
+    console.log("MOCK NEW CREDIT UNION ADMIN EMAIL:", params);
+    return;
+  }
+  const rendered = renderTemplate(preferences.emailTemplates.newCreditUnionCreated, params);
+  await sendOrThrow({
+    from: FROM_NOTIFICATIONS,
+    to: preferences.adminNotificationEmail || ADMIN_EMAIL,
+    subject: rendered.subject,
+    html: rendered.html,
+  });
+}
+
+export async function sendContactFormNotification(email: string) {
+  const preferences = await getNotificationPreferences();
+  if (!preferences.contactFormMessage) return;
+  if (!resend) {
+    console.log("MOCK CONTACT FORM ADMIN EMAIL:", { email });
+    return;
+  }
+  const rendered = renderTemplate(preferences.emailTemplates.contactFormMessage, { email });
+  await sendOrThrow({
+    from: FROM_NOTIFICATIONS,
+    to: preferences.adminNotificationEmail || ADMIN_EMAIL,
+    subject: rendered.subject,
+    html: rendered.html,
   });
 }

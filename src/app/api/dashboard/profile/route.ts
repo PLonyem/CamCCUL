@@ -5,6 +5,7 @@ import { isPlaceholder } from "@/lib/utils";
 import { creditUnionProfileSchema, SERVICE_OPTIONS } from "@/lib/validation/credit-union-profile";
 import {
   sendProfileSubmissionToCamCCUL,
+  sendProfileUpdatedToCamCCUL,
   sendProfileConfirmationToCreditUnion,
 } from "@/lib/email";
 
@@ -99,7 +100,7 @@ export async function POST(request: NextRequest) {
 
   const existing = await prisma.affiliate.findUnique({
     where: { id: affiliateId },
-    select: { code: true },
+    select: { code: true, profileStatus: true },
   });
   if (!existing) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -175,8 +176,11 @@ export async function POST(request: NextRequest) {
     dateStyle: "long",
     timeStyle: "short",
   });
+  const adminNotification = existing.profileStatus === "approved"
+    ? sendProfileUpdatedToCamCCUL
+    : sendProfileSubmissionToCamCCUL;
   const notifications = [
-    sendProfileSubmissionToCamCCUL({
+    adminNotification({
       creditUnionName: affiliate.name,
       creditUnionCode: affiliate.code,
       chapter: affiliate.chapter ?? "Not set",

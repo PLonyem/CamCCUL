@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useClerk } from "@clerk/nextjs";
 import { Sidebar } from "./Sidebar";
 import { AdminNavbar } from "./AdminNavbar";
 import { cn } from "@/lib/utils";
@@ -14,6 +15,7 @@ export function AdminShell({ children }: AdminShellProps) {
 
   return (
     <div className="flex h-screen overflow-hidden">
+      <AdminSessionTimeout />
       {isSidebarOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/50 md:hidden"
@@ -38,4 +40,41 @@ export function AdminShell({ children }: AdminShellProps) {
       </div>
     </div>
   );
+}
+
+function AdminSessionTimeout() {
+  const { signOut } = useClerk();
+
+  useEffect(() => {
+    let timer: number | undefined;
+    let resetTimer: (() => void) | undefined;
+    let disposed = false;
+    const events: (keyof WindowEventMap)[] = ["mousedown", "keydown", "scroll", "touchstart"];
+
+    fetch("/api/admin/settings/security", { cache: "no-store" })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((settings: { sessionTimeoutMinutes?: number } | null) => {
+        if (disposed || !settings?.sessionTimeoutMinutes) return;
+        const timeoutMs = settings.sessionTimeoutMinutes * 60_000;
+        resetTimer = () => {
+          if (timer) window.clearTimeout(timer);
+          timer = window.setTimeout(() => {
+            void signOut({ redirectUrl: "/login" });
+          }, timeoutMs);
+        };
+        for (const event of events) window.addEventListener(event, resetTimer, { passive: true });
+        resetTimer();
+      })
+      .catch(() => {});
+
+    return () => {
+      disposed = true;
+      if (timer) window.clearTimeout(timer);
+      if (resetTimer) {
+        for (const event of events) window.removeEventListener(event, resetTimer);
+      }
+    };
+  }, [signOut]);
+
+  return null;
 }
