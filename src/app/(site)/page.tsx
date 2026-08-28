@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { HomeClient } from "./HomeClient";
-import { CompactLoanCalculator } from "./CompactLoanCalculator";
+import { LoanCalculatorClient } from "./loan-calculator/LoanCalculatorClient";
 
 // Homepage Editor changes must appear immediately rather than waiting for a
 // deployment, so the hero configuration is read on every request.
@@ -126,7 +126,7 @@ export default async function Home() {
         heroOverlay={heroOverlay}
         heroContent={heroContent}
       />
-      <CompactLoanCalculator />
+      <LoanCalculatorClient />
     </>
   );
 }
