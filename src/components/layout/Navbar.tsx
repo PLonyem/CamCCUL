@@ -3,7 +3,6 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useUser, useClerk } from "@clerk/nextjs";
 import {
@@ -23,19 +22,17 @@ import {
   Newspaper,
   HelpCircle,
   Mail,
-  Calculator,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
 import { type TranslationKey } from "@/lib/i18n";
-import logo from "../../../public/logo.jpg";
 
 const navLinks: { key: TranslationKey; href: string }[] = [
   { key: "nav_home", href: "/" },
   { key: "nav_about", href: "/about" },
   { key: "nav_services", href: "/services" },
-  { key: "nav_loan_calculator", href: "/loan-calculator" },
+  { key: "nav_affiliates", href: "/affiliates" },
   { key: "nav_resources", href: "/resources" },
   { key: "nav_news", href: "/news" },
   { key: "nav_faq", href: "/faq" },
@@ -49,11 +46,6 @@ const serviceLinks: { key: TranslationKey; href: string }[] = [
   { key: "nav_services_digitalization", href: "/services/digitalization" },
 ];
 
-const aboutLinks: { key: TranslationKey; href: string }[] = [
-  { key: "home_about_title", href: "/about" },
-  { key: "home_services_title", href: "/services" },
-];
-
 // Flat list for the mobile dropdown specifically — unlike the desktop nav,
 // mobile doesn't nest About/Services into their own expandable sub-menus
 // (no room for that inside a compact anchored card), and includes an
@@ -63,7 +55,6 @@ const mobileMenuLinks: { key: TranslationKey; href: string; icon: LucideIcon }[]
   { key: "nav_home", href: "/", icon: Home },
   { key: "nav_about", href: "/about", icon: Info },
   { key: "nav_services", href: "/services", icon: Briefcase },
-  { key: "nav_loan_calculator", href: "/loan-calculator", icon: Calculator },
   { key: "nav_affiliates", href: "/affiliates", icon: Building2 },
   { key: "nav_resources", href: "/resources", icon: FolderOpen },
   { key: "nav_news", href: "/news", icon: Newspaper },
@@ -78,7 +69,6 @@ export function Navbar() {
   const role = user?.publicMetadata.role;
   const { language, setLanguage, t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
-  const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const isHomepage = pathname === "/";
@@ -392,10 +382,10 @@ export function Navbar() {
     >
       <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between gap-4 px-4 xl:px-6">
         <Link href="/" className={cn("flex shrink-0 items-center gap-3 rounded-lg", focusRing)}>
-          <div className="w-10 h-10 rounded-lg bg-white ring-1 ring-primary-100 flex items-center justify-center overflow-hidden p-1 shrink-0">
-            <Image src={logo} alt="CamCCUL logo" className="h-full w-full object-contain" priority />
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white text-primary-600 ring-1 ring-primary-100">
+            <Building2 className="h-6 w-6" aria-hidden="true" />
           </div>
-          <div>
+          <div className="min-w-0">
             <span
               className={cn(
                 "font-display block whitespace-nowrap text-xl font-bold leading-tight transition-colors",
@@ -406,7 +396,7 @@ export function Navbar() {
             </span>
             <span
               className={cn(
-                "hidden whitespace-nowrap text-xs transition-colors 2xl:block",
+                "block max-w-[130px] truncate text-[10px] leading-tight transition-colors xl:max-w-[165px] xl:text-xs",
                 lightChrome ? "text-white/80" : "text-primary-600"
               )}
             >
@@ -415,59 +405,9 @@ export function Navbar() {
           </div>
         </Link>
 
-        <nav className="hidden items-center gap-4 xl:flex 2xl:gap-6">
+        <nav className="hidden min-w-0 flex-1 items-center justify-center gap-2 lg:flex xl:gap-4 2xl:gap-6">
           {navLinks.map((link) => {
             const isActive = isLinkActive(link.href);
-
-            if (link.key === "nav_about") {
-              return (
-                <div
-                  key={link.href}
-                  className="relative"
-                  onMouseEnter={() => setIsAboutOpen(true)}
-                  onMouseLeave={() => setIsAboutOpen(false)}
-                  onFocus={() => setIsAboutOpen(true)}
-                  onBlur={(e) => {
-                    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-                      setIsAboutOpen(false);
-                    }
-                  }}
-                >
-                  <span
-                    className={cn(
-                      "flex items-center gap-1 text-sm font-medium transition-colors py-2 cursor-default",
-                      lightChrome
-                        ? "text-white hover:text-primary-100"
-                        : "text-primary-700 hover:text-primary-600",
-                      isActive && !lightChrome && "text-primary-600 font-semibold"
-                    )}
-                  >
-                    {t(link.key)}
-                    <ChevronDown className="h-3.5 w-3.5" />
-                  </span>
-
-                  <div
-                    className={cn(
-                      "absolute left-0 top-full w-56 rounded-lg border border-primary-100 bg-white shadow-lg py-2 transition-opacity duration-150",
-                      isAboutOpen
-                        ? "opacity-100 visible"
-                        : "opacity-0 invisible pointer-events-none"
-                    )}
-                  >
-                    {aboutLinks.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={() => setIsAboutOpen(false)}
-                        className="block px-4 py-2.5 text-sm text-primary-700 hover:bg-primary-50 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
-                      >
-                        {t(item.key)}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              );
-            }
 
             if (link.key === "nav_services") {
               return (
@@ -485,7 +425,7 @@ export function Navbar() {
                 >
                   <span
                     className={cn(
-                      "flex items-center gap-1 text-sm font-medium transition-colors py-2 cursor-default",
+                      "flex cursor-default items-center gap-1 whitespace-nowrap py-2 text-xs font-medium transition-colors xl:text-sm",
                       lightChrome
                         ? "text-white hover:text-primary-100"
                         : "text-primary-700 hover:text-primary-600",
@@ -524,7 +464,7 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "text-sm font-medium transition-colors rounded",
+                  "whitespace-nowrap rounded text-xs font-medium transition-colors xl:text-sm",
                   focusRing,
                   lightChrome
                     ? "text-white hover:text-primary-100"
@@ -539,19 +479,19 @@ export function Navbar() {
         </nav>
 
         <div className="flex items-center gap-2 shrink-0">
+          {languageToggle}
           <Link
             href="/affiliates"
-            className="hidden items-center whitespace-nowrap rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary-500 xl:inline-flex"
+            className="hidden items-center whitespace-nowrap rounded-lg bg-primary-500 px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary-500 lg:inline-flex xl:px-4 xl:text-sm"
           >
             {t("nav_find_credit_union")}
           </Link>
           <div className="hidden xl:block">{accountLink}</div>
-          {languageToggle}
 
           <button
             type="button"
             className={cn(
-              "inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg p-2 transition-colors xl:hidden",
+              "inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg p-2 transition-colors lg:hidden",
               focusRing,
               lightChrome
                 ? "text-white hover:bg-white/10"
@@ -596,7 +536,7 @@ export function Navbar() {
           aria-hidden="true"
           onClick={closeMobileMenu}
           className={cn(
-            "fixed inset-0 z-40 bg-black/20 xl:hidden",
+            "fixed inset-0 z-40 bg-black/20 lg:hidden",
             "transition-opacity duration-300 ease-in-out",
             isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
           )}
@@ -604,7 +544,7 @@ export function Navbar() {
         <div
           aria-hidden={!isOpen}
           className={cn(
-            "fixed right-4 top-16 z-50 w-72 min-w-64 max-w-[calc(100vw-2rem)] xl:hidden",
+            "fixed right-4 top-16 z-50 w-72 min-w-64 max-w-[calc(100vw-2rem)] lg:hidden",
             "max-h-[calc(100dvh-5rem)] flex flex-col bg-white",
             "rounded-xl border border-gray-200 shadow-xl overflow-hidden overflow-y-auto",
             "origin-top-right",

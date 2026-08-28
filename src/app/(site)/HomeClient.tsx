@@ -66,13 +66,35 @@ export function HomeClient({
   heroOverlay,
   heroContent,
 }: HomeClientProps) {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const photoRef = useRef<HTMLDivElement>(null);
   useHeroParallax(photoRef);
 
   const hasHeroImage = heroContent.images.length > 0;
   const slideIndex = useHeroSlideshow(heroContent.images.length);
-  const titleLines = heroContent.title.split("\n").filter((line) => line.trim().length > 0);
+  const heroBadge =
+    language === "fr" && heroContent.badge === "Cameroon Cooperative Credit Union League"
+      ? t("nav_tagline")
+      : heroContent.badge;
+  const heroTitle =
+    language === "fr" && heroContent.title === "Owned by members. Built for communities."
+      ? `${t("home2_hero_heading_line1")}\n${t("home2_hero_heading_line2")}`
+      : heroContent.title;
+  const heroSubtitle =
+    language === "fr" &&
+    heroContent.subtitle ===
+      "CamCCUL supervises and empowers cooperative credit unions across Cameroon, extending safe, affordable financial services to every region."
+      ? t("home2_hero_subtitle")
+      : heroContent.subtitle;
+  const primaryButtonText =
+    language === "fr" && heroContent.primaryButtonText === "Find a credit union near you"
+      ? t("home2_hero_cta_primary")
+      : heroContent.primaryButtonText;
+  const secondaryButtonText =
+    language === "fr" && heroContent.secondaryButtonText === "Become an affiliate"
+      ? t("home2_hero_cta_secondary")
+      : heroContent.secondaryButtonText;
+  const titleLines = heroTitle.split("\n").filter((line) => line.trim().length > 0);
 
   const primaryButtonClass =
     heroContent.buttonStyle === "outline"
@@ -176,7 +198,7 @@ export function HomeClient({
                 className="text-white/70 font-semibold uppercase"
                 style={{ fontSize: "13px", letterSpacing: "0.14em", ...heroTextShadow }}
               >
-                {heroContent.badge}
+                {heroBadge}
               </p>
             </FadeUp>
 
@@ -205,7 +227,7 @@ export function HomeClient({
                 className="mt-5 text-white/[0.82] max-w-[34ch]"
                 style={{ fontSize: "20px", lineHeight: 1.6, ...heroTextShadow }}
               >
-                {heroContent.subtitle}
+                {heroSubtitle}
               </p>
             </FadeUp>
 
@@ -215,13 +237,13 @@ export function HomeClient({
                   href={heroContent.primaryButtonLink}
                   className={`inline-flex items-center justify-center ${RADIUS} px-6 py-3 text-sm font-medium transition-shadow w-full sm:w-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent ${primaryButtonClass}`}
                 >
-                  {heroContent.primaryButtonText}
+                  {primaryButtonText}
                 </Link>
                 <Link
                   href={heroContent.secondaryButtonLink}
                   className={`inline-flex items-center justify-center ${RADIUS} border border-white/70 text-white px-6 py-3 text-sm font-medium transition-colors w-full sm:w-auto hover:bg-white/[0.12] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent`}
                 >
-                  {heroContent.secondaryButtonText}
+                  {secondaryButtonText}
                 </Link>
               </div>
             </FadeUp>
