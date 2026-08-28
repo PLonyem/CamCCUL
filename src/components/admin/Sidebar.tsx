@@ -65,9 +65,9 @@ export function Sidebar({ onNavigate }: SidebarProps) {
 
   return (
     <aside className="bg-gray-900 text-white h-full flex flex-col">
-      <div className="flex items-center gap-3 px-4 pt-6">
-        <div className="w-10 h-10 rounded-lg bg-primary-500 flex items-center justify-center shrink-0">
-          <Building2 className="h-5 w-5 text-white" />
+      <div className="flex items-center gap-3 border-b border-gray-800 px-4 py-5">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary-500 shadow-sm ring-1 ring-white/10">
+          <Building2 className="h-6 w-6 text-white" aria-hidden="true" />
         </div>
         <div className="min-w-0">
           <p className="font-display font-bold text-lg leading-tight truncate">

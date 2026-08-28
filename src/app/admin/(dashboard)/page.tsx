@@ -2,7 +2,6 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import { Newspaper, CheckCircle2, Building2, Mail } from "lucide-react";
-import { currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import { Card } from "@/components/ui/Card";
 import { buttonVariants } from "@/components/ui/Button";
@@ -52,8 +51,6 @@ function StatCard({
 }
 
 export default async function AdminDashboardPage() {
-  const user = await currentUser();
-
   const [totalArticles, publishedArticles, totalAffiliates, unreadMessages] =
     await Promise.all([
       prisma.newsArticle.count(),
@@ -64,10 +61,6 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-bold text-gray-900">
-        <T k="admin.dashboard" />, {user?.fullName ?? "Admin"}
-      </h1>
-
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           label={<T k="admin.totalArticles" />}

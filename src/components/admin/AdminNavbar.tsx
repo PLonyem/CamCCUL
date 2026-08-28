@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
 import { useClerk, useUser } from "@clerk/nextjs";
 import { LogOut, Menu } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
@@ -20,7 +18,7 @@ export function AdminNavbar({ onMenuClick }: AdminNavbarProps) {
   return (
     <header className="sticky top-0 z-40 h-16 shrink-0 border-b border-gray-200 bg-white">
       <div className="flex h-full items-center justify-between gap-4 px-4 sm:px-6">
-        <div className="flex min-w-0 items-center gap-3">
+        <div className="flex items-center">
           <button
             type="button"
             onClick={onMenuClick}
@@ -30,24 +28,6 @@ export function AdminNavbar({ onMenuClick }: AdminNavbarProps) {
             <Menu className="h-6 w-6" />
           </button>
 
-          <Link href="/admin" className="flex min-w-0 items-center gap-3 rounded-lg">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white">
-              <Image
-                src="/logo.jpg"
-                alt="CamCCUL logo"
-                width={74}
-                height={90}
-                priority
-                className="h-10 w-10 object-contain"
-              />
-            </div>
-            <div className="min-w-0 leading-tight">
-              <span className="font-display block text-xl font-bold text-primary-900">CamCCUL</span>
-              <span className="block truncate text-xs text-gray-500">
-                {t("nav_admin_dashboard")}
-              </span>
-            </div>
-          </Link>
         </div>
 
         <div className="flex shrink-0 items-center gap-3 sm:gap-4">
