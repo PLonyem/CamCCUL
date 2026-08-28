@@ -14,7 +14,7 @@ export async function POST(
   }
 
   const { id } = await params;
-  const affiliate = await prisma.affiliate.findUnique({ where: { id } });
+  const affiliate = await prisma.affiliate.findUnique({ where: { id }, include: { chapter: true } });
   if (!affiliate) return NextResponse.json({ error: "Credit union not found." }, { status: 404 });
 
   const clerk = await clerkClient();
@@ -39,7 +39,7 @@ export async function POST(
       creditUnionName: affiliate.name,
       email,
       password,
-      chapter: affiliate.chapter ?? "CamCCUL",
+      chapter: affiliate.chapter?.name ?? affiliate.chapterName ?? "CamCCUL",
     });
   } catch (error) {
     emailSent = false;

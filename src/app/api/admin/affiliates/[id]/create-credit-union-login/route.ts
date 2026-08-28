@@ -21,7 +21,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
   const { id } = await params;
   const affiliate = await prisma.affiliate.findUnique({
     where: { id },
-    select: { id: true, name: true, code: true, chapter: true },
+    select: { id: true, name: true, code: true, chapterName: true, chapter: { select: { name: true } } },
   });
   if (!affiliate) {
     return NextResponse.json({ error: "Affiliate not found" }, { status: 404 });
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         affiliateId: affiliate.id,
         affiliateName: affiliate.name,
         affiliateCode: affiliate.code,
-        chapter: affiliate.chapter ?? undefined,
+        chapter: affiliate.chapter?.name ?? affiliate.chapterName ?? undefined,
       },
     });
 

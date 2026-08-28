@@ -7,16 +7,18 @@ import { PageHero } from "@/components/layout/PageHero";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { FadeUp } from "@/components/ui/FadeUp";
-import { regions, regionLabels } from "@/lib/mock-data";
 import { useLanguage } from "@/context/LanguageContext";
-import { localize, type Language, type TranslationKey } from "@/lib/i18n";
+import { type TranslationKey } from "@/lib/i18n";
 import { isPlaceholder, cn } from "@/lib/utils";
 
 interface PublicAffiliateProfile {
   id: string;
   code: string;
   name: string;
-  region: string;
+  regionId: string;
+  regionName: string;
+  chapterId: string;
+  chapterName: string;
   city: string | null;
   profileStatus: string | null;
   // profileStatus defaults to "pending" in the DB for every affiliate,
@@ -37,12 +39,16 @@ interface PublicAffiliateProfile {
   staffCount: number | null;
 }
 
-// The 10 regions double as CamCCUL's 10 administrative chapters — this
-// page just presents them under "Chapter" framing rather than "Region",
-// derived from the same regionLabels data rather than a separate field.
-function chapterLabel(region: string, language: Language): string {
-  const label = localize(regionLabels[region] ?? { en: region, fr: region }, language);
-  return language === "fr" ? `Chapitre ${label}` : `${label} Chapter`;
+interface PublicChapter {
+  id: string;
+  name: string;
+  creditUnions: PublicAffiliateProfile[];
+}
+
+interface PublicRegion {
+  id: string;
+  name: string;
+  chapters: PublicChapter[];
 }
 
 function AffiliateProfileDetails({
@@ -214,30 +220,16 @@ function AffiliateProfileDetails({
 }
 
 function AffiliatesPageContent() {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const searchParams = useSearchParams();
   const regionParam = searchParams.get("region") ?? "";
 
-  const [affiliates, setAffiliates] = useState<PublicAffiliateProfile[]>([]);
+  const [regions, setRegions] = useState<PublicRegion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
-  // Deep-linked from the homepage's reach band and a credit union's
-  // chapter breadcrumb (e.g. /affiliates?region=NORTHWEST) — pre-selects
-  // the matching chapter on first render.
-  const [selectedChapter, setSelectedChapter] = useState(() =>
-    regions.includes(regionParam) ? chapterLabel(regionParam, language) : ""
-  );
+  const [selectedRegionId, setSelectedRegionId] = useState("");
+  const [selectedChapterId, setSelectedChapterId] = useState("");
   const [expandedAffiliate, setExpandedAffiliate] = useState<string | null>(null);
-
-  // Re-applies the ?region= deep link if it changes via client-side
-  // navigation while already on this page — adjusted during render since
-  // it's reacting to a URL change, not an effect.
-  const [lastRegionParam, setLastRegionParam] = useState(regionParam);
-  if (regionParam !== lastRegionParam) {
-    setLastRegionParam(regionParam);
-    setSelectedChapter(regions.includes(regionParam) ? chapterLabel(regionParam, language) : "");
-    setExpandedAffiliate(null);
-  }
 
   useEffect(() => {
     let ignore = false;
@@ -246,9 +238,17 @@ function AffiliatesPageContent() {
         if (!res.ok) throw new Error("Failed to load affiliates");
         return res.json();
       })
-      .then((data: { affiliates: PublicAffiliateProfile[] }) => {
+      .then((data: { regions: PublicRegion[] }) => {
         if (ignore) return;
-        setAffiliates(data.affiliates);
+        const items = data.regions ?? [];
+        setRegions(items);
+        if (regionParam) {
+          const normalized = regionParam.replace(/\s+/g, "").toLowerCase();
+          const matched = items.find((region) =>
+            region.name.replace(/\s*Region$/i, "").replace(/\s+/g, "").toLowerCase() === normalized
+          );
+          if (matched) setSelectedRegionId(matched.id);
+        }
         setIsLoading(false);
       })
       .catch(() => {
@@ -260,18 +260,14 @@ function AffiliatesPageContent() {
     return () => {
       ignore = true;
     };
-  }, []);
+  }, [regionParam]);
 
-  const chapterOptions = regions.map((region) => ({
-    region,
-    label: chapterLabel(region, language),
-  }));
+  const selectedRegion = regions.find((region) => region.id === selectedRegionId);
+  const selectedChapter = selectedRegion?.chapters.find((chapter) => chapter.id === selectedChapterId);
 
-  const selectedRegion = chapterOptions.find((c) => c.label === selectedChapter)?.region ?? "";
-  const filteredAffiliates = affiliates.filter((a) => a.region === selectedRegion);
-
-  function selectChapter(label: string) {
-    setSelectedChapter(label);
+  function selectRegion(regionId: string) {
+    setSelectedRegionId(regionId);
+    setSelectedChapterId("");
     setExpandedAffiliate(null);
   }
 
@@ -282,63 +278,60 @@ function AffiliatesPageContent() {
   return (
     <div className="bg-gray-50 min-h-screen py-20">
       <div className="max-w-5xl mx-auto px-4">
-        {selectedChapter === "" ? (
-          <FadeUp>
-          <Card className="p-8 text-center mx-auto max-w-lg">
-            <Building2 className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-            <h2 className="font-display text-2xl font-bold text-primary-900 mb-2">
-              {t("affiliates_select_title")}
-            </h2>
-            <p className="text-gray-600 mb-6">{t("affiliates_select_description")}</p>
+        <FadeUp>
+          <Card className="p-6 md:p-8">
+            <h2 className="font-display text-2xl font-bold text-primary-900">{t("affiliates_select_title")}</h2>
+            <p className="mt-2 text-gray-600">{t("affiliates_select_description")}</p>
+            <div className="mt-8 grid gap-6 md:grid-cols-2">
+              <div>
+                <label htmlFor="region-select" className="mb-2 block text-sm font-semibold text-primary-900">{t("affiliates_step_region")}</label>
             <select
-              value={selectedChapter}
-              onChange={(e) => selectChapter(e.target.value)}
-              className="w-full h-14 rounded-xl border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 focus:outline-none text-lg px-6 bg-white cursor-pointer"
+                  id="region-select"
+                  value={selectedRegionId}
+                  onChange={(event) => selectRegion(event.target.value)}
+                  className="h-12 w-full cursor-pointer rounded-xl border border-gray-300 bg-white px-4 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-200"
             >
-              <option value="" disabled className="text-gray-400">
-                {t("affiliates_select_placeholder")}
-              </option>
-              {chapterOptions.map((c) => (
-                <option key={c.region} value={c.label}>
-                  {c.label}
-                </option>
+                  <option value="">{t("affiliates_select_region_placeholder")}</option>
+                  {regions.map((region) => (
+                    <option key={region.id} value={region.id}>{region.name.replace(/ Region$/i, "")}</option>
               ))}
             </select>
-          </Card>
-          </FadeUp>
-        ) : (
-          <>
-            <FadeUp>
-            <Card className="p-6 mb-8 border-l-4 border-primary-500">
-              <div className="flex justify-between items-center flex-wrap gap-4">
-                <div>
-                  <p className="font-display text-xl font-bold text-primary-900">
-                    {t("affiliates_region_label")} {selectedChapter}
-                  </p>
-                  <p className="text-gray-600 mt-1">
-                    {t("affiliates_total_label")} {filteredAffiliates.length}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => selectChapter("")}
-                  className="inline-flex items-center rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-                >
-                  {t("affiliates_change_region")}
-                </button>
               </div>
-            </Card>
-            </FadeUp>
 
-            {isLoading ? (
-              <div className="text-center py-12 text-gray-400 text-sm">{t("loading_text")}</div>
-            ) : loadError ? (
-              <div className="text-center py-12 text-gray-500 text-sm">
-                {t("affiliates_load_error")}
+              {selectedRegion && (
+                <div>
+                  <label htmlFor="chapter-select" className="mb-2 block text-sm font-semibold text-primary-900">{t("affiliates_step_chapter")}</label>
+                  <select
+                    id="chapter-select"
+                    value={selectedChapterId}
+                    onChange={(event) => { setSelectedChapterId(event.target.value); setExpandedAffiliate(null); }}
+                    className="h-12 w-full cursor-pointer rounded-xl border border-gray-300 bg-white px-4 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-200"
+                  >
+                    <option value="">{t("affiliates_select_placeholder")}</option>
+                    {selectedRegion.chapters.map((chapter) => <option key={chapter.id} value={chapter.id}>{chapter.name}</option>)}
+                  </select>
+                </div>
+              )}
+            </div>
+          </Card>
+        </FadeUp>
+
+        {isLoading ? (
+          <div className="py-12 text-center text-sm text-gray-400">{t("loading_text")}</div>
+        ) : loadError ? (
+          <div className="py-12 text-center text-sm text-gray-500">{t("affiliates_load_error")}</div>
+        ) : selectedChapter ? (
+          <div className="mt-8">
+            <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-primary-600">{t("affiliates_step_credit_unions")}</p>
+                <h3 className="mt-1 font-display text-2xl font-bold text-primary-900">{selectedChapter.name} Chapter</h3>
               </div>
-            ) : filteredAffiliates.length > 0 ? (
+              <p className="text-sm text-gray-500">{selectedChapter.creditUnions.length} credit {selectedChapter.creditUnions.length === 1 ? "union" : "unions"}</p>
+            </div>
+            {selectedChapter.creditUnions.length > 0 ? (
               <div className="space-y-3">
-                {filteredAffiliates.map((affiliate, index) => {
+                {selectedChapter.creditUnions.map((affiliate, index) => {
                   const isOpen = expandedAffiliate === affiliate.code;
                   return (
                     <FadeUp key={affiliate.id} index={index % 8}>
@@ -357,19 +350,11 @@ function AffiliatesPageContent() {
                               aria-label={t("affiliates_profile_available")}
                             />
                           )}
-                          {affiliate.hasSubmittedProfile && affiliate.profileStatus === "pending" && (
-                            <span
-                              className="h-2 w-2 rounded-full bg-amber-500 shrink-0"
-                              title={t("affiliates_profile_pending")}
-                              aria-label={t("affiliates_profile_pending")}
-                            />
-                          )}
                           <span className="font-semibold text-primary-900 flex-1 min-w-0 truncate">
+                            <span className="mr-2 font-mono text-xs text-gray-500">{affiliate.code}</span>
                             {affiliate.name}
                           </span>
-                          <Badge variant="default" className="shrink-0">
-                            {affiliate.code}
-                          </Badge>
+                          {affiliate.profileStatus === "approved" && <Badge variant="success" className="shrink-0">{t("affiliates_approved")}</Badge>}
                           <ChevronDown
                             className={cn(
                               "h-4 w-4 text-gray-400 transition-transform shrink-0",
@@ -385,13 +370,17 @@ function AffiliatesPageContent() {
                 })}
               </div>
             ) : (
-              <div className="text-center py-12">
+              <div className="rounded-xl border border-dashed border-gray-300 bg-white py-12 text-center">
                 <SearchX className="h-16 w-16 text-gray-300 mx-auto mb-4" />
                 <p className="text-gray-600">{t("affiliates_empty_title")}</p>
                 <p className="text-gray-500 text-sm mt-1">{t("affiliates_empty_subtitle")}</p>
               </div>
             )}
-          </>
+          </div>
+        ) : selectedRegion ? (
+          <p className="mt-8 text-center text-sm text-gray-500">{t("affiliates_select_chapter_prompt")}</p>
+        ) : (
+          <p className="mt-8 text-center text-sm text-gray-500">{t("affiliates_select_region_prompt")}</p>
         )}
       </div>
     </div>

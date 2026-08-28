@@ -2,6 +2,7 @@ import "dotenv/config";
 import bcrypt from "bcryptjs";
 import { prisma } from "../src/lib/prisma";
 import { affiliates, newsArticles, resources } from "../src/lib/mock-data";
+import { CAMCCUL_REGION_STRUCTURE } from "../src/lib/chapters";
 
 async function seedAdminUser() {
   const passwordHash = await bcrypt.hash("admin123", 12);
@@ -46,15 +47,51 @@ async function seedNewsArticles() {
   console.log(`${newsArticles.length} news articles seeded`);
 }
 
-async function seedAffiliates() {
+async function seedRegionsAndChapters() {
+  const chaptersByRegionCode = new Map<string, Array<{ id: string; name: string }>>();
+
+  for (const regionDefinition of CAMCCUL_REGION_STRUCTURE) {
+    const region = await prisma.region.upsert({
+      where: { name: regionDefinition.name },
+      update: {},
+      create: { name: regionDefinition.name },
+    });
+
+    const chapters = [];
+    for (const chapterName of regionDefinition.chapters) {
+      const chapter = await prisma.chapter.upsert({
+        where: { name_regionId: { name: chapterName, regionId: region.id } },
+        update: {},
+        create: { name: chapterName, regionId: region.id },
+      });
+      chapters.push(chapter);
+    }
+    chaptersByRegionCode.set(regionDefinition.code, chapters);
+  }
+
+  console.log("5 regions and 10 chapters seeded");
+  return chaptersByRegionCode;
+}
+
+async function seedAffiliates(chaptersByRegionCode: Map<string, Array<{ id: string; name: string }>>) {
   for (const affiliate of affiliates) {
+    const regionChapters = chaptersByRegionCode.get(affiliate.region.toUpperCase()) ?? [];
+    const numericCode = Number.parseInt(affiliate.code.match(/\d+/)?.[0] ?? "0", 10);
+    const assignedChapter = regionChapters.length > 0
+      ? regionChapters[numericCode % regionChapters.length]
+      : null;
+
     await prisma.affiliate.upsert({
       where: { code: affiliate.code },
-      update: {},
+      update: assignedChapter
+        ? { chapterId: assignedChapter.id, chapterName: assignedChapter.name }
+        : {},
       create: {
         code: affiliate.code,
         name: affiliate.name,
         region: affiliate.region,
+        chapterId: assignedChapter?.id ?? null,
+        chapterName: assignedChapter?.name ?? null,
         city: affiliate.city || null,
         address: affiliate.address || null,
         phone: affiliate.phone || null,
@@ -244,7 +281,8 @@ async function seedNotificationSettings() {
 async function main() {
   await seedAdminUser();
   await seedNewsArticles();
-  await seedAffiliates();
+  const chaptersByRegionCode = await seedRegionsAndChapters();
+  await seedAffiliates(chaptersByRegionCode);
   await seedResources();
   await seedContactMessages();
   await seedAnnouncements();

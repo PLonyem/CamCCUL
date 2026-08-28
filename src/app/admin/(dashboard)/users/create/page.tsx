@@ -1,16 +1,19 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CheckCircle2, Eye, EyeOff, Info, KeyRound, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { CAMCCUL_CHAPTERS } from "@/lib/chapters";
+
+interface ChapterOption { id: string; name: string }
+interface RegionOption { id: string; name: string; chapters: ChapterOption[] }
 
 interface FormState {
   name: string;
   code: string;
-  chapter: string;
+  regionId: string;
+  chapterId: string;
   city: string;
   address: string;
   phone: string;
@@ -21,7 +24,8 @@ interface FormState {
 const EMPTY_FORM: FormState = {
   name: "",
   code: "",
-  chapter: "",
+  regionId: "",
+  chapterId: "",
   city: "",
   address: "",
   phone: "",
@@ -43,19 +47,38 @@ function generatePassword() {
 export default function CreateNewCreditUnionPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const requestedChapter = searchParams.get("chapter");
-  const initialChapter =
-    requestedChapter && CAMCCUL_CHAPTERS.includes(requestedChapter as (typeof CAMCCUL_CHAPTERS)[number])
-      ? requestedChapter
-      : "";
-  const [form, setForm] = useState<FormState>(() => ({ ...EMPTY_FORM, chapter: initialChapter }));
+  const requestedRegionId = searchParams.get("regionId") ?? "";
+  const requestedChapterId = searchParams.get("chapterId") ?? "";
+  const [regions, setRegions] = useState<RegionOption[]>([]);
+  const [isLoadingHierarchy, setIsLoadingHierarchy] = useState(true);
+  const [form, setForm] = useState<FormState>(() => ({ ...EMPTY_FORM, regionId: requestedRegionId, chapterId: requestedChapterId }));
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
 
+  useEffect(() => {
+    let ignore = false;
+    fetch("/api/admin/credit-unions", { cache: "no-store" })
+      .then(async (response) => {
+        const body = await response.json().catch(() => null);
+        if (!response.ok) throw new Error(body?.error ?? "Could not load regions and chapters.");
+        return body.regions as RegionOption[];
+      })
+      .then((items) => { if (!ignore) setRegions(items ?? []); })
+      .catch((caught) => { if (!ignore) setError(caught instanceof Error ? caught.message : "Could not load regions and chapters."); })
+      .finally(() => { if (!ignore) setIsLoadingHierarchy(false); });
+    return () => { ignore = true; };
+  }, []);
+
+  const selectedRegion = regions.find((region) => region.id === form.regionId);
+
   function updateField(field: keyof FormState, value: string) {
     setForm((current) => ({ ...current, [field]: value }));
+  }
+
+  function updateRegion(regionId: string) {
+    setForm((current) => ({ ...current, regionId, chapterId: "" }));
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -116,10 +139,17 @@ export default function CreateNewCreditUnionPage() {
               <input id="code" required placeholder="e.g., BCCU-003" value={form.code} onChange={(e) => updateField("code", e.target.value.toUpperCase())} className={inputClass} />
             </div>
             <div>
+              <label htmlFor="region" className={labelClass}>Region *</label>
+              <select id="region" required disabled={isLoadingHierarchy} value={form.regionId} onChange={(e) => updateRegion(e.target.value)} className={inputClass}>
+                <option value="">— Select a Region —</option>
+                {regions.map((region) => <option key={region.id} value={region.id}>{region.name}</option>)}
+              </select>
+            </div>
+            <div>
               <label htmlFor="chapter" className={labelClass}>Chapter *</label>
-              <select id="chapter" required value={form.chapter} onChange={(e) => updateField("chapter", e.target.value)} className={inputClass}>
-                <option value="">Select a chapter</option>
-                {CAMCCUL_CHAPTERS.map((chapter) => <option key={chapter}>{chapter}</option>)}
+              <select id="chapter" required disabled={!selectedRegion || isLoadingHierarchy} value={form.chapterId} onChange={(e) => updateField("chapterId", e.target.value)} className={inputClass}>
+                <option value="">— Select a Chapter —</option>
+                {selectedRegion?.chapters.map((chapter) => <option key={chapter.id} value={chapter.id}>{chapter.name}</option>)}
               </select>
             </div>
             <div>

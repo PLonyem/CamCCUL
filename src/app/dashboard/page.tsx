@@ -57,7 +57,7 @@ export default async function DashboardPage() {
       select: {
         name: true,
         code: true,
-        chapter: true,
+        chapter: { select: { name: true } },
         profileStatus: true,
         profileUpdatedAt: true,
         yearEstablished: true,
@@ -133,7 +133,7 @@ export default async function DashboardPage() {
           Welcome, {affiliate.name}
         </h1>
         <div className="flex flex-wrap items-center gap-2 mt-3">
-          {affiliate.chapter && <Badge>{affiliate.chapter}</Badge>}
+          {affiliate.chapter && <Badge>{affiliate.chapter.name}</Badge>}
           <Badge>{affiliate.code}</Badge>
         </div>
       </div>

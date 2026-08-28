@@ -3,6 +3,7 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import { isPlaceholder } from "@/lib/utils";
 import { creditUnionProfileSchema, SERVICE_OPTIONS } from "@/lib/validation/credit-union-profile";
+import { regionNameToCode } from "@/lib/chapters";
 import {
   sendProfileSubmissionToCamCCUL,
   sendProfileUpdatedToCamCCUL,
@@ -25,7 +26,8 @@ export async function GET() {
     select: {
       name: true,
       code: true,
-      chapter: true,
+      chapter: { select: { name: true } },
+      chapterName: true,
       city: true,
       address: true,
       phone: true,
@@ -58,7 +60,7 @@ export async function GET() {
   return NextResponse.json({
     name: affiliate.name,
     code: affiliate.code,
-    chapter: affiliate.chapter ?? "",
+    chapter: affiliate.chapter?.name ?? affiliate.chapterName ?? "",
     city: isPlaceholder(affiliate.city) ? "" : affiliate.city,
     address: isPlaceholder(affiliate.address) ? "" : affiliate.address,
     phone: isPlaceholder(affiliate.phone) ? "" : affiliate.phone,
@@ -94,6 +96,13 @@ export async function POST(request: NextRequest) {
   }
 
   const data = parsed.data;
+  const selectedChapter = await prisma.chapter.findFirst({
+    where: { name: data.chapter },
+    include: { region: true },
+  });
+  if (!selectedChapter) {
+    return NextResponse.json({ error: "Select a valid CamCCUL chapter." }, { status: 400 });
+  }
   const services = data.servicesOfferedOther?.trim()
     ? [...data.servicesOffered, `${OTHER_PREFIX}${data.servicesOfferedOther.trim()}`]
     : data.servicesOffered;
@@ -144,7 +153,9 @@ export async function POST(request: NextRequest) {
       data: {
         name: data.creditUnionName,
         code: data.code,
-        chapter: data.chapter,
+        chapterId: selectedChapter.id,
+        chapterName: selectedChapter.name,
+        region: regionNameToCode(selectedChapter.region.name),
         city: data.city,
         address: data.address,
         phone: data.phone,
@@ -162,7 +173,7 @@ export async function POST(request: NextRequest) {
         profileUpdatedAt: submittedAt,
         profileStatus: "pending",
       },
-      select: { name: true, code: true, chapter: true },
+      select: { name: true, code: true, chapter: { select: { name: true } } },
     }),
     prisma.affiliateSubmission.create({
       data: { affiliateId, status: "pending", submittedAt, fieldSnapshot: data },
@@ -183,7 +194,7 @@ export async function POST(request: NextRequest) {
     adminNotification({
       creditUnionName: affiliate.name,
       creditUnionCode: affiliate.code,
-      chapter: affiliate.chapter ?? "Not set",
+      chapter: affiliate.chapter?.name ?? "Not set",
       submittedAt: submittedAtDisplay,
     }),
   ];
