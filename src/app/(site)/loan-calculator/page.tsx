@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { LoanCalculatorClient } from "./LoanCalculatorClient";
 
 export const metadata: Metadata = {
-  title: "Smart Loan Calculator | CamCCUL",
-  description: "Estimate loan eligibility, savings requirements, repayments and borrowing costs across the CamCCUL network.",
+  title: "Loan Calculator & Credit Union Finder | CamCCUL",
+  description:
+    "Estimate a potential flat-rate loan repayment and find an affiliated credit union within one of CamCCUL's ten chapters.",
 };
 
 export default function LoanCalculatorPage() {

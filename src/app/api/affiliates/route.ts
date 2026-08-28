@@ -2,6 +2,23 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { affiliates as mockAffiliates } from "@/lib/mock-data";
 
+const CHAPTER_BY_REGION: Record<string, string> = {
+  ADAMAWA: "Adamawa Chapter",
+  CENTRE: "Centre Chapter",
+  EAST: "East Chapter",
+  "FAR NORTH": "Far North Chapter",
+  LITTORAL: "Littoral Chapter",
+  NORTH: "North Chapter",
+  NORTHWEST: "Northwest Chapter",
+  SOUTH: "South Chapter",
+  SOUTHWEST: "Southwest Chapter",
+  WEST: "West Chapter",
+};
+
+function chapterName(chapter: string | null | undefined, region: string) {
+  return chapter || CHAPTER_BY_REGION[region.toUpperCase()] || `${region} Chapter`;
+}
+
 // Public directory endpoint — no auth. Profile content (history, contact
 // details, leadership, services) is only included once profileStatus is
 // "approved"; unapproved submissions never leave the server, not just
@@ -17,6 +34,7 @@ export async function GET() {
         code: true,
         name: true,
         region: true,
+        chapter: true,
         city: true,
         address: true,
         phone: true,
@@ -42,6 +60,7 @@ export async function GET() {
         code: a.code,
         name: a.name,
         region: a.region,
+        chapter: chapterName(a.chapter, a.region),
         city: a.city,
         // profileStatus defaults to "pending" in the DB for every
         // affiliate, submitted or not — profileUpdatedAt (null until a
@@ -66,7 +85,7 @@ export async function GET() {
       };
     });
 
-    return NextResponse.json({ affiliates: publicAffiliates });
+    return NextResponse.json({ affiliates: publicAffiliates, source: "database" });
   } catch (error) {
     console.error(
       "Database unavailable, falling back to mock affiliate data:",
@@ -80,6 +99,7 @@ export async function GET() {
         code: a.code,
         name: a.name,
         region: a.region,
+        chapter: chapterName(null, a.region),
         city: a.city,
         profileStatus: null,
         hasSubmittedProfile: false,
@@ -96,6 +116,6 @@ export async function GET() {
         boardSize: null,
         staffCount: null,
       }));
-    return NextResponse.json({ affiliates: fallback });
+    return NextResponse.json({ affiliates: fallback, source: "fallback" });
   }
 }
