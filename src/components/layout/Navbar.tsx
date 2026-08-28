@@ -194,15 +194,19 @@ export function Navbar() {
       onClick={toggleLanguage}
       aria-label={t("nav_language_aria")}
       className={cn(
-        "inline-flex items-center justify-center gap-1 min-h-11 min-w-11 px-2 rounded-lg transition-colors",
+        "inline-flex h-10 min-w-[4.5rem] items-center justify-center gap-2 rounded-full border px-3 text-xs font-semibold uppercase tracking-wide shadow-sm backdrop-blur-sm transition-colors",
         focusRing,
         lightChrome
-          ? "text-white hover:bg-white/10"
-          : "text-primary-700 hover:bg-primary-50"
+          ? "border-white/30 bg-white/10 text-white hover:border-white/50 hover:bg-white/20"
+          : "border-primary-200 bg-primary-50 text-primary-800 hover:border-primary-300 hover:bg-primary-100"
       )}
     >
-      <Globe className="h-5 w-5" />
-      <span className="text-xs font-semibold uppercase">{language}</span>
+      <Globe className="h-4 w-4" aria-hidden="true" />
+      <span
+        aria-hidden="true"
+        className={cn("h-4 w-px", lightChrome ? "bg-white/30" : "bg-primary-200")}
+      />
+      <span>{language}</span>
     </button>
   );
 
@@ -386,15 +390,15 @@ export function Navbar() {
         !atHeroTop && isScrolled && "shadow-sm"
       )}
     >
-      <div className="max-w-[1200px] mx-auto px-4 h-16 flex items-center justify-between gap-4">
-        <Link href="/" className={cn("flex items-center gap-3 min-w-0 rounded-lg", focusRing)}>
+      <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between gap-4 px-4 xl:px-6">
+        <Link href="/" className={cn("flex shrink-0 items-center gap-3 rounded-lg", focusRing)}>
           <div className="w-10 h-10 rounded-lg bg-white ring-1 ring-primary-100 flex items-center justify-center overflow-hidden p-1 shrink-0">
             <Image src={logo} alt="CamCCUL logo" className="h-full w-full object-contain" priority />
           </div>
-          <div className="min-w-0">
+          <div>
             <span
               className={cn(
-                "font-display font-bold text-xl block leading-tight truncate transition-colors",
+                "font-display block whitespace-nowrap text-xl font-bold leading-tight transition-colors",
                 lightChrome ? "text-white" : "text-primary-900"
               )}
             >
@@ -402,7 +406,7 @@ export function Navbar() {
             </span>
             <span
               className={cn(
-                "hidden md:block text-xs truncate transition-colors",
+                "hidden whitespace-nowrap text-xs transition-colors 2xl:block",
                 lightChrome ? "text-white/80" : "text-primary-600"
               )}
             >
@@ -411,7 +415,7 @@ export function Navbar() {
           </div>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-8 shrink-0">
+        <nav className="hidden items-center gap-4 xl:flex 2xl:gap-6">
           {navLinks.map((link) => {
             const isActive = isLinkActive(link.href);
 
@@ -537,17 +541,17 @@ export function Navbar() {
         <div className="flex items-center gap-2 shrink-0">
           <Link
             href="/affiliates"
-            className="hidden md:inline-flex items-center bg-primary-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary-500"
+            className="hidden items-center whitespace-nowrap rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary-500 xl:inline-flex"
           >
             {t("nav_find_credit_union")}
           </Link>
-          <div className="hidden md:block">{accountLink}</div>
+          <div className="hidden xl:block">{accountLink}</div>
           {languageToggle}
 
           <button
             type="button"
             className={cn(
-              "md:hidden inline-flex items-center justify-center min-h-11 min-w-11 p-2 rounded-lg transition-colors",
+              "inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg p-2 transition-colors xl:hidden",
               focusRing,
               lightChrome
                 ? "text-white hover:bg-white/10"
@@ -592,7 +596,7 @@ export function Navbar() {
           aria-hidden="true"
           onClick={closeMobileMenu}
           className={cn(
-            "md:hidden fixed inset-0 z-40 bg-black/20",
+            "fixed inset-0 z-40 bg-black/20 xl:hidden",
             "transition-opacity duration-300 ease-in-out",
             isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
           )}
@@ -600,7 +604,7 @@ export function Navbar() {
         <div
           aria-hidden={!isOpen}
           className={cn(
-            "md:hidden fixed top-16 right-4 z-50 w-72 max-w-[calc(100vw-2rem)] min-w-64",
+            "fixed right-4 top-16 z-50 w-72 min-w-64 max-w-[calc(100vw-2rem)] xl:hidden",
             "max-h-[calc(100dvh-5rem)] flex flex-col bg-white",
             "rounded-xl border border-gray-200 shadow-xl overflow-hidden overflow-y-auto",
             "origin-top-right",
