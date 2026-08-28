@@ -12,7 +12,6 @@ interface Deadline {
 // a separate feature to build later, not guessed at here.
 const DEADLINES: Deadline[] = [
   { name: "Q3 COBAC Report Due", date: "2026-09-30" },
-  { name: "Profile Update Deadline", date: "2026-12-31" },
 ];
 
 // How far back the progress bar's "0%" point sits from each deadline. The

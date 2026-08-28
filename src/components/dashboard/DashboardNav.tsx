@@ -6,15 +6,8 @@ import {
   ChevronDown,
   Menu,
   X,
-  BarChart3,
-  ClipboardCheck,
   Clock,
   Megaphone,
-  FileEdit,
-  Eye,
-  History,
-  ListChecks,
-  XCircle,
   FileCheck2,
   GraduationCap,
   Newspaper,
@@ -37,36 +30,14 @@ interface NavGroup {
   items: DropdownItem[];
 }
 
-// #quick-stats/#profile-completion/#deadline-countdown/#announcements are
-// sections on the dashboard home page (src/app/dashboard/page.tsx);
-// #submission-history is the same page's Submission History section — all
-// three Submissions items point there since there's no separate filtered
-// view for status yet. Prefixed with /dashboard so these still resolve
-// correctly from other dashboard pages, not just from the home page itself.
+// Dashboard section links are prefixed with /dashboard so they resolve
+// correctly from any portal page, not just from the home page itself.
 const NAV_GROUPS: NavGroup[] = [
   {
     label: "Overview",
     items: [
-      { label: "Quick Stats", href: "/dashboard#quick-stats", icon: BarChart3 },
-      { label: "Profile Completion", href: "/dashboard#profile-completion", icon: ClipboardCheck },
       { label: "Deadline Countdown", href: "/dashboard#deadline-countdown", icon: Clock },
       { label: "Announcements", href: "/dashboard#announcements", icon: Megaphone },
-    ],
-  },
-  {
-    label: "Profile",
-    items: [
-      { label: "Complete Profile", href: "/dashboard/profile", icon: FileEdit },
-      { label: "Preview Profile", href: "/dashboard/profile/preview", icon: Eye },
-      { label: "Edit History", href: "/dashboard/profile/history", icon: History },
-    ],
-  },
-  {
-    label: "Submissions",
-    items: [
-      { label: "Submission History", href: "/dashboard#submission-history", icon: ListChecks },
-      { label: "Current Status", href: "/dashboard#submission-history", icon: Clock },
-      { label: "Rejected Items", href: "/dashboard#submission-history", icon: XCircle },
     ],
   },
   {
@@ -166,8 +137,8 @@ export function DashboardNav() {
   // once per real page load (a hard refresh, or first arrival), never on
   // in-app client-side navigation between dashboard pages — layouts don't
   // remount for those. A refresh with a leftover #section hash in the URL
-  // (from an earlier nav dropdown click, or a ProfileCompletion "missing
-  // field" jump) makes the browser scroll straight back to that anchor
+  // from an earlier navigation click makes the browser scroll straight
+  // back to that anchor
   // instead of the top; the browser's own one-time scroll-to-anchor has
   // already happened by the time this effect runs, so stripping the hash
   // here doesn't undo it — it just means the *next* refresh starts clean
