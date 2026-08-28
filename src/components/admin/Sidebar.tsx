@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useClerk, useUser } from "@clerk/nextjs";
@@ -68,13 +67,14 @@ export function Sidebar({ onNavigate }: SidebarProps) {
     <aside className="bg-gray-900 text-white h-full flex flex-col">
       <div className="flex flex-col items-center border-b border-gray-800 px-4 py-5 text-center">
         <div className="rounded-lg bg-white p-1 shadow-sm ring-1 ring-white/10">
-          <Image
+          <img
             src="/images/logo.jpg"
             alt="CamCCUL logo"
-            width={74}
-            height={90}
-            priority
-            className="h-auto w-14 rounded-lg object-contain"
+            width="56"
+            height="68"
+            loading="eager"
+            decoding="sync"
+            className="block h-auto w-14 rounded-lg object-contain"
           />
         </div>
         <p className="mt-2 text-xs leading-tight text-gray-400">Admin Dashboard</p>
