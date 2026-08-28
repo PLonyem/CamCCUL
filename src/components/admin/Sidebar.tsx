@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useClerk, useUser } from "@clerk/nextjs";
-import { Building2, LogOut, ArrowLeft } from "lucide-react";
+import { LogOut, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { adminNavGroups, getActiveAdminNavHref, type AdminNavItem } from "./nav-items";
 import { useLanguage } from "@/context/LanguageContext";
@@ -65,18 +66,18 @@ export function Sidebar({ onNavigate }: SidebarProps) {
 
   return (
     <aside className="bg-gray-900 text-white h-full flex flex-col">
-      <div className="flex items-center gap-3 border-b border-gray-800 px-4 py-5">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary-500 shadow-sm ring-1 ring-white/10">
-          <Building2 className="h-6 w-6 text-white" aria-hidden="true" />
+      <div className="flex flex-col items-center border-b border-gray-800 px-4 py-5 text-center">
+        <div className="rounded-lg bg-white p-1 shadow-sm ring-1 ring-white/10">
+          <Image
+            src="/images/logo.jpg"
+            alt="CamCCUL logo"
+            width={74}
+            height={90}
+            priority
+            className="h-auto w-14 rounded-lg object-contain"
+          />
         </div>
-        <div className="min-w-0">
-          <p className="font-display font-bold text-lg leading-tight truncate">
-            CamCCUL
-          </p>
-          <p className="text-xs text-gray-400 leading-tight">
-            Admin Dashboard
-          </p>
-        </div>
+        <p className="mt-2 text-xs leading-tight text-gray-400">Admin Dashboard</p>
       </div>
 
       <nav className="flex-1 mt-8 px-3">
