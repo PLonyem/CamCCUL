@@ -2,15 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import {
-  BriefcaseBusiness,
-  Calculator,
-  Download,
-  Lightbulb,
-  Siren,
-  Sprout,
-  UsersRound,
-} from "lucide-react";
+import { Calculator, ChevronDown, Download, Lightbulb } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { cn } from "@/lib/utils";
 
@@ -22,28 +14,24 @@ const LOAN_PRODUCTS = [
     label: { en: "Regular Member Loan", fr: "Prêt ordinaire aux membres" },
     description: { en: "Everyday personal and household needs", fr: "Besoins personnels et familiaux courants" },
     savingsRate: 0.2,
-    icon: UsersRound,
   },
   {
     id: "agricultural",
     label: { en: "Agricultural Loan", fr: "Prêt agricole" },
     description: { en: "Farming, inputs and seasonal production", fr: "Agriculture, intrants et production saisonnière" },
     savingsRate: 0.2,
-    icon: Sprout,
   },
   {
     id: "business",
     label: { en: "Business / Development Loan", fr: "Prêt commercial / développement" },
     description: { en: "Business growth and productive investment", fr: "Croissance d’entreprise et investissement productif" },
     savingsRate: 0.3333,
-    icon: BriefcaseBusiness,
   },
   {
     id: "emergency",
     label: { en: "Emergency Loan", fr: "Prêt d’urgence" },
     description: { en: "Urgent and unexpected financial needs", fr: "Besoins financiers urgents et imprévus" },
     savingsRate: 0.3333,
-    icon: Siren,
   },
 ] as const;
 
@@ -448,54 +436,40 @@ export function LoanCalculatorClient() {
               </div>
             </div>
 
-            <fieldset className="mt-8">
-              <legend className="font-display text-base font-bold text-primary-900">{c.loanType}</legend>
+            <div className="mt-8">
+              <label htmlFor="loan-product" className="font-display text-base font-bold text-primary-900">
+                {c.loanType}
+              </label>
               <p className="mt-1 text-sm text-gray-500">{c.loanTypeIntro}</p>
-              <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {LOAN_PRODUCTS.map((product) => {
-                  const ProductIcon = product.icon;
-                  const isSelected = selectedLoanProductId === product.id;
-                  return (
-                    <button
-                      key={product.id}
-                      type="button"
-                      aria-pressed={isSelected}
-                      onClick={() => {
-                        setSelectedLoanProductId(product.id);
-                        setResult(null);
-                        setEstimateReference(null);
-                      }}
-                      className={cn(
-                        "group flex min-h-24 items-start gap-4 rounded-xl border p-4 text-left transition-all",
-                        isSelected
-                          ? "border-primary-500 bg-primary-50 shadow-sm ring-1 ring-primary-500"
-                          : "border-gray-200 bg-white hover:border-primary-300 hover:bg-gray-50"
-                      )}
-                    >
-                      <span
-                        className={cn(
-                          "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors",
-                          isSelected
-                            ? "bg-primary-500 text-white"
-                            : "bg-gray-100 text-gray-500 group-hover:bg-primary-50 group-hover:text-primary-600"
-                        )}
-                      >
-                        <ProductIcon className="h-5 w-5" aria-hidden="true" />
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        <span className="block font-semibold text-gray-900">{product.label[language]}</span>
-                        <span className="mt-1 block text-xs leading-5 text-gray-500">
-                          {product.description[language]}
-                        </span>
-                        <span className="mt-2 inline-flex rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-primary-700 ring-1 ring-primary-100">
-                          {formatSavingsRate(product.savingsRate)} {c.savingsRequired}
-                        </span>
-                      </span>
-                    </button>
-                  );
-                })}
+              <div className="relative mt-4 max-w-2xl">
+                <select
+                  id="loan-product"
+                  value={selectedLoanProductId}
+                  onChange={(event) => {
+                    setSelectedLoanProductId(event.target.value as LoanProductId);
+                    setResult(null);
+                    setEstimateReference(null);
+                  }}
+                  className="h-12 w-full appearance-none rounded-lg border border-gray-300 bg-white px-4 pr-11 text-base font-medium text-gray-900 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
+                >
+                  {LOAN_PRODUCTS.map((product) => (
+                    <option key={product.id} value={product.id}>
+                      {product.label[language]} — {formatSavingsRate(product.savingsRate)} {c.savingsRequired}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown
+                  className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400"
+                  aria-hidden="true"
+                />
               </div>
-            </fieldset>
+              <div className="mt-3 max-w-2xl rounded-lg border border-primary-100 bg-primary-50 px-4 py-3">
+                <p className="text-sm text-gray-700">{selectedLoanProduct.description[language]}</p>
+                <p className="mt-1 text-xs font-semibold text-primary-700">
+                  {formatSavingsRate(selectedLoanProduct.savingsRate)} {c.savingsRequired}
+                </p>
+              </div>
+            </div>
 
             <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
               <label className="block">
