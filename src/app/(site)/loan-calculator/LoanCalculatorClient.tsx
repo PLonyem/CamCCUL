@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { Calculator, ChevronDown, Download, Lightbulb, Wallet } from "lucide-react";
+import { Calculator, ChevronDown, Download, Lightbulb } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { cn } from "@/lib/utils";
 
@@ -77,19 +77,6 @@ const copy = {
     savingsNoteLead:
       "Your credit union may require this savings balance before granting the loan. This estimate uses the selected product’s",
     savingsNoteTail: "savings policy; final requirements are set by your credit union.",
-    savingsProgressTitle: "Savings Requirement Progress",
-    savingsProgressSubtitle:
-      "See how close you are to meeting the savings requirement for this loan.",
-    currentSavingsInput: "Your Current Savings Balance",
-    currentSavingsPlaceholder: "FCFA 500,000",
-    currentSavingsHelper: "Enter the balance currently in your credit union savings account.",
-    currentSavings: "Current Savings",
-    remainingGap: "Remaining Gap",
-    progressBelowHalf: "Your savings are growing. Keep contributing regularly.",
-    progressHalfway: "Strong progress. You're more than halfway to your goal.",
-    progressAlmostThere: "Almost there. A few more deposits will get you there.",
-    progressMet: "✅ Savings requirement met. You're ready to visit your credit union.",
-    progressExceeded: "✅ Excellent. Your savings exceed the requirement.",
     nextStep: "Next Step",
     nextStepLead: "Go to the credit union where you already have an account.",
     nextStepBody:
@@ -142,19 +129,6 @@ const copy = {
     savingsNoteLead:
       "Votre coopérative peut exiger ce solde d’épargne avant d’accorder le prêt. Cette estimation utilise la politique d’épargne de",
     savingsNoteTail: "du produit sélectionné ; les exigences finales sont fixées par votre coopérative.",
-    savingsProgressTitle: "Progression vers l’épargne requise",
-    savingsProgressSubtitle:
-      "Voyez où vous en êtes par rapport à l’épargne requise pour ce prêt.",
-    currentSavingsInput: "Votre solde d’épargne actuel",
-    currentSavingsPlaceholder: "FCFA 500 000",
-    currentSavingsHelper: "Saisissez le solde actuel de votre compte d’épargne à la coopérative.",
-    currentSavings: "Épargne actuelle",
-    remainingGap: "Montant restant",
-    progressBelowHalf: "Votre épargne progresse. Continuez à cotiser régulièrement.",
-    progressHalfway: "Belle progression. Vous avez dépassé la moitié de votre objectif.",
-    progressAlmostThere: "Vous y êtes presque. Quelques dépôts supplémentaires suffiront.",
-    progressMet: "✅ Exigence d’épargne atteinte. Vous pouvez vous rendre à votre coopérative.",
-    progressExceeded: "✅ Excellent. Votre épargne dépasse le montant requis.",
     nextStep: "Prochaine étape",
     nextStepLead: "Rendez-vous à la coopérative où vous avez déjà un compte.",
     nextStepBody:
@@ -329,7 +303,6 @@ export function LoanCalculatorClient() {
   const [amount, setAmount] = useState("");
   const [term, setTerm] = useState<(typeof REPAYMENT_TERMS)[number]>(12);
   const [interestRate, setInterestRate] = useState("18");
-  const [currentSavings, setCurrentSavings] = useState("");
   const [result, setResult] = useState<LoanResult | null>(null);
   const [estimateReference, setEstimateReference] = useState<string | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
@@ -343,49 +316,6 @@ export function LoanCalculatorClient() {
   const formattedAmount = amount
     ? new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(Number(amount))
     : "";
-  const formattedCurrentSavings = currentSavings
-    ? `FCFA ${new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(Number(currentSavings))}`
-    : "";
-  const currentSavingsValue = Number(currentSavings) || 0;
-  const savingsProgress = result?.requiredSavings
-    ? (currentSavingsValue / result.requiredSavings) * 100
-    : 0;
-  const progressWidth = Math.min(savingsProgress, 100);
-  const remainingSavingsGap = result
-    ? Math.max(result.requiredSavings - currentSavingsValue, 0)
-    : 0;
-  const savingsRequirementMatched = result
-    ? Math.abs(currentSavingsValue - result.requiredSavings) <= 0.5
-    : false;
-  const savingsStatus = savingsProgress < 50
-    ? {
-        gradient: "from-red-400 to-red-500",
-        gapColor: "text-red-600",
-        message: c.progressBelowHalf,
-      }
-    : savingsProgress < 80
-      ? {
-          gradient: "from-amber-400 to-amber-500",
-          gapColor: "text-amber-600",
-          message: c.progressHalfway,
-        }
-      : savingsProgress < 100 && !savingsRequirementMatched
-        ? {
-            gradient: "from-blue-400 to-blue-500",
-            gapColor: "text-blue-600",
-            message: c.progressAlmostThere,
-          }
-        : savingsRequirementMatched
-          ? {
-              gradient: "from-green-400 to-green-500",
-              gapColor: "text-green-600",
-              message: c.progressMet,
-            }
-          : {
-              gradient: "from-green-400 to-green-500",
-              gapColor: "text-green-600",
-              message: c.progressExceeded,
-            };
 
   function formatCurrency(value: number) {
     return `FCFA ${new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(
@@ -653,94 +583,6 @@ export function LoanCalculatorClient() {
                     </p>
                   </div>
                 </div>
-
-                <section className="mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-                  <div className="flex items-start gap-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-primary-500">
-                      <Wallet className="h-5 w-5" aria-hidden="true" />
-                    </span>
-                    <div>
-                      <h3 className="font-display text-xl font-bold text-primary-900">
-                        {c.savingsProgressTitle}
-                      </h3>
-                      <p className="mt-1 text-sm leading-6 text-gray-600">
-                        {c.savingsProgressSubtitle}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="mt-6 border-t border-gray-100 pt-6">
-                    <label htmlFor="current-savings" className="block text-sm font-medium text-gray-700">
-                      {c.currentSavingsInput}
-                    </label>
-                    <input
-                      id="current-savings"
-                      type="text"
-                      inputMode="numeric"
-                      value={formattedCurrentSavings}
-                      onChange={(event) => setCurrentSavings(digitsOnly(event.target.value))}
-                      placeholder={c.currentSavingsPlaceholder}
-                      className="mt-2 h-12 w-full rounded-lg border border-gray-300 px-4 text-base text-gray-900 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-100 md:max-w-md"
-                    />
-                    <p className="mt-2 text-xs leading-5 text-gray-500">{c.currentSavingsHelper}</p>
-                  </div>
-
-                  <div className="mt-7 border-t border-gray-100 pt-8">
-                    <div className="relative">
-                      <span
-                        className="absolute -top-7 -translate-x-1/2 text-xs font-semibold tabular-nums text-gray-600 transition-[left] duration-700 ease-out"
-                        style={{ left: `${Math.min(Math.max(progressWidth, 4), 96)}%` }}
-                      >
-                        {Math.round(savingsProgress)}%
-                      </span>
-                      <div className="h-4 w-full overflow-hidden rounded-full bg-gray-100 shadow-inner">
-                        <div
-                          className={cn(
-                            "h-4 rounded-full bg-gradient-to-r transition-[width] duration-700 ease-out",
-                            savingsStatus.gradient
-                          )}
-                          style={{ width: `${progressWidth}%` }}
-                          role="progressbar"
-                          aria-valuemin={0}
-                          aria-valuemax={100}
-                          aria-valuenow={Math.min(Math.round(savingsProgress), 100)}
-                          aria-label={c.savingsProgressTitle}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="mt-7 grid grid-cols-1 divide-y divide-gray-100 rounded-xl border border-gray-100 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-                      <div className="p-4 text-center sm:text-left">
-                        <p className="text-xs font-medium uppercase tracking-wider text-gray-500">
-                          {c.currentSavings}
-                        </p>
-                        <p className="font-display mt-2 text-lg font-bold text-gray-900">
-                          {formatCurrency(currentSavingsValue)}
-                        </p>
-                      </div>
-                      <div className="p-4 text-center sm:text-left">
-                        <p className="text-xs font-medium uppercase tracking-wider text-gray-500">
-                          {c.requiredSavings}
-                        </p>
-                        <p className="font-display mt-2 text-lg font-bold text-primary-900">
-                          {formatCurrency(result.requiredSavings)}
-                        </p>
-                      </div>
-                      <div className="p-4 text-center sm:text-left">
-                        <p className="text-xs font-medium uppercase tracking-wider text-gray-500">
-                          {c.remainingGap}
-                        </p>
-                        <p className={cn("font-display mt-2 text-lg font-bold", savingsStatus.gapColor)}>
-                          {formatCurrency(remainingSavingsGap)}
-                        </p>
-                      </div>
-                    </div>
-
-                    <p className="mt-6 text-center text-sm font-medium text-gray-700" aria-live="polite">
-                      {savingsStatus.message}
-                    </p>
-                  </div>
-                </section>
 
               </div>
             )}
