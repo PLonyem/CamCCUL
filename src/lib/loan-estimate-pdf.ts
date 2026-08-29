@@ -1,6 +1,7 @@
 import { jsPDF } from "jspdf";
 
 export interface LoanEstimatePdfInput {
+  logoDataUrl: string;
   reference: string;
   referenceLabel: string;
   date: string;
@@ -55,7 +56,11 @@ export function buildLoanEstimatePdf(input: LoanEstimatePdfInput) {
   doc.setTextColor(239, 243, 247);
   doc.text("CamCCUL", PAGE_WIDTH / 2, 158, { align: "center", angle: 38 });
 
-  drawBuildingMark(doc);
+  try {
+    doc.addImage(input.logoDataUrl, "JPEG", MARGIN, 14, 18, 15.3, undefined, "FAST");
+  } catch {
+    drawBuildingMark(doc);
+  }
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10.5);
   doc.setTextColor(20, 50, 70);

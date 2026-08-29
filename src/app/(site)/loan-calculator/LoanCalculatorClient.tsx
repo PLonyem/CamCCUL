@@ -1,14 +1,57 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
-import { Building2, Calculator, Download, Lightbulb } from "lucide-react";
+import {
+  BriefcaseBusiness,
+  Calculator,
+  Download,
+  Lightbulb,
+  Siren,
+  Sprout,
+  UsersRound,
+} from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { cn } from "@/lib/utils";
 
 const REPAYMENT_TERMS = [6, 12, 18, 24, 36] as const;
-const REQUIRED_SAVINGS_RATE = 0.25;
+
+const LOAN_PRODUCTS = [
+  {
+    id: "regular",
+    label: { en: "Regular Member Loan", fr: "Prêt ordinaire aux membres" },
+    description: { en: "Everyday personal and household needs", fr: "Besoins personnels et familiaux courants" },
+    savingsRate: 0.2,
+    icon: UsersRound,
+  },
+  {
+    id: "agricultural",
+    label: { en: "Agricultural Loan", fr: "Prêt agricole" },
+    description: { en: "Farming, inputs and seasonal production", fr: "Agriculture, intrants et production saisonnière" },
+    savingsRate: 0.2,
+    icon: Sprout,
+  },
+  {
+    id: "business",
+    label: { en: "Business / Development Loan", fr: "Prêt commercial / développement" },
+    description: { en: "Business growth and productive investment", fr: "Croissance d’entreprise et investissement productif" },
+    savingsRate: 0.3333,
+    icon: BriefcaseBusiness,
+  },
+  {
+    id: "emergency",
+    label: { en: "Emergency Loan", fr: "Prêt d’urgence" },
+    description: { en: "Urgent and unexpected financial needs", fr: "Besoins financiers urgents et imprévus" },
+    savingsRate: 0.3333,
+    icon: Siren,
+  },
+] as const;
+
+type LoanProductId = (typeof LOAN_PRODUCTS)[number]["id"];
 
 interface LoanResult {
+  loanProductId: LoanProductId;
+  savingsRate: number;
   principal: number;
   termMonths: number;
   annualRate: number;
@@ -27,6 +70,9 @@ const copy = {
       "Estimate your monthly payment and the savings balance you may need before applying through your own credit union.",
     calculatorTitle: "Estimate Your Loan",
     calculatorIntro: "Enter a few details to receive a simple flat-rate estimate.",
+    loanType: "Choose a Loan Type",
+    loanTypeIntro: "The selected product determines the indicative savings requirement.",
+    savingsRequired: "savings required",
     amount: "Loan Amount (FCFA)",
     amountPlaceholder: "e.g., 2,500,000",
     period: "Repayment Period",
@@ -40,8 +86,9 @@ const copy = {
     monthlyPayment: "Estimated Monthly Payment",
     requiredSavings: "Required Savings Balance",
     totalRepayment: "Total Repayment",
-    savingsNote:
-      "Your credit union may require you to maintain a savings balance before your loan is granted. This is an estimated requirement based on a standard 25% savings policy.",
+    savingsNoteLead:
+      "Your credit union may require this savings balance before granting the loan. This estimate uses the selected product’s",
+    savingsNoteTail: "savings policy; final requirements are set by your credit union.",
     nextStep: "Next Step",
     nextStepLead: "Go to the credit union where you already have an account.",
     nextStepBody:
@@ -58,6 +105,7 @@ const copy = {
     loanApplicant: "Loan Applicant",
     loanEstimate: "Loan Estimate",
     loanAmount: "Loan Amount",
+    loanProduct: "Loan Type",
     repaymentPeriod: "Repayment Period",
     interestRate: "Interest Rate",
     annualFlatRate: "annual (flat rate)",
@@ -74,6 +122,9 @@ const copy = {
       "Estimez votre mensualité et le solde d’épargne dont vous pourriez avoir besoin avant de faire une demande auprès de votre propre coopérative.",
     calculatorTitle: "Estimez votre prêt",
     calculatorIntro: "Saisissez quelques informations pour obtenir une estimation simple à taux fixe.",
+    loanType: "Choisissez un type de prêt",
+    loanTypeIntro: "Le produit sélectionné détermine l’exigence indicative d’épargne.",
+    savingsRequired: "d’épargne requise",
     amount: "Montant du prêt (FCFA)",
     amountPlaceholder: "ex. 2 500 000",
     period: "Durée de remboursement",
@@ -87,8 +138,9 @@ const copy = {
     monthlyPayment: "Mensualité estimée",
     requiredSavings: "Solde d’épargne requis",
     totalRepayment: "Remboursement total",
-    savingsNote:
-      "Votre coopérative peut exiger le maintien d’un solde d’épargne avant l’octroi du prêt. Il s’agit d’une estimation fondée sur une politique standard d’épargne de 25 %.",
+    savingsNoteLead:
+      "Votre coopérative peut exiger ce solde d’épargne avant d’accorder le prêt. Cette estimation utilise la politique d’épargne de",
+    savingsNoteTail: "du produit sélectionné ; les exigences finales sont fixées par votre coopérative.",
     nextStep: "Prochaine étape",
     nextStepLead: "Rendez-vous à la coopérative où vous avez déjà un compte.",
     nextStepBody:
@@ -105,6 +157,7 @@ const copy = {
     loanApplicant: "Demandeur de prêt",
     loanEstimate: "Estimation du prêt",
     loanAmount: "Montant du prêt",
+    loanProduct: "Type de prêt",
     repaymentPeriod: "Durée de remboursement",
     interestRate: "Taux d’intérêt",
     annualFlatRate: "annuel (taux fixe)",
@@ -120,6 +173,10 @@ function digitsOnly(value: string) {
   return value.replace(/\D/g, "");
 }
 
+function formatSavingsRate(rate: number) {
+  return `${Number((rate * 100).toFixed(2))}%`;
+}
+
 function createEstimateReference(year: number) {
   const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   const values = new Uint32Array(4);
@@ -128,14 +185,28 @@ function createEstimateReference(year: number) {
   return `CAM-${year}-${suffix}`;
 }
 
+async function loadCamcculLogoDataUrl() {
+  const response = await fetch("/logo.jpg");
+  if (!response.ok) throw new Error("CamCCUL logo could not be loaded.");
+  const blob = await response.blob();
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(blob);
+  });
+}
+
 function LoanEstimateDocument({
   result,
+  productName,
   reference,
   locale,
   c,
   formatCurrency,
 }: {
   result: LoanResult;
+  productName: string;
   reference: string | null;
   locale: string;
   c: (typeof copy)[keyof typeof copy];
@@ -148,6 +219,7 @@ function LoanEstimateDocument({
     day: "numeric",
   }).format(new Date(result.calculatedAt));
   const rows = [
+    [c.loanProduct, productName],
     [c.loanAmount, formatCurrency(result.principal)],
     [c.repaymentPeriod, `${result.termMonths} ${c.months}`],
     [c.interestRate, `${result.annualRate}% ${c.annualFlatRate}`],
@@ -168,8 +240,14 @@ function LoanEstimateDocument({
 
       <div className="relative z-10">
         <header className="loan-estimate-header relative border-b border-gray-300 pb-7 text-center">
-          <div className="loan-estimate-logo mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary-500 text-white md:absolute md:left-0 md:top-0 md:mb-0">
-            <Building2 className="h-7 w-7" aria-hidden="true" />
+          <div className="loan-estimate-logo mx-auto mb-4 flex h-14 w-14 items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-white p-1 shadow-sm md:absolute md:left-0 md:top-0 md:mb-0">
+            <Image
+              src="/logo.jpg"
+              alt="CamCCUL logo"
+              width={106}
+              height={90}
+              className="h-full w-full object-contain"
+            />
           </div>
           <p className="font-display text-sm font-bold text-primary-900 sm:text-base">
             CAMCCUL — Cameroon Cooperative Credit Union League
@@ -233,6 +311,7 @@ export function LoanCalculatorClient() {
   const c = copy[language];
   const locale = language === "fr" ? "fr-FR" : "en-US";
 
+  const [selectedLoanProductId, setSelectedLoanProductId] = useState<LoanProductId>("regular");
   const [amount, setAmount] = useState("");
   const [term, setTerm] = useState<(typeof REPAYMENT_TERMS)[number]>(12);
   const [interestRate, setInterestRate] = useState("18");
@@ -240,6 +319,11 @@ export function LoanCalculatorClient() {
   const [estimateReference, setEstimateReference] = useState<string | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
   const [calculatorError, setCalculatorError] = useState("");
+  const selectedLoanProduct =
+    LOAN_PRODUCTS.find((product) => product.id === selectedLoanProductId) ?? LOAN_PRODUCTS[0];
+  const resultLoanProduct = result
+    ? LOAN_PRODUCTS.find((product) => product.id === result.loanProductId) ?? LOAN_PRODUCTS[0]
+    : selectedLoanProduct;
 
   const formattedAmount = amount
     ? new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(Number(amount))
@@ -273,11 +357,13 @@ export function LoanCalculatorClient() {
     setCalculatorError("");
     setEstimateReference(createEstimateReference(new Date().getFullYear()));
     setResult({
+      loanProductId: selectedLoanProduct.id,
+      savingsRate: selectedLoanProduct.savingsRate,
       principal,
       termMonths: term,
       annualRate,
       monthlyPayment: totalRepayment / term,
-      requiredSavings: principal * REQUIRED_SAVINGS_RATE,
+      requiredSavings: principal * selectedLoanProduct.savingsRate,
       totalInterest,
       totalRepayment,
       calculatedAt: new Date().toISOString(),
@@ -294,6 +380,7 @@ export function LoanCalculatorClient() {
 
     try {
       const { downloadLoanEstimatePdf } = await import("@/lib/loan-estimate-pdf");
+      const logoDataUrl = await loadCamcculLogoDataUrl();
       const displayDate = new Intl.DateTimeFormat(locale, {
         year: "numeric",
         month: "long",
@@ -301,6 +388,7 @@ export function LoanCalculatorClient() {
       }).format(new Date(result.calculatedAt));
 
       downloadLoanEstimatePdf({
+        logoDataUrl,
         reference,
         referenceLabel: c.estimateReference,
         date: displayDate,
@@ -309,6 +397,7 @@ export function LoanCalculatorClient() {
         preparedForLabel: c.preparedFor,
         title: c.loanEstimate,
         rows: [
+          { label: c.loanProduct, value: resultLoanProduct.label[language] },
           { label: c.loanAmount, value: formatCurrency(result.principal) },
           { label: c.repaymentPeriod, value: `${result.termMonths} ${c.months}` },
           { label: c.interestRate, value: `${result.annualRate}% ${c.annualFlatRate}` },
@@ -358,6 +447,55 @@ export function LoanCalculatorClient() {
                 <p className="mt-1 text-sm text-gray-600">{c.calculatorIntro}</p>
               </div>
             </div>
+
+            <fieldset className="mt-8">
+              <legend className="font-display text-base font-bold text-primary-900">{c.loanType}</legend>
+              <p className="mt-1 text-sm text-gray-500">{c.loanTypeIntro}</p>
+              <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {LOAN_PRODUCTS.map((product) => {
+                  const ProductIcon = product.icon;
+                  const isSelected = selectedLoanProductId === product.id;
+                  return (
+                    <button
+                      key={product.id}
+                      type="button"
+                      aria-pressed={isSelected}
+                      onClick={() => {
+                        setSelectedLoanProductId(product.id);
+                        setResult(null);
+                        setEstimateReference(null);
+                      }}
+                      className={cn(
+                        "group flex min-h-24 items-start gap-4 rounded-xl border p-4 text-left transition-all",
+                        isSelected
+                          ? "border-primary-500 bg-primary-50 shadow-sm ring-1 ring-primary-500"
+                          : "border-gray-200 bg-white hover:border-primary-300 hover:bg-gray-50"
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors",
+                          isSelected
+                            ? "bg-primary-500 text-white"
+                            : "bg-gray-100 text-gray-500 group-hover:bg-primary-50 group-hover:text-primary-600"
+                        )}
+                      >
+                        <ProductIcon className="h-5 w-5" aria-hidden="true" />
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block font-semibold text-gray-900">{product.label[language]}</span>
+                        <span className="mt-1 block text-xs leading-5 text-gray-500">
+                          {product.description[language]}
+                        </span>
+                        <span className="mt-2 inline-flex rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-primary-700 ring-1 ring-primary-100">
+                          {formatSavingsRate(product.savingsRate)} {c.savingsRequired}
+                        </span>
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </fieldset>
 
             <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
               <label className="block">
@@ -459,7 +597,9 @@ export function LoanCalculatorClient() {
                     <p className="mt-2 text-xl font-bold text-primary-900">
                       {formatCurrency(result.requiredSavings)}
                     </p>
-                    <p className="mt-3 text-xs leading-5 text-gray-500">{c.savingsNote}</p>
+                    <p className="mt-3 text-xs leading-5 text-gray-500">
+                      {c.savingsNoteLead} {formatSavingsRate(result.savingsRate)} {c.savingsNoteTail}
+                    </p>
                   </div>
 
                   <div className="rounded-xl border border-primary-100 bg-primary-50 p-5">
@@ -481,6 +621,7 @@ export function LoanCalculatorClient() {
               </p>
               <LoanEstimateDocument
                 result={result}
+                productName={resultLoanProduct.label[language]}
                 reference={estimateReference}
                 locale={locale}
                 c={c}
