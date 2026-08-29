@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Building2, Calculator, Lightbulb, Printer } from "lucide-react";
+import { Building2, Calculator, Download, Lightbulb } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { cn } from "@/lib/utils";
 
@@ -48,7 +48,9 @@ const copy = {
       "Present your loan estimate to the credit union staff to begin your application process.",
     trustNote:
       "CamCCUL does not issue loans directly. Loans are provided by your affiliated credit union under their policies and approval.",
-    printEstimate: "Print Loan Estimate",
+    downloadEstimate: "Download Loan Estimate",
+    downloadingEstimate: "Preparing PDF...",
+    downloadError: "The loan estimate could not be downloaded. Please try again.",
     estimatePreview: "Loan Estimate Preview",
     estimateReference: "Estimate Reference",
     estimateDate: "Date",
@@ -93,7 +95,9 @@ const copy = {
       "Présentez votre estimation au personnel de la coopérative pour commencer votre demande de prêt.",
     trustNote:
       "CamCCUL n’accorde pas directement de prêts. Les prêts sont accordés par votre coopérative affiliée selon ses politiques et sous réserve de son approbation.",
-    printEstimate: "Imprimer l’estimation du prêt",
+    downloadEstimate: "Télécharger l’estimation du prêt",
+    downloadingEstimate: "Préparation du PDF...",
+    downloadError: "Impossible de télécharger l’estimation du prêt. Veuillez réessayer.",
     estimatePreview: "Aperçu de l’estimation du prêt",
     estimateReference: "Référence de l’estimation",
     estimateDate: "Date",
@@ -234,6 +238,7 @@ export function LoanCalculatorClient() {
   const [interestRate, setInterestRate] = useState("18");
   const [result, setResult] = useState<LoanResult | null>(null);
   const [estimateReference, setEstimateReference] = useState<string | null>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
   const [calculatorError, setCalculatorError] = useState("");
 
   const formattedAmount = amount
@@ -279,26 +284,55 @@ export function LoanCalculatorClient() {
     });
   }
 
-  function printEstimate() {
+  async function downloadEstimate() {
     if (!result) return;
 
     const reference = createEstimateReference(new Date().getFullYear());
     setEstimateReference(reference);
-    document.body.classList.add("printing-loan-estimate");
+    setIsDownloading(true);
+    setCalculatorError("");
 
-    const cleanUpPrintMode = () => {
-      document.body.classList.remove("printing-loan-estimate");
-    };
-    window.addEventListener("afterprint", cleanUpPrintMode, { once: true });
+    try {
+      const { downloadLoanEstimatePdf } = await import("@/lib/loan-estimate-pdf");
+      const displayDate = new Intl.DateTimeFormat(locale, {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }).format(new Date(result.calculatedAt));
 
-    // Moving print() to the next task lets React commit the new reference
-    // before the browser captures the document for its print preview.
-    window.setTimeout(() => window.print(), 0);
+      downloadLoanEstimatePdf({
+        reference,
+        referenceLabel: c.estimateReference,
+        date: displayDate,
+        dateLabel: c.estimateDate,
+        preparedFor: c.loanApplicant,
+        preparedForLabel: c.preparedFor,
+        title: c.loanEstimate,
+        rows: [
+          { label: c.loanAmount, value: formatCurrency(result.principal) },
+          { label: c.repaymentPeriod, value: `${result.termMonths} ${c.months}` },
+          { label: c.interestRate, value: `${result.annualRate}% ${c.annualFlatRate}` },
+          { label: c.monthlyPayment, value: formatCurrency(result.monthlyPayment) },
+          { label: c.requiredSavings, value: formatCurrency(result.requiredSavings) },
+          { label: c.totalInterest, value: formatCurrency(result.totalInterest) },
+          { label: c.totalRepayment, value: formatCurrency(result.totalRepayment) },
+        ],
+        nextStepHeading: c.nextStep,
+        nextStepLead: c.nextStepLead,
+        nextStepBody: c.estimateNextStepBody,
+        disclaimers: [c.planningDisclaimer, c.approvalDisclaimer, c.termsDisclaimer],
+      });
+    } catch (error) {
+      console.error("Loan estimate PDF generation failed:", error);
+      setCalculatorError(c.downloadError);
+    } finally {
+      setIsDownloading(false);
+    }
   }
 
   return (
-    <div className="loan-calculator-page bg-gray-50">
-      <section className="loan-calculator-screen-only bg-primary-900 px-4 py-14 text-white md:py-18">
+    <div className="bg-gray-50">
+      <section className="bg-primary-900 px-4 py-14 text-white md:py-18">
         <div className="mx-auto max-w-5xl text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-200">
             {c.eyebrow}
@@ -310,9 +344,9 @@ export function LoanCalculatorClient() {
         </div>
       </section>
 
-      <section className="loan-calculator-content px-4 py-12 md:py-16">
-        <div className="loan-calculator-stack mx-auto max-w-5xl space-y-8">
-          <div className="loan-calculator-screen-only rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+      <section className="px-4 py-12 md:py-16">
+        <div className="mx-auto max-w-5xl space-y-8">
+          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
             <div className="flex items-start gap-3">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-primary-600">
                 <Calculator className="h-6 w-6" aria-hidden="true" />
@@ -438,19 +472,21 @@ export function LoanCalculatorClient() {
 
                 <button
                   type="button"
-                  onClick={printEstimate}
-                  className="mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg border border-primary-500 bg-white px-6 font-semibold text-primary-700 transition-colors hover:bg-primary-50 sm:w-auto"
+                  onClick={downloadEstimate}
+                  disabled={isDownloading}
+                  aria-busy={isDownloading}
+                  className="mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg border border-primary-500 bg-white px-6 font-semibold text-primary-700 transition-colors hover:bg-primary-50 disabled:cursor-wait disabled:opacity-60 sm:w-auto"
                 >
-                  <Printer className="h-5 w-5" aria-hidden="true" />
-                  {c.printEstimate}
+                  <Download className="h-5 w-5" aria-hidden="true" />
+                  {isDownloading ? c.downloadingEstimate : c.downloadEstimate}
                 </button>
               </div>
             )}
           </div>
 
           {result && (
-            <section className="loan-estimate-preview-wrapper">
-              <p className="loan-calculator-screen-only mb-3 text-center text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
+            <section>
+              <p className="mb-3 text-center text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
                 {c.estimatePreview}
               </p>
               <LoanEstimateDocument
@@ -463,7 +499,7 @@ export function LoanCalculatorClient() {
             </section>
           )}
 
-          <section className="loan-calculator-screen-only rounded-2xl border border-primary-200 bg-primary-50 p-8 text-center">
+          <section className="rounded-2xl border border-primary-200 bg-primary-50 p-8 text-center">
             <Lightbulb className="mx-auto h-8 w-8 text-primary-500" aria-hidden="true" />
             <h2 className="font-display mt-4 text-2xl font-bold text-primary-900">
               {c.nextStep}
