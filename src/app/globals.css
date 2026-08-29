@@ -219,13 +219,97 @@ body {
   }
 }
 
+.loan-estimate-watermark {
+  opacity: 0.065;
+  transform: translate(-50%, -50%) rotate(-38deg);
+}
+
 @media print {
   @page {
-    margin: 1.5cm;
+    size: A4 portrait;
+    margin: 12mm;
   }
 
   body {
     background: #fff;
+  }
+
+  body.printing-loan-estimate *,
+  body:has(.loan-estimate-page) * {
+    visibility: hidden !important;
+  }
+
+  body.printing-loan-estimate .loan-estimate-page,
+  body.printing-loan-estimate .loan-estimate-page *,
+  body:has(.loan-estimate-page) .loan-estimate-page,
+  body:has(.loan-estimate-page) .loan-estimate-page * {
+    visibility: visible !important;
+  }
+
+  body.printing-loan-estimate .loan-calculator-screen-only,
+  body:has(.loan-estimate-page) .loan-calculator-screen-only {
+    display: none !important;
+  }
+
+  body.printing-loan-estimate .loan-calculator-content,
+  body:has(.loan-estimate-page) .loan-calculator-content {
+    padding: 0 !important;
+  }
+
+  body.printing-loan-estimate .loan-calculator-stack,
+  body:has(.loan-estimate-page) .loan-calculator-stack {
+    max-width: none !important;
+    margin: 0 !important;
+  }
+
+  body.printing-loan-estimate .loan-estimate-preview-wrapper,
+  body:has(.loan-estimate-page) .loan-estimate-preview-wrapper {
+    margin: 0 !important;
+  }
+
+  body.printing-loan-estimate .loan-estimate-page,
+  body:has(.loan-estimate-page) .loan-estimate-page {
+    box-sizing: border-box;
+    width: 100% !important;
+    max-width: none !important;
+    min-height: 273mm;
+    margin: 0 !important;
+    padding: 14mm 15mm 10mm !important;
+    overflow: hidden;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: #fff !important;
+    color: #111827 !important;
+    box-shadow: none !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .loan-estimate-header {
+    padding-left: 18mm;
+    padding-right: 18mm;
+  }
+
+  .loan-estimate-logo {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    margin: 0 !important;
+  }
+
+  .loan-estimate-watermark {
+    left: 50% !important;
+    top: 50% !important;
+    font-size: 120px !important;
+    opacity: 0.065 !important;
+    transform: translate(-50%, -50%) rotate(-38deg) !important;
+  }
+
+  .loan-estimate-page table,
+  .loan-estimate-page tr,
+  .loan-estimate-page section,
+  .loan-estimate-page footer {
+    break-inside: avoid;
   }
 }
 

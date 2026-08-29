@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Calculator, Lightbulb } from "lucide-react";
+import { Building2, Calculator, Lightbulb, Printer } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { cn } from "@/lib/utils";
 
@@ -9,9 +9,14 @@ const REPAYMENT_TERMS = [6, 12, 18, 24, 36] as const;
 const REQUIRED_SAVINGS_RATE = 0.25;
 
 interface LoanResult {
+  principal: number;
+  termMonths: number;
+  annualRate: number;
   monthlyPayment: number;
   requiredSavings: number;
+  totalInterest: number;
   totalRepayment: number;
+  calculatedAt: string;
 }
 
 const copy = {
@@ -43,6 +48,22 @@ const copy = {
       "Present your loan estimate to the credit union staff to begin your application process.",
     trustNote:
       "CamCCUL does not issue loans directly. Loans are provided by your affiliated credit union under their policies and approval.",
+    printEstimate: "Print Loan Estimate",
+    estimatePreview: "Loan Estimate Preview",
+    estimateReference: "Estimate Reference",
+    estimateDate: "Date",
+    preparedFor: "Prepared for",
+    loanApplicant: "Loan Applicant",
+    loanEstimate: "Loan Estimate",
+    loanAmount: "Loan Amount",
+    repaymentPeriod: "Repayment Period",
+    interestRate: "Interest Rate",
+    annualFlatRate: "annual (flat rate)",
+    totalInterest: "Total Interest",
+    estimateNextStepBody: "Present this estimate to begin your loan application.",
+    planningDisclaimer: "This estimate is for planning purposes only.",
+    approvalDisclaimer: "It does not constitute loan approval or a guarantee of eligibility.",
+    termsDisclaimer: "Final terms are determined by the credit union under their policies.",
   },
   fr: {
     eyebrow: "OUTILS FINANCIERS CAMCCUL",
@@ -72,11 +93,135 @@ const copy = {
       "Présentez votre estimation au personnel de la coopérative pour commencer votre demande de prêt.",
     trustNote:
       "CamCCUL n’accorde pas directement de prêts. Les prêts sont accordés par votre coopérative affiliée selon ses politiques et sous réserve de son approbation.",
+    printEstimate: "Imprimer l’estimation du prêt",
+    estimatePreview: "Aperçu de l’estimation du prêt",
+    estimateReference: "Référence de l’estimation",
+    estimateDate: "Date",
+    preparedFor: "Préparé pour",
+    loanApplicant: "Demandeur de prêt",
+    loanEstimate: "Estimation du prêt",
+    loanAmount: "Montant du prêt",
+    repaymentPeriod: "Durée de remboursement",
+    interestRate: "Taux d’intérêt",
+    annualFlatRate: "annuel (taux fixe)",
+    totalInterest: "Intérêts totaux",
+    estimateNextStepBody: "Présentez cette estimation pour commencer votre demande de prêt.",
+    planningDisclaimer: "Cette estimation est fournie uniquement à des fins de planification.",
+    approvalDisclaimer: "Elle ne constitue ni une approbation de prêt ni une garantie d’éligibilité.",
+    termsDisclaimer: "Les conditions finales sont déterminées par la coopérative selon ses politiques.",
   },
 } as const;
 
 function digitsOnly(value: string) {
   return value.replace(/\D/g, "");
+}
+
+function createEstimateReference(year: number) {
+  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const values = new Uint32Array(4);
+  crypto.getRandomValues(values);
+  const suffix = Array.from(values, (value) => alphabet[value % alphabet.length]).join("");
+  return `CAM-${year}-${suffix}`;
+}
+
+function LoanEstimateDocument({
+  result,
+  reference,
+  locale,
+  c,
+  formatCurrency,
+}: {
+  result: LoanResult;
+  reference: string | null;
+  locale: string;
+  c: (typeof copy)[keyof typeof copy];
+  formatCurrency: (value: number) => string;
+}) {
+  const displayReference = reference ?? `CAM-${new Date(result.calculatedAt).getFullYear()}-XXXX`;
+  const displayDate = new Intl.DateTimeFormat(locale, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(new Date(result.calculatedAt));
+  const rows = [
+    [c.loanAmount, formatCurrency(result.principal)],
+    [c.repaymentPeriod, `${result.termMonths} ${c.months}`],
+    [c.interestRate, `${result.annualRate}% ${c.annualFlatRate}`],
+    [c.monthlyPayment, formatCurrency(result.monthlyPayment)],
+    [c.requiredSavings, formatCurrency(result.requiredSavings)],
+    [c.totalInterest, formatCurrency(result.totalInterest)],
+    [c.totalRepayment, formatCurrency(result.totalRepayment)],
+  ];
+
+  return (
+    <article
+      className="loan-estimate-page relative mx-auto max-w-3xl overflow-hidden rounded-sm border border-gray-200 bg-white px-5 py-8 text-gray-900 shadow-xl sm:px-10 md:px-14 md:py-12"
+      aria-label={c.estimatePreview}
+    >
+      <div className="loan-estimate-watermark pointer-events-none absolute left-1/2 top-1/2 z-0 select-none whitespace-nowrap font-display text-[clamp(4rem,15vw,7.5rem)] font-bold text-primary-900">
+        CamCCUL
+      </div>
+
+      <div className="relative z-10">
+        <header className="loan-estimate-header relative border-b border-gray-300 pb-7 text-center">
+          <div className="loan-estimate-logo mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary-500 text-white md:absolute md:left-0 md:top-0 md:mb-0">
+            <Building2 className="h-7 w-7" aria-hidden="true" />
+          </div>
+          <p className="font-display text-sm font-bold text-primary-900 sm:text-base">
+            CAMCCUL — Cameroon Cooperative Credit Union League
+          </p>
+          <h2 className="font-display mt-4 text-2xl font-extrabold uppercase tracking-[0.22em] text-gray-950 sm:text-3xl">
+            {c.loanEstimate}
+          </h2>
+        </header>
+
+        <section className="grid gap-2 py-7 text-sm sm:grid-cols-2">
+          <p>
+            <span className="text-gray-500">{c.estimateReference}: </span>
+            <span className="font-mono font-semibold text-gray-900">{displayReference}</span>
+          </p>
+          <p className="sm:text-right">
+            <span className="text-gray-500">{c.estimateDate}: </span>
+            <span className="font-semibold text-gray-900">{displayDate}</span>
+          </p>
+          <p className="sm:col-span-2">
+            <span className="text-gray-500">{c.preparedFor}: </span>
+            <span className="font-semibold text-gray-900">{c.loanApplicant}</span>
+          </p>
+        </section>
+
+        <table className="w-full border-collapse text-sm">
+          <tbody>
+            {rows.map(([label, value]) => (
+              <tr key={label} className="border-b border-gray-200 last:border-b-0">
+                <th scope="row" className="w-1/2 py-3 pr-3 text-left font-normal text-gray-500">
+                  {label}
+                </th>
+                <td className="py-3 text-right font-bold text-gray-950">{value}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <section className="mt-8 border-l-4 border-primary-500 bg-primary-50 px-5 py-4">
+          <h3 className="font-display text-lg font-bold text-primary-900">{c.nextStep}</h3>
+          <p className="mt-2 font-semibold text-gray-800">{c.nextStepLead}</p>
+          <p className="mt-1 text-sm text-gray-600">{c.estimateNextStepBody}</p>
+        </section>
+
+        <section className="mt-8 space-y-1 text-xs leading-5 text-gray-500">
+          <p>{c.planningDisclaimer}</p>
+          <p>{c.approvalDisclaimer}</p>
+          <p>{c.termsDisclaimer}</p>
+        </section>
+
+        <footer className="mt-10 border-t border-gray-300 pt-5 text-center text-xs leading-5 text-gray-500">
+          <p className="font-semibold text-primary-900">Cameroon Cooperative Credit Union League</p>
+          <p>Commercial Avenue, Bamenda · +237 233 36 11 82 · info@camccul.cm</p>
+        </footer>
+      </div>
+    </article>
+  );
 }
 
 export function LoanCalculatorClient() {
@@ -88,6 +233,7 @@ export function LoanCalculatorClient() {
   const [term, setTerm] = useState<(typeof REPAYMENT_TERMS)[number]>(12);
   const [interestRate, setInterestRate] = useState("18");
   const [result, setResult] = useState<LoanResult | null>(null);
+  const [estimateReference, setEstimateReference] = useState<string | null>(null);
   const [calculatorError, setCalculatorError] = useState("");
 
   const formattedAmount = amount
@@ -120,16 +266,39 @@ export function LoanCalculatorClient() {
     const totalRepayment = principal + totalInterest;
 
     setCalculatorError("");
+    setEstimateReference(null);
     setResult({
+      principal,
+      termMonths: term,
+      annualRate,
       monthlyPayment: totalRepayment / term,
       requiredSavings: principal * REQUIRED_SAVINGS_RATE,
+      totalInterest,
       totalRepayment,
+      calculatedAt: new Date().toISOString(),
     });
   }
 
+  function printEstimate() {
+    if (!result) return;
+
+    const reference = createEstimateReference(new Date().getFullYear());
+    setEstimateReference(reference);
+    document.body.classList.add("printing-loan-estimate");
+
+    const cleanUpPrintMode = () => {
+      document.body.classList.remove("printing-loan-estimate");
+    };
+    window.addEventListener("afterprint", cleanUpPrintMode, { once: true });
+
+    // Moving print() to the next task lets React commit the new reference
+    // before the browser captures the document for its print preview.
+    window.setTimeout(() => window.print(), 0);
+  }
+
   return (
-    <div className="bg-gray-50">
-      <section className="bg-primary-900 px-4 py-14 text-white md:py-18">
+    <div className="loan-calculator-page bg-gray-50">
+      <section className="loan-calculator-screen-only bg-primary-900 px-4 py-14 text-white md:py-18">
         <div className="mx-auto max-w-5xl text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-200">
             {c.eyebrow}
@@ -141,9 +310,9 @@ export function LoanCalculatorClient() {
         </div>
       </section>
 
-      <section className="px-4 py-12 md:py-16">
-        <div className="mx-auto max-w-5xl space-y-8">
-          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+      <section className="loan-calculator-content px-4 py-12 md:py-16">
+        <div className="loan-calculator-stack mx-auto max-w-5xl space-y-8">
+          <div className="loan-calculator-screen-only rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
             <div className="flex items-start gap-3">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-primary-600">
                 <Calculator className="h-6 w-6" aria-hidden="true" />
@@ -242,33 +411,59 @@ export function LoanCalculatorClient() {
             )}
 
             {result && (
-              <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3" aria-live="polite">
-                <div className="rounded-xl border border-primary-100 bg-primary-50 p-5">
-                  <p className="text-sm text-primary-700">{c.monthlyPayment}</p>
-                  <p className="mt-2 text-xl font-bold text-primary-900">
-                    {formatCurrency(result.monthlyPayment)}
-                  </p>
+              <div className="mt-8" aria-live="polite">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                  <div className="rounded-xl border border-primary-100 bg-primary-50 p-5">
+                    <p className="text-sm text-primary-700">{c.monthlyPayment}</p>
+                    <p className="mt-2 text-xl font-bold text-primary-900">
+                      {formatCurrency(result.monthlyPayment)}
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl border border-primary-200 bg-primary-50 p-5">
+                    <p className="text-sm text-primary-700">{c.requiredSavings}</p>
+                    <p className="mt-2 text-xl font-bold text-primary-900">
+                      {formatCurrency(result.requiredSavings)}
+                    </p>
+                    <p className="mt-3 text-xs leading-5 text-gray-500">{c.savingsNote}</p>
+                  </div>
+
+                  <div className="rounded-xl border border-primary-100 bg-primary-50 p-5">
+                    <p className="text-sm text-primary-700">{c.totalRepayment}</p>
+                    <p className="mt-2 text-xl font-bold text-primary-900">
+                      {formatCurrency(result.totalRepayment)}
+                    </p>
+                  </div>
                 </div>
 
-                <div className="rounded-xl border border-primary-200 bg-primary-50 p-5">
-                  <p className="text-sm text-primary-700">{c.requiredSavings}</p>
-                  <p className="mt-2 text-xl font-bold text-primary-900">
-                    {formatCurrency(result.requiredSavings)}
-                  </p>
-                  <p className="mt-3 text-xs leading-5 text-gray-500">{c.savingsNote}</p>
-                </div>
-
-                <div className="rounded-xl border border-primary-100 bg-primary-50 p-5">
-                  <p className="text-sm text-primary-700">{c.totalRepayment}</p>
-                  <p className="mt-2 text-xl font-bold text-primary-900">
-                    {formatCurrency(result.totalRepayment)}
-                  </p>
-                </div>
+                <button
+                  type="button"
+                  onClick={printEstimate}
+                  className="mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg border border-primary-500 bg-white px-6 font-semibold text-primary-700 transition-colors hover:bg-primary-50 sm:w-auto"
+                >
+                  <Printer className="h-5 w-5" aria-hidden="true" />
+                  {c.printEstimate}
+                </button>
               </div>
             )}
           </div>
 
-          <section className="rounded-2xl border border-primary-200 bg-primary-50 p-8 text-center">
+          {result && (
+            <section className="loan-estimate-preview-wrapper">
+              <p className="loan-calculator-screen-only mb-3 text-center text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
+                {c.estimatePreview}
+              </p>
+              <LoanEstimateDocument
+                result={result}
+                reference={estimateReference}
+                locale={locale}
+                c={c}
+                formatCurrency={formatCurrency}
+              />
+            </section>
+          )}
+
+          <section className="loan-calculator-screen-only rounded-2xl border border-primary-200 bg-primary-50 p-8 text-center">
             <Lightbulb className="mx-auto h-8 w-8 text-primary-500" aria-hidden="true" />
             <h2 className="font-display mt-4 text-2xl font-bold text-primary-900">
               {c.nextStep}
