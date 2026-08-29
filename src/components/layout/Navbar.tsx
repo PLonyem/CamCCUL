@@ -47,9 +47,7 @@ const serviceLinks: { key: TranslationKey; href: string }[] = [
 
 // Flat list for the mobile dropdown specifically — unlike the desktop nav,
 // mobile doesn't nest About/Services into their own expandable sub-menus
-// (no room for that inside a compact anchored card), and includes an
-// explicit Affiliates entry the desktop nav only exposes via the separate
-// "Find a Credit Union" CTA button.
+// because there is no room for that inside a compact anchored card.
 const mobileMenuLinks: { key: TranslationKey; href: string; icon: LucideIcon }[] = [
   { key: "nav_home", href: "/", icon: Home },
   { key: "nav_about", href: "/about", icon: Info },
@@ -374,12 +372,6 @@ export function Navbar() {
 
         <div className="ml-auto flex shrink-0 items-center gap-2">
           <div className="hidden md:block">{languageToggle}</div>
-          <Link
-            href="/affiliates"
-            className="hidden items-center whitespace-nowrap rounded-lg bg-primary-500 px-2.5 py-2 text-[10px] font-medium text-white transition-colors hover:bg-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 md:inline-flex lg:px-3 lg:text-xs xl:px-4 xl:text-sm"
-          >
-            {t("nav_find_credit_union")}
-          </Link>
           <div className="hidden md:block">{accountLink}</div>
 
           <button
