@@ -271,7 +271,7 @@ export function LoanCalculatorClient() {
     const totalRepayment = principal + totalInterest;
 
     setCalculatorError("");
-    setEstimateReference(null);
+    setEstimateReference(createEstimateReference(new Date().getFullYear()));
     setResult({
       principal,
       termMonths: term,
@@ -287,8 +287,8 @@ export function LoanCalculatorClient() {
   async function downloadEstimate() {
     if (!result) return;
 
-    const reference = createEstimateReference(new Date().getFullYear());
-    setEstimateReference(reference);
+    const reference = estimateReference ?? createEstimateReference(new Date().getFullYear());
+    if (!estimateReference) setEstimateReference(reference);
     setIsDownloading(true);
     setCalculatorError("");
 
@@ -470,16 +470,6 @@ export function LoanCalculatorClient() {
                   </div>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={downloadEstimate}
-                  disabled={isDownloading}
-                  aria-busy={isDownloading}
-                  className="mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg border border-primary-500 bg-white px-6 font-semibold text-primary-700 transition-colors hover:bg-primary-50 disabled:cursor-wait disabled:opacity-60 sm:w-auto"
-                >
-                  <Download className="h-5 w-5" aria-hidden="true" />
-                  {isDownloading ? c.downloadingEstimate : c.downloadEstimate}
-                </button>
               </div>
             )}
           </div>
@@ -496,6 +486,18 @@ export function LoanCalculatorClient() {
                 c={c}
                 formatCurrency={formatCurrency}
               />
+              <div className="mt-5 flex justify-center">
+                <button
+                  type="button"
+                  onClick={downloadEstimate}
+                  disabled={isDownloading}
+                  aria-busy={isDownloading}
+                  className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-primary-500 px-6 font-semibold text-white transition-colors hover:bg-primary-600 disabled:cursor-wait disabled:opacity-60 sm:w-auto"
+                >
+                  <Download className="h-5 w-5" aria-hidden="true" />
+                  {isDownloading ? c.downloadingEstimate : c.downloadEstimate}
+                </button>
+              </div>
             </section>
           )}
 
